@@ -1,0 +1,194 @@
+{
+  "conflicts": [
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Poseidon",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "6cc2762f29ec",
+        "0657e09f312a"
+      ],
+      "tasks": [
+        {
+          "id": "6cc2762f29ec",
+          "activity": "GL 01 OSV / 72hrs - Brine / DE / WBCO / THS",
+          "project": "Whale 10 Completion"
+        },
+        {
+          "id": "0657e09f312a",
+          "activity": "GL 02 OSV-WBCO / HPDU / 3\" Iron / Tetra Filtration",
+          "project": "Whale 10 Completion"
+        }
+      ],
+      "overlap_minutes": 525,
+      "overlap_start": "2026-06-21T16:30:00",
+      "overlap_end": "2026-06-22T01:15:00",
+      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jun 21 to Jun 22): 'GL 01 OSV / 72hrs - Brine / DE / WBCO / THS', 'GL 02 OSV-WBCO / HPDU / 3\" Iron / Tetra Filtration'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Poseidon",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "77e5431f5680",
+        "3831eb837f7c"
+      ],
+      "tasks": [
+        {
+          "id": "77e5431f5680",
+          "activity": "GL 06 HOS Carolina / 120 hrs - Frac Heads",
+          "project": "Whale 10 Completion"
+        },
+        {
+          "id": "3831eb837f7c",
+          "activity": "GL 07 OSV- ROCS / Upper Completions Equipment / Packer Fluid",
+          "project": "Whale 10 Completion"
+        }
+      ],
+      "overlap_minutes": 2880,
+      "overlap_start": "2026-07-10T16:00:00",
+      "overlap_end": "2026-07-12T16:00:00",
+      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jul 10 to Jul 12): 'GL 06 HOS Carolina / 120 hrs - Frac Heads', 'GL 07 OSV- ROCS / Upper Completions Equipment / Packer Fluid'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Noble Voyager",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "48f2aade8ee7",
+        "1b3c08361229"
+      ],
+      "tasks": [
+        {
+          "id": "48f2aade8ee7",
+          "activity": "GL 03 OSV - 60hrs - WBM, Foam & N2 Equip, 28\" Csg, CTRS, WH Tools",
+          "project": "Princess P13 - Top Hole"
+        },
+        {
+          "id": "1b3c08361229",
+          "activity": "GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets",
+          "project": "Princess P13 - Top Hole"
+        }
+      ],
+      "overlap_minutes": 720,
+      "overlap_start": "2026-07-25T00:00:00",
+      "overlap_end": "2026-07-25T12:00:00",
+      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Jul 25 to Jul 25): 'GL 03 OSV - 60hrs - WBM, Foam & N2 Equip, 28\" Csg, CTRS, WH Tools', 'GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Noble Voyager",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "1b3c08361229",
+        "a42cce6059bc"
+      ],
+      "tasks": [
+        {
+          "id": "1b3c08361229",
+          "activity": "GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets",
+          "project": "Princess P13 - Top Hole"
+        },
+        {
+          "id": "a42cce6059bc",
+          "activity": "GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical",
+          "project": "Princess P13 - Top Hole"
+        }
+      ],
+      "overlap_minutes": 1440,
+      "overlap_start": "2026-07-27T00:00:00",
+      "overlap_end": "2026-07-28T00:00:00",
+      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Jul 27 to Jul 28): 'GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets', 'GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Noble Voyager",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "a42cce6059bc",
+        "5d0c90af3777"
+      ],
+      "tasks": [
+        {
+          "id": "a42cce6059bc",
+          "activity": "GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical",
+          "project": "Princess P13 - Top Hole"
+        },
+        {
+          "id": "5d0c90af3777",
+          "activity": "GL 08 OSV - 60hrs - Backload WBM & Equipment",
+          "project": "Princess P13 - Top Hole"
+        }
+      ],
+      "overlap_minutes": 2880,
+      "overlap_start": "2026-07-28T00:00:00",
+      "overlap_end": "2026-07-30T00:00:00",
+      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Jul 28 to Jul 30): 'GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical', 'GL 08 OSV - 60hrs - Backload WBM & Equipment'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Noble Voyager",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "5d0c90af3777",
+        "41f6ee600332"
+      ],
+      "tasks": [
+        {
+          "id": "5d0c90af3777",
+          "activity": "GL 08 OSV - 60hrs - Backload WBM & Equipment",
+          "project": "Princess P13 - Top Hole"
+        },
+        {
+          "id": "41f6ee600332",
+          "activity": "GL 01 OSV - 36hrs - SBM, Barite, CMT, BOPA, WH Tools, WBCO, 4-1/2\" & 3-1/2\" DP",
+          "project": "Princess P8 TA - Prep for Sidetrack"
+        }
+      ],
+      "overlap_minutes": 720,
+      "overlap_start": "2026-07-30T00:00:00",
+      "overlap_end": "2026-07-30T12:00:00",
+      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Jul 30 to Jul 30): 'GL 08 OSV - 60hrs - Backload WBM & Equipment', 'GL 01 OSV - 36hrs - SBM, Barite, CMT, BOPA, WH Tools, WBCO, 4-1/2\" & 3-1/2\" DP'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Olympus",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "32340e45607f",
+        "d66c7fc744be"
+      ],
+      "tasks": [
+        {
+          "id": "32340e45607f",
+          "activity": "GL 05b Backhaul ODR to Core",
+          "project": "MB 09"
+        },
+        {
+          "id": "d66c7fc744be",
+          "activity": "GL 05c Outer Production Riser",
+          "project": "MB 09"
+        }
+      ],
+      "overlap_minutes": 6480,
+      "overlap_start": "2026-06-19T09:00:00",
+      "overlap_end": "2026-06-23T21:00:00",
+      "message": "Olympus: 2 routes are on location at the same time against 1 configured vessel (Jun 19 to Jun 23): 'GL 05b Backhaul ODR to Core', 'GL 05c Outer Production Riser'."
+    }
+  ],
+  "buffer_hours": 24
+}

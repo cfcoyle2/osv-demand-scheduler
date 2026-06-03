@@ -1,0 +1,63 @@
+{
+  "manual-20260519185215321737": {
+    "deleted": true,
+    "_updated_at": "2026-05-19T18:52:17.848703"
+  },
+  "manual-20260519185248704655": {
+    "deleted": true,
+    "_updated_at": "2026-05-19T18:53:01.787898"
+  },
+  "3a3ec91f75ea": {
+    "start_date": "2026-05-31T05:00:00",
+    "offshore_start": "2026-06-02T11:00:00",
+    "duration_hours": 24.0,
+    "transit_hours": 18.0,
+    "offshore_end": "2026-06-03T11:00:00",
+    "return_end": "2026-06-04T05:00:00",
+    "_updated_at": "2026-05-19T19:19:26.390605"
+  },
+  "4d33fe51f9a0": {
+    "start_date": "2026-06-03T05:00:00",
+    "offshore_start": "2026-06-06T01:30:00",
+    "status": "Planned",
+    "duration_hours": 24.0,
+    "transit_hours": 18.0,
+    "coordinator": "Chris Coyle",
+    "offshore_end": "2026-06-07T01:30:00",
+    "return_end": "2026-06-07T19:30:00",
+    "_updated_at": "2026-05-26T15:18:57.184093"
+  },
+  "446061398da7": {
+    "start_date": "2026-05-13T05:00:00",
+    "offshore_start": "2026-05-14T05:00:00",
+    "status": "Complete",
+    "duration_hours": 16.0,
+    "transit_hours": 18.0,
+    "coordinator": "Chris Coyle",
+    "offshore_end": "2026-05-14T21:00:00",
+    "return_end": "2026-05-15T15:00:00",
+    "_updated_at": "2026-05-26T17:13:35.497883"
+  },
+  "28b0a609c604": {
+    "start_date": "2026-05-20T05:00:00",
+    "offshore_start": "2026-05-22T05:00:00",
+    "status": "Complete",
+    "duration_hours": 10.0,
+    "transit_hours": 10.0,
+    "coordinator": "Daphne Barrera",
+    "offshore_end": "2026-05-22T15:00:00",
+    "return_end": "2026-05-23T01:00:00",
+    "_updated_at": "2026-05-26T17:13:44.629831"
+  },
+  "4c2e2302ccbb": {
+    "start_date": "2026-05-21T05:00:00",
+    "offshore_start": "2026-05-23T05:00:00",
+    "status": "Complete",
+    "duration_hours": 5.0,
+    "transit_hours": 5.0,
+    "coordinator": "Daphne Barrera",
+    "offshore_end": "2026-05-23T10:00:00",
+    "return_end": "2026-05-23T15:00:00",
+    "_updated_at": "2026-05-26T17:13:52.799844"
+  }
+}

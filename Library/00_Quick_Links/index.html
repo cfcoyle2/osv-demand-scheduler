@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gulf of America Logistics - Quick Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .link-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 24px;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .link-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        .link-card.alt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .link-card h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .link-card p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        @media (max-width: 500px) {
+            .links {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 24px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⛴ Gulf of America Logistics</h1>
+        <p class="subtitle">Vessel & Logistics Planning Tools</p>
+        <div class="links">
+            <a href="http://127.0.0.1:8000/" class="link-card">
+                <h2>📊 OSV Demand Scheduler</h2>
+                <p>View and manage vessel demand scheduling</p>
+            </a>
+            <a href="http://127.0.0.1:8000/spot-hire" class="link-card alt">
+                <h2>⚓ Spot Hire Planner</h2>
+                <p>Plan and track spot hire activities</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

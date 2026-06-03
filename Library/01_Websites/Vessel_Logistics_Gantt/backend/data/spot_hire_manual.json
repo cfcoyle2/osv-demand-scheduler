@@ -1,0 +1,17 @@
+[
+  {
+    "id": "spot-manual-20260602183636779278",
+    "asset": "Pontus",
+    "display_asset": "Pontus",
+    "vessel_count": 2,
+    "area": "Sisco",
+    "activity": "SISCO 001 DRILL NEW WELL",
+    "phase": "Top Hole",
+    "color": "#16858c",
+    "start_date": "2026-06-08",
+    "end_date": "2026-08-03",
+    "status": "Planned",
+    "notes": "",
+    "source": "manual"
+  }
+]

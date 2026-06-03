@@ -1,0 +1,123 @@
+{
+  "version": "2.0",
+  "description": "Logistics Lookahead Data Template - Use for syncing and automation",
+  "weekOf": "2026-05-13",
+  "activeAsset": "poseidon",
+  "showTrends": true,
+  "assets": [
+    {
+      "id": "poseidon",
+      "name": "Deepwater Poseidon",
+      "coordinator": "Christopher Coyle",
+      "issues": [
+        "Will begin to work with vendors to move packages to planned status and close out. *No issues from OLC on Supplier updates in Kabal*"
+      ],
+      "notes": {
+        "7-14": "Will begin to work with vendors to move packages to planned status and close out.",
+        "14-21": "Will begin to work with OPS Engineers, vendors and rig to get any remaining packages in Kabal",
+        "21+": ""
+      },
+      "activities": {
+        "7-14": ["Whale 9 Completion", "Whale 10 Deepening"],
+        "14-21": ["Whale 9 Completion", "Whale 10 Deepening"],
+        "21+": ["Whale 9 Completion", "Whale 10 Deepening (pushed 8 days since last week)"]
+      },
+      "runs": [
+        {
+          "id": "r1",
+          "window": "7-14",
+          "activity": "Whale 9 Completion",
+          "date": "5/20",
+          "gl": "GL 09",
+          "vessel": "OSV",
+          "hours": "48hrs",
+          "cargo": "ROCS / Upper Completions Equipment / Packer Fluid",
+          "status": "planned"
+        },
+        {
+          "id": "r2",
+          "window": "7-14",
+          "activity": "Whale 10 Deepening",
+          "date": "5/20",
+          "gl": "GL 02a",
+          "vessel": "FSV",
+          "hours": "8 hrs",
+          "cargo": "Groceries & Resupply",
+          "status": "confirmed"
+        },
+        {
+          "id": "r3",
+          "window": "14-21",
+          "activity": "Whale 9 Completion",
+          "date": "5/27",
+          "gl": "GL 10",
+          "vessel": "OSV",
+          "hours": "48hrs",
+          "cargo": "Power Wire / SSXT",
+          "status": "planned"
+        },
+        {
+          "id": "r4",
+          "window": "14-21",
+          "activity": "Whale 10 Deepening",
+          "date": "5/30",
+          "gl": "GL 02c",
+          "vessel": "FSV",
+          "hours": "8 hrs",
+          "cargo": "Groceries & Resupply",
+          "status": "confirmed"
+        },
+        {
+          "id": "r5",
+          "window": "21+",
+          "activity": "Whale 9 Completion",
+          "date": "6/1",
+          "gl": "GL 11a",
+          "vessel": "FSV",
+          "hours": "8 hrs",
+          "cargo": "S/L Contingency",
+          "status": "planned"
+        },
+        {
+          "id": "r6",
+          "window": "21+",
+          "activity": "Whale 10 Deepening (pushed 8 days since last week)",
+          "date": "6/4",
+          "gl": "GL 01",
+          "vessel": "OSV",
+          "hours": "72 HRS",
+          "cargo": "Post Spud Equipment / 14 CSG / 22\" Stormpacker / SBM / Barite / Base Oil",
+          "status": "planned"
+        }
+      ],
+      "gantt": [
+        {
+          "name": "Comp. Multizone WHL_LWX9",
+          "well": "WHL_LWX9",
+          "start": "2026-03-10",
+          "end": "2026-04-29",
+          "color": "g-green"
+        },
+        {
+          "name": "Deepening WHL_LWX10",
+          "well": "WHL_LWX10",
+          "start": "2026-05-01",
+          "end": "2026-08-19",
+          "color": "g-red"
+        }
+      ]
+    }
+  ],
+  "automation": {
+    "description": "Use this section to configure automated updates",
+    "syncEnabled": true,
+    "sourceFile": "C:/Users/Chris.Coyle/Downloads/Logistics_Lookahead (5).html",
+    "windowMappings": {
+      "week1": "7-14",
+      "week2": "14-21",
+      "week3": "21+"
+    },
+    "lastSync": null,
+    "syncInterval": "weekly"
+  }
+}

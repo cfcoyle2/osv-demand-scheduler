@@ -1,0 +1,2758 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GOA DW Logistics Look-Ahead</title>
+  <style>
+    /* ── Root & Reset ──────────────────────────────────────── */
+    :root {
+      --shell-red:   #dd1d21;
+      --shell-yellow:#fbce07;
+      --dark-bg:     #1a1a2e;
+      --card-bg:     #16213e;
+      --card-border: #0f3460;
+      --accent:      #e94560;
+      --text-light:  #e0e0e0;
+      --text-muted:  #a0a0b0;
+      --week1:       #1b4332;
+      --week1-head:  #2d6a4f;
+      --week2:       #1c3455;
+      --week2-head:  #2563a8;
+      --week3:       #3d2e00;
+      --week3-head:  #b7791f;
+      --beyond:      #2d1b3d;
+      --beyond-head: #7c3aed;
+      --concerns:    #3a1a1a;
+      --concerns-head:#b91c1c;
+      --tag-osv:     #0d47a1;
+      --tag-fsv:     #1b5e20;
+      --tag-ev:      #4a148c;
+      --tag-flight:  #880e4f;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0a0a18 0%, #1a1a2e 60%, #0f3460 100%);
+      border-bottom: 3px solid var(--shell-red);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,.6);
+    }
+    .header-brand {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      line-height: 1;
+    }
+    .shell-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      color: var(--shell-red);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .2px;
+      background: linear-gradient(180deg, #ffe86c 0%, var(--shell-yellow) 100%);
+      border: 1px solid #d9b400;
+      flex-shrink: 0;
+    }
+    .shell-subbrand {
+      font-size: .75rem;
+      color: #93c5fd;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .header-title h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: #fff;
+    }
+    .header-title p {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    #weekLabel {
+      background: var(--shell-red);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: .82rem;
+      font-weight: 600;
+    }
+    .header-meta input[type="date"] {
+      background: #0f3460;
+      border: 1px solid #2563a8;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+    .header-meta input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+    .btn {
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--shell-red); color: #fff; }
+    .btn-secondary { background: #0f3460; color: #fff; border: 1px solid #2563a8; }
+    .btn-success { background: #1b5e20; color: #fff; }
+    .btn:hover { opacity: .85; }
+    .sync-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid #2d3748;
+      padding: 4px 10px;
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+      background: #1f2937;
+      color: #cbd5e1;
+    }
+    .sync-indicator::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      box-shadow: 0 0 0 3px rgba(148,163,184,.2);
+    }
+    .sync-indicator.ok {
+      border-color: #14532d;
+      background: rgba(34,197,94,.12);
+      color: #86efac;
+    }
+    .sync-indicator.ok::before {
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+    }
+    .sync-indicator.syncing {
+      border-color: #1d4ed8;
+      background: rgba(59,130,246,.14);
+      color: #bfdbfe;
+    }
+    .sync-indicator.syncing::before {
+      background: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+      animation: pulse-sync 1.2s infinite;
+    }
+    .sync-indicator.warn {
+      border-color: #7f1d1d;
+      background: rgba(239,68,68,.13);
+      color: #fecaca;
+    }
+    .sync-indicator.warn::before {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,.2);
+    }
+    .sync-indicator.local {
+      border-color: #78350f;
+      background: rgba(245,158,11,.14);
+      color: #fde68a;
+    }
+    .sync-indicator.local::before {
+      background: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245,158,11,.2);
+    }
+    @keyframes pulse-sync {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    /* ── Asset Tabs ────────────────────────────────────────── */
+    .tabs-container {
+      background: #0f1629;
+      border-bottom: 2px solid var(--card-border);
+      padding: 0 28px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .tabs-container::-webkit-scrollbar { height: 4px; }
+    .tabs-container::-webkit-scrollbar-thumb { background: #2563a8; border-radius: 2px; }
+    .tab-btn {
+      display: inline-block;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: color .2s, border-color .2s;
+      user-select: none;
+    }
+    .tab-btn:hover { color: var(--text-light); }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--shell-red); }
+    .tab-badge {
+      display: inline-block;
+      background: #2d3748;
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: .68rem;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    .tab-btn.active .tab-badge { background: var(--shell-red); color: #fff; }
+
+    /* ── Search/Filter Bar ─────────────────────────────────── */
+    .filter-bar {
+      background: #12192b;
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .filter-bar input {
+      background: #0f3460;
+      border: 1px solid #2563a8;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: .82rem;
+      width: 240px;
+    }
+    .filter-bar input::placeholder { color: #6b7fa3; }
+    .filter-bar label { font-size: .8rem; color: var(--text-muted); }
+    .filter-bar select {
+      background: #0f3460;
+      border: 1px solid #2563a8;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: .8rem;
+    }
+    .sync-conflict-banner {
+      background: linear-gradient(90deg, rgba(30,58,138,.5), rgba(22,101,52,.5));
+      color: #dbeafe;
+      border-bottom: 1px solid rgba(96,165,250,.4);
+      padding: 8px 28px;
+      font-size: .78rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .sync-conflict-banner .close-btn {
+      background: transparent;
+      border: 1px solid rgba(148,163,184,.5);
+      color: #dbeafe;
+      border-radius: 6px;
+      font-size: .72rem;
+      padding: 3px 7px;
+      cursor: pointer;
+    }
+    .sync-conflict-banner .close-btn:hover { opacity: .8; }
+    .sync-launch-banner {
+      background: linear-gradient(90deg, rgba(120,53,15,.65), rgba(30,58,138,.55));
+      color: #fde68a;
+      border-bottom: 1px solid rgba(251,191,36,.45);
+      padding: 8px 28px;
+      font-size: .78rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sync-launch-banner .launch-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .sync-launch-banner .launch-btn {
+      background: transparent;
+      border: 1px solid rgba(251,191,36,.7);
+      color: #fde68a;
+      border-radius: 6px;
+      font-size: .72rem;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    .sync-launch-banner .launch-btn:hover { opacity: .82; }
+    .local-file-lock {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(10,10,24,.96), rgba(22,33,62,.96));
+      padding: 24px;
+    }
+    .local-file-lock-card {
+      width: min(760px, 94vw);
+      border: 1px solid rgba(148,163,184,.35);
+      border-radius: 14px;
+      background: rgba(15,23,42,.92);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      padding: 22px;
+    }
+    .local-file-lock-card h3 {
+      font-size: 1.15rem;
+      color: #fde68a;
+      margin-bottom: 8px;
+    }
+    .local-file-lock-card p {
+      font-size: .86rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+    .local-file-lock-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .local-file-lock-note {
+      margin-top: 10px;
+      font-size: .74rem;
+      color: #94a3b8;
+      word-break: break-word;
+    }
+    .diag-panel {
+      background: #0e172a;
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 28px;
+      display: none;
+    }
+    .diag-panel.open { display: block; }
+    .diag-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .diag-title {
+      font-size: .8rem;
+      color: #dbeafe;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .diag-status {
+      font-size: .74rem;
+      color: var(--text-muted);
+    }
+    .diag-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .diag-results {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      font-size: .77rem;
+    }
+    .diag-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      border: 1px solid rgba(148,163,184,.2);
+      border-radius: 8px;
+      background: rgba(15,23,42,.65);
+      padding: 7px 10px;
+    }
+    .diag-tag {
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      font-size: .68rem;
+    }
+    .diag-tag.pass { color: #86efac; }
+    .diag-tag.warn { color: #fde68a; }
+    .diag-tag.fail { color: #fecaca; }
+    .diag-detail {
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .toggle-chip {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: .74rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .chip-osv  { background:#0d47a1; color:#fff; }
+    .chip-fsv  { background:#1b5e20; color:#fff; }
+    .chip-ev   { background:#4a148c; color:#fff; }
+    .chip-flight { background:#880e4f; color:#fff; }
+    .toggle-chip.off { opacity: .35; }
+
+    /* ── Main Layout ───────────────────────────────────────── */
+    main { padding: 24px 28px; }
+
+    /* ── Asset Panel ───────────────────────────────────────── */
+    .asset-panel { display: none; }
+    .asset-panel.active { display: block; }
+
+    .asset-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .asset-name-block h2 { font-size: 1.5rem; font-weight: 700; }
+    .asset-name-block .coord-line {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .asset-status-badge {
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      background: #1b5e20;
+      color: #a7f3d0;
+    }
+    .asset-status-badge.warning { background: #78350f; color: #fde68a; }
+    .asset-status-badge.critical { background: #7f1d1d; color: #fecaca; }
+
+    /* ── Timeline Columns ──────────────────────────────────── */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1100px) { .timeline-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px)  { .timeline-grid { grid-template-columns: 1fr; } }
+
+    .time-col {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .col-header {
+      padding: 10px 14px;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .col-header .col-dates { font-size: .72rem; font-weight: 400; opacity: .8; }
+    .col-header .entry-count {
+      background: rgba(255,255,255,.15);
+      border-radius: 10px;
+      padding: 1px 8px;
+      font-size: .68rem;
+    }
+    .col-week1 .col-header  { background: var(--week1-head); }
+    .col-week2 .col-header  { background: var(--week2-head); }
+    .col-week3 .col-header  { background: var(--week3-head); }
+    .col-beyond .col-header { background: var(--beyond-head); }
+    .col-concerns .col-header { background: var(--concerns-head); }
+    .col-body { padding: 10px 12px; min-height: 120px; }
+
+    /* ── Run Cards ─────────────────────────────────────────── */
+    .run-card {
+      background: rgba(255,255,255,.04);
+      border-left: 3px solid var(--card-border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      position: relative;
+    }
+    .run-card:hover { background: rgba(255,255,255,.09); transform: translateX(2px); }
+    .run-card.osv   { border-left-color: #3b82f6; }
+    .run-card.fsv   { border-left-color: #22c55e; }
+    .run-card.ev    { border-left-color: #a855f7; }
+    .run-card.flight { border-left-color: #ec4899; }
+    .run-card.note  { border-left-color: #f59e0b; background: rgba(245,158,11,.06); }
+    .run-card.concern { border-left-color: #ef4444; background: rgba(239,68,68,.06); }
+
+    .run-date { font-weight: 700; color: var(--shell-yellow); font-size: .78rem; }
+    .run-type-tag {
+      display: inline-block;
+      font-size: .64rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .tag-osv    { background: var(--tag-osv);    color: #fff; }
+    .tag-fsv    { background: var(--tag-fsv);    color: #fff; }
+    .tag-ev     { background: var(--tag-ev);     color: #fff; }
+    .tag-flight { background: var(--tag-flight); color: #fff; }
+    .tag-note   { background: #92400e; color: #fde68a; }
+    .tag-tug    { background: #374151; color: #d1d5db; }
+
+    .run-desc { color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
+    .run-hours { color: #67e8f9; font-size: .72rem; font-style: italic; }
+
+    .empty-col {
+      color: var(--text-muted);
+      font-size: .78rem;
+      text-align: center;
+      padding: 20px 0;
+      opacity: .5;
+    }
+
+    /* ── Concerns / Flights Section ────────────────────────── */
+    .concerns-row {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-top: 3px solid var(--concerns-head);
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .concerns-row-header {
+      background: var(--concerns-head);
+      padding: 8px 14px;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      border-radius: 7px 7px 0 0;
+    }
+    .concerns-row-body {
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 640px) { .concerns-row-body { grid-template-columns: 1fr; } }
+
+    /* ── Edit Modal ────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #1a1a2e;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      width: min(680px, 95vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.8);
+    }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full { grid-column: 1/-1; }
+    .form-group label { font-size: .78rem; color: var(--text-muted); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: #0f3460;
+      border: 1px solid #2563a8;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: .82rem;
+    }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+    .btn-danger { background: #7f1d1d; color: #fecaca; }
+
+    /* ── Print Styles ──────────────────────────────────────── */
+    @media print {
+      header, .tabs-container, .filter-bar, .btn, .modal-overlay { display: none !important; }
+      body { background: #fff; color: #000; }
+      .asset-panel { display: block !important; page-break-after: always; }
+      .time-col, .run-card { border-color: #ccc !important; background: #f9f9f9 !important; }
+      .run-date { color: #000 !important; }
+    }
+
+    /* ── Summary Overview ──────────────────────────────────── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .overview-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s;
+    }
+    .overview-card:hover { border-color: var(--shell-red); transform: translateY(-2px); }
+    .overview-card .oc-asset { font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+    .overview-card .oc-coord { font-size: .72rem; color: var(--text-muted); margin-bottom: 8px; }
+    .overview-card .oc-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .oc-stat { font-size: .72rem; color: var(--text-muted); }
+    .oc-stat span { color: var(--text-light); font-weight: 600; }
+
+    /* ── Legend ────────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      font-size: .75rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Drag & Drop ─────────────────────────────────────── */
+    .col-body.drop-target {
+      outline: 2px dashed #38bdf8;
+      outline-offset: -4px;
+      background: rgba(56,189,248,.08);
+    }
+    .run-card.draggable { cursor: grab; }
+    .run-card.draggable:active { cursor: grabbing; }
+    .run-card.dragging {
+      opacity: .55;
+      transform: scale(.98);
+    }
+
+    /* ── Trends ──────────────────────────────────────────── */
+    .trend-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .trend-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .trend-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      .trend-grid { grid-template-columns: 1fr; }
+    }
+    .trend-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .trend-card .k { color: var(--text-muted); font-size: .72rem; }
+    .trend-card .v { font-size: 1.2rem; font-weight: 700; margin-top: 3px; }
+    .trend-card .d { font-size: .74rem; margin-top: 3px; }
+    .trend-up { color: #22c55e; }
+    .trend-down { color: #f87171; }
+    .trend-flat { color: var(--text-muted); }
+
+    .trend-viz-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 980px) {
+      .trend-viz-grid { grid-template-columns: 1fr; }
+    }
+    .trend-subpanel {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .trend-subpanel h4 {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .heatmap-wrap { overflow-x: auto; }
+    .heatmap {
+      min-width: 520px;
+      display: grid;
+      grid-template-columns: 170px repeat(3, 1fr) 80px;
+      gap: 6px;
+      font-size: .74rem;
+      align-items: center;
+    }
+    .hm-head {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: .66rem;
+      letter-spacing: .04em;
+      padding-bottom: 4px;
+    }
+    .hm-asset {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    .hm-cell {
+      text-align: center;
+      border-radius: 6px;
+      padding: 6px 4px;
+      border: 1px solid rgba(255,255,255,.06);
+      color: #fff;
+      font-weight: 700;
+    }
+    .hm-total {
+      text-align: right;
+      color: var(--text-light);
+      font-weight: 700;
+    }
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 36px;
+      gap: 8px;
+      align-items: center;
+      font-size: .73rem;
+    }
+    .bar-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-light);
+    }
+    .bar-track {
+      height: 10px;
+      background: rgba(255,255,255,.07);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563a8, #22c55e);
+      border-radius: 999px;
+    }
+    .bar-val { text-align: right; color: var(--text-muted); }
+  </style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TaxCatchAll msdt:dt="string">1;#Confidential|e4bc29b2-6e76-48cc-b090-8b544c0802ae</mso:TaxCatchAll>
+<mso:SAEFSecurityClassificationTaxHTField0 msdt:dt="string">Confidential|e4bc29b2-6e76-48cc-b090-8b544c0802ae</mso:SAEFSecurityClassificationTaxHTField0>
+<mso:SAEFSecurityClassification msdt:dt="string">1;#Confidential|e4bc29b2-6e76-48cc-b090-8b544c0802ae</mso:SAEFSecurityClassification>
+<mso:MediaServiceImageTags msdt:dt="string"></mso:MediaServiceImageTags>
+<mso:lcf76f155ced4ddcb4097134ff3c332f msdt:dt="string"></mso:lcf76f155ced4ddcb4097134ff3c332f>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+
+<div id="localFileLock" class="local-file-lock">
+  <div class="local-file-lock-card">
+    <h3>Open Live Preview To Continue</h3>
+    <p>This file is running from your local Downloads/OneDrive path. Editing is locked in local mode to prevent fragmented data and failed sync. Open the VS Code Live Preview link to continue.</p>
+    <div class="local-file-lock-actions">
+      <button class="btn btn-primary" onclick="openSharePointWebApp()">Open Live Preview</button>
+      <button class="btn btn-secondary" onclick="copySharePointWebAppUrl()">Copy Web URL</button>
+    </div>
+    <div class="local-file-lock-note" id="localFileLockUrl"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="header-brand">
+    <div class="brand-lockup" aria-label="Shell brand">
+      <span class="shell-brand">Shell</span>
+      <span class="shell-subbrand">Gulf of America Logistics</span>
+    </div>
+    <div class="header-title">
+      <h1>GOA DW Logistics Look-Ahead</h1>
+      <p>Supply Chain Delivery · Interactive Weekly Update</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span id="weekLabel">Week of —</span>
+    <span id="syncStatusPill" class="sync-indicator local">Sync: Local only</span>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-muted)">
+      Week start:
+      <input type="date" id="weekStartPicker" />
+    </label>
+    <button class="btn btn-secondary" onclick="openAddEntryModal(null, 'edit')">+ Add Entry</button>
+    <button class="btn btn-secondary" onclick="syncKabalWorkbook()">Sync XLSX</button>
+    <button class="btn btn-secondary" onclick="openKabalSource()">Open Source</button>
+    <button class="btn btn-secondary" onclick="toggleTrendPanel()">Heat Map</button>
+    <button class="btn btn-secondary" onclick="captureTrendSnapshot('manual')">Capture Snapshot</button>
+    <button class="btn btn-success" onclick="exportJSON()">Export JSON</button>
+    <button class="btn btn-secondary" onclick="toggleDiagnosticsPanel()">Diagnostics</button>
+    <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
+  </div>
+</header>
+
+<div id="syncConflictBanner" class="sync-conflict-banner">
+  <span id="syncConflictText"></span>
+  <button class="close-btn" onclick="dismissConflictBanner()">Dismiss</button>
+</div>
+
+<div id="syncLaunchBanner" class="sync-launch-banner">
+  <span>You are running this app from a local file. Open the VS Code Live Preview URL to continue.</span>
+  <div class="launch-actions">
+    <button class="launch-btn" onclick="openSharePointWebApp()">Open Live Preview</button>
+    <button class="launch-btn" onclick="copySharePointWebAppUrl()">Copy Web URL</button>
+  </div>
+</div>
+
+<div id="diagPanel" class="diag-panel">
+  <div class="diag-head">
+    <div>
+      <div class="diag-title">Sync Diagnostics</div>
+      <div id="diagStatus" class="diag-status">Not run yet.</div>
+    </div>
+    <div class="diag-actions">
+      <button class="btn btn-secondary" onclick="runSyncDiagnostics()">Run Check</button>
+      <button class="btn btn-secondary" onclick="copyDiagnosticsSummary()">Copy Summary</button>
+      <button class="btn btn-secondary" onclick="openSharePointWebApp()">Open Web App</button>
+    </div>
+  </div>
+  <div id="diagResults" class="diag-results"></div>
+</div>
+
+<!-- ═══════════════ ASSET TABS ═══════════════ -->
+<div class="tabs-container" id="tabsContainer"></div>
+
+<!-- ═══════════════ FILTER BAR ═══════════════ -->
+<div class="filter-bar">
+  <input type="text" id="searchInput" placeholder="🔍  Search runs, notes, concerns…" oninput="applyFilters()" />
+  <label>Coord:
+    <select id="coordFilter" onchange="applyFilters()">
+      <option value="">All Coordinators</option>
+    </select>
+  </label>
+  <div class="toggle-group" id="typeToggles">
+    <span class="toggle-chip chip-osv"  data-type="osv"    onclick="toggleType(this)">OSV</span>
+    <span class="toggle-chip chip-fsv"  data-type="fsv"    onclick="toggleType(this)">FSV</span>
+    <span class="toggle-chip chip-ev"   data-type="ev"     onclick="toggleType(this)">EV Run</span>
+    <span class="toggle-chip chip-flight" data-type="flight" onclick="toggleType(this)">Flight</span>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+<main id="mainContent"></main>
+<input type="file" id="kabalXlsxInput" accept=".xlsx,.xls" style="display:none" />
+
+<!-- ═══════════════ EDIT / ADD MODAL ═══════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Add / Edit Entry</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Asset</label>
+        <select id="fAsset"></select>
+      </div>
+      <div class="form-group">
+        <label>Time Window</label>
+        <select id="fWindow">
+          <option value="week1">7–14 Days</option>
+          <option value="week2">14–21 Days</option>
+          <option value="week3">Beyond 21 Days</option>
+          <option value="concerns">Flights / Concerns / Issues</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date (optional)</label>
+        <input type="text" id="fDate" placeholder="e.g. 4/18" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="fType">
+          <option value="osv">OSV</option>
+          <option value="fsv">FSV</option>
+          <option value="ev">EV Run</option>
+          <option value="flight">Flight</option>
+          <option value="note">Note</option>
+          <option value="concern">Concern/Issue</option>
+          <option value="tug">Tug & Barge</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>GL #</label>
+        <input type="text" id="fGL" placeholder="e.g. GL 09" />
+      </div>
+      <div class="form-group">
+        <label>Duration / Hours</label>
+        <input type="text" id="fHours" placeholder="e.g. 48 hrs" />
+      </div>
+      <div class="form-group full">
+        <label>Description / Cargo Details</label>
+        <textarea id="fDesc"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Sub-operation / Well</label>
+        <input type="text" id="fSub" placeholder="e.g. Whale 9 Completion" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btnDeleteEntry" onclick="deleteEntry()" style="display:none">Delete</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEntry()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA STORE  (populated from the PowerPoint – April 9, 2026)
+   Each asset has: id, name, coordinator, status, entries[]
+   Entry: { id, window, date, type, gl, hours, sub, desc }
+   windows: week1 | week2 | week3 | concerns
+═══════════════════════════════════════════════════════════ */
+const WINDOWS = {
+  week1:    { label: '7–14 Days',          cls: 'col-week1' },
+  week2:    { label: '14–21 Days',         cls: 'col-week2' },
+  week3:    { label: 'Beyond 21 Days',     cls: 'col-week3' },
+  concerns: { label: 'Flights / Concerns / Issues', cls: 'col-concerns' }
+};
+
+let assets = [
+  {
+    id: 'pontus', name: 'Pontus', coordinator: 'Christopher Coyle',
+    status: 'active', statusLabel: 'Dover 2 Deepen',
+    entries: [
+      { id:'p1', window:'week1', date:'4/16', type:'fsv', gl:'GL 07a', hours:'12 hrs', sub:'Dover 2 Deepen', desc:'FSV – Weekly Groceries & Rig Supplies' },
+      { id:'p2', window:'week1', date:'4/20', type:'fsv', gl:'GL 08',  hours:'12 hrs', sub:'Dover 2 Deepen', desc:'FSV – 8-1/2" x 9-7/8" BHA. Note: Planning on leaving Monday evening' },
+      { id:'p3', window:'week2', date:'4/22', type:'osv', gl:'GL 09',  hours:'36 hrs', sub:'Dover 2 Deepen', desc:'OSV – 8-5/8" x 7-3/4" liner and Casing Tools. Backload: 9-7/8" x 11" BHA / 9-3/8" Pipe, Hanger Basket, Casing Tools and Accessories' },
+      { id:'p4', window:'week2', date:'4/23', type:'fsv', gl:'GL 10',  hours:'12 hrs', sub:'Dover 2 Deepen', desc:'FSV – Weekly Groceries & Rig Supplies. Will begin to work with OPS Engineers, vendors and rig to get any remaining packages in Kabal' },
+      { id:'p5', window:'concerns', date:'', type:'note', gl:'', hours:'', sub:'Engineering Update', desc:'Awaiting Dover 002 Completion Equipment List – from Ops Engineer. Advised Rydberg 002 Completion Proteus conducted May 2025 is a very similar well.' }
+    ]
+  },
+  {
+    id: 'poseidon', name: 'Poseidon', coordinator: 'Christopher Coyle',
+    status: 'active', statusLabel: 'Whale 9 Completion / Whale 10 Deepening',
+    entries: [
+      { id:'po1', window:'week1', date:'4/22', type:'osv', gl:'GL 09',  hours:'48 hrs', sub:'Whale 9 Completion', desc:'OSV – ROCS / Upper Completions Equipment / Packer Fluid' },
+      { id:'po2', window:'week1', date:'4/22', type:'fsv', gl:'GL 02a', hours:'8 hrs',  sub:'Whale 10 Deepening', desc:'FSV – Groceries & Resupply' },
+      { id:'po3', window:'week1', date:'',     type:'note', gl:'',      hours:'',       sub:'Note', desc:'Will begin to work with vendors to move packages to planned status and close out. *No issues from OLC on Supplier updates in Kabal*' },
+      { id:'po4', window:'week2', date:'4/26', type:'osv', gl:'GL 10',  hours:'48 hrs', sub:'Whale 9 Completion', desc:'OSV – Power Wire / SSXT' },
+      { id:'po5', window:'week2', date:'4/29', type:'fsv', gl:'GL 02c', hours:'8 hrs',  sub:'Whale 10 Deepening', desc:'FSV – Groceries & Resupply. Will begin to work with OPS Engineers, vendors and rig to get any remaining packages in Kabal' },
+      { id:'po6', window:'week3', date:'5/1',  type:'fsv', gl:'GL 11a', hours:'8 hrs',  sub:'Whale 9 Completion', desc:'FSV – S/L Contingency' },
+      { id:'po7', window:'week3', date:'5/4',  type:'osv', gl:'GL 01',  hours:'72 hrs', sub:'Whale 10 Deepening', desc:'OSV – Post Spud Equipment / 14 CSG / 22" Stormpacker / SBM / Barite / Base Oil' },
+      { id:'po8', window:'week3', date:'5/9',  type:'osv', gl:'GL 02',  hours:'48 hrs', sub:'Whale 10 Deepening', desc:'OSV – 18.125" BHA / Cutting Boxes / Liner Hanger / Cement' },
+      { id:'po9', window:'week3', date:'5/16', type:'osv', gl:'GL 03',  hours:'48 hrs', sub:'Whale 10 Deepening', desc:'OSV – 12.25" BHA / 9 5/8" Liner / Run Equipment' },
+      { id:'po10',window:'week3', date:'5/6',  type:'fsv', gl:'GL 03a', hours:'8 hrs',  sub:'Whale 10 Deepening', desc:'FSV – Groceries & Resupply' },
+      { id:'po11',window:'week3', date:'5/23', type:'osv', gl:'GL 04',  hours:'48 hrs', sub:'Whale 10 Deepening', desc:'OSV – Tieback / Liner Hanger / Run Equipment / Cement' }
+    ]
+  },
+  {
+    id: 'stena', name: 'Stena', coordinator: 'Christopher Coyle',
+    status: 'active', statusLabel: 'Kaikias KI-2 Drill New Well',
+    entries: [
+      { id:'st1', window:'week1', date:'4/18', type:'fsv', gl:'GL 08c', hours:'10 hrs', sub:'Kaikias KI-2', desc:'FSV – Groceries / Rig Supplies' },
+      { id:'st2', window:'week1', date:'4/21', type:'osv', gl:'GL 09',  hours:'50 hrs', sub:'Kaikias KI-2', desc:'OSV – 7-5/8" x 10-3/4" Tieback Liner. Note: Work with vendors to move packages to planned status and close out.' },
+      { id:'st3', window:'week2', date:'4/24', type:'osv', gl:'GL 09a', hours:'30 hrs', sub:'Kaikias KI-2', desc:'OSV – Wireline Equipment / Backload SBM' },
+      { id:'st4', window:'week2', date:'4/29', type:'osv', gl:'GL 10',  hours:'48 hrs', sub:'Kaikias KI-2', desc:'OSV – Demob / Backload Remaining SBM. Note: Work with OPS Engineers, vendors and rig to get any remaining packages in Kabal' },
+      { id:'st5', window:'week3', date:'5/1',  type:'osv', gl:'GL 01',  hours:'60 hrs', sub:'Kaikias Completion', desc:'OSV – THS / Brine / Workstrings 4-1/2" DP / Stena 5-7/8" DP / Misc. (Pushed 6 days right)' },
+      { id:'st6', window:'week3', date:'5/4',  type:'fsv', gl:'GL 02',  hours:'12 hrs', sub:'Kaikias Completion', desc:'FSV – Sump Packer/CIBP / Wireline' },
+      { id:'st7', window:'week3', date:'5/6',  type:'osv', gl:'GL 03',  hours:'24 hrs', sub:'Kaikias Completion', desc:'OSV – TCP / Lower Completion' },
+      { id:'st8', window:'week3', date:'5/13', type:'osv', gl:'GL 04',  hours:'48 hrs', sub:'Kaikias Completion', desc:'OSV – NaCl/MEG 8.9 / WBRT / HES CPS / HES CWT' },
+      { id:'st9', window:'week3', date:'5/16', type:'osv', gl:'GL 05',  hours:'48 hrs', sub:'Kaikias Completion', desc:'OSV – 4-1/2" Production Tbg / Slickline / TFMC' },
+      { id:'st10',window:'week3', date:'5/24', type:'osv', gl:'GL 06',  hours:'36 hrs', sub:'Kaikias Completion', desc:'OSV – SSXT / Powerwire' },
+      { id:'st11',window:'week3', date:'5/26', type:'osv', gl:'GL 07',  hours:'50 hrs', sub:'Kaikias Completion', desc:'OSV – Demob / Misc Cargo to Rig / Brine Backload' }
+    ]
+  },
+  {
+    id: 'noble-voyager', name: 'Noble Voyager', coordinator: 'Christopher Coyle',
+    status: 'active', statusLabel: 'Awaiting Initial Scheduling',
+    entries: []
+  },
+  {
+    id: 'q5000', name: 'Q5000 (Q5)', coordinator: 'Daphne Barrera',
+    status: 'warning', statusLabel: 'TAR Prep – Moving PHI Houma ~4/18',
+    entries: [
+      { id:'q1', window:'week1', date:'4/17', type:'osv', gl:'GL 02',  hours:'72 hrs', sub:'Whale 303', desc:'OSV – Mobilize @ Princess (Riser Swap, CSG, CT, CMT, Fluids)' },
+      { id:'q2', window:'week2', date:'4/25', type:'osv', gl:'GL 06',  hours:'',       sub:'Whale 303', desc:'OSV – Bullhead Workover Fluid. Rig at Princess P2 (Ursa)' },
+      { id:'q3', window:'week2', date:'4/28', type:'fsv', gl:'GL 10',  hours:'',       sub:'Whale 303', desc:'FSV – E-Line Trip: Permanent Bridge Plug Install' },
+      { id:'q4', window:'week3', date:'4/30', type:'osv', gl:'GL 03',  hours:'24 hrs', sub:'Princess (Ursa)', desc:'OSV – Weekly Grocery Run. Moving to Cardamom (Auger)' },
+      { id:'q5', window:'week3', date:'5/06', type:'osv', gl:'GL 04',  hours:'24 hrs', sub:'Princess', desc:'OSV – Weekly Grocery Run' },
+      { id:'q6', window:'week3', date:'5/17', type:'osv', gl:'GL XX',  hours:'48 hrs', sub:'Cardamom', desc:'OSV – OWIRS Shipment A' },
+      { id:'q7', window:'week3', date:'5/24', type:'osv', gl:'GL XX',  hours:'48 hrs', sub:'Cardamom', desc:'OSV – OWIRS Shipment B' },
+      { id:'q8', window:'week3', date:'5/27', type:'osv', gl:'GL XX',  hours:'48 hrs', sub:'Cardamom', desc:'OSV – OWIRS Shipment C (Additional boat run needed)' },
+      { id:'q9', window:'week3', date:'5/30', type:'osv', gl:'GL XX',  hours:'48 hrs', sub:'Cardamom', desc:'OSV – OWIRS Shipment D' },
+      { id:'q10',window:'concerns', date:'', type:'note', gl:'', hours:'', sub:'Well Sequence', desc:'Whale WS 303 PLT – Start 4/05 Princess P2. ZI & PNC log start 4/15. Rig up America w/ 500bbl tanks 4/23. Princess P11 start 5/26. Cardamom DC02 CTCO & SSD est start 6/16. Vito VA-12 est 7/20.' },
+      { id:'q11',window:'concerns', date:'', type:'concern', gl:'', hours:'', sub:'Second Boat', desc:'Convert to OWIRS for Cardamom – 4 runs. Rig requests a second boat. Evaluating options.' },
+      { id:'q12',window:'concerns', date:'', type:'note', gl:'', hours:'', sub:'America Rig-Up', desc:'Need America rigged up with Expro Manifold right after dry dock work. Will move to PHI Houma ~4/18.' }
+    ]
+  },
+  {
+    id: 'perdido', name: 'Perdido', coordinator: 'Jennifer Palmisano',
+    status: 'warning', statusLabel: 'Rig Idle / TAR Prep (Shut down 3/21–6/9)',
+    entries: [
+      { id:'pd1', window:'week1', date:'4/11', type:'fsv', gl:'GL 15',  hours:'',       sub:'Perdido EV Run', desc:'EV Run – 4/11 BH Drilling' },
+      { id:'pd2', window:'week1', date:'4/7',  type:'fsv', gl:'GL 15a', hours:'',       sub:'Perdido TAR Run', desc:'FSV – Perdido TAR Run / BH Drilling' },
+      { id:'pd3', window:'week2', date:'4/18', type:'ev',  gl:'GL 16',  hours:'',       sub:'Perdido EV Run', desc:'EV Run – TAR Prep' },
+      { id:'pd4', window:'week2', date:'4/25', type:'ev',  gl:'GL 17',  hours:'',       sub:'Perdido EV Run', desc:'EV Run – TAR Prep' },
+      { id:'pd5', window:'week3', date:'4/29', type:'osv', gl:'GL 18a', hours:'',       sub:'Perdido Warehouse Boat', desc:'Warehouse OSV – Charter starts 4/25 (HOS Woodland). Est 30 POB for flotel.' },
+      { id:'pd6', window:'concerns', date:'', type:'concern', gl:'', hours:'', sub:'TAR', desc:'TAR Scheduled May 2026. Warehouse OSV & Flotel (HOS Woodland) on charter mid-April. Tug & Barge needed for Perdido Deck Extension (June/July \'26 timeframe).' },
+      { id:'pd7', window:'concerns', date:'', type:'flight', gl:'', hours:'', sub:'Aviation', desc:'Need further details of TAR Asset Personnel Mobilization. Finalize aviation plan to mobilize HOS Warland.' }
+    ]
+  },
+  {
+    id: 'whale', name: 'Whale', coordinator: 'Jennifer Palmisano',
+    status: 'critical', statusLabel: 'TAR Prep – May 2026',
+    entries: [
+      { id:'wh1', window:'week1', date:'3/28', type:'ev',  gl:'GL 13',  hours:'', sub:'Whale EV Run', desc:'EV/TAR Run – TAR Equipment' },
+      { id:'wh2', window:'week1', date:'4/04', type:'ev',  gl:'GL 14',  hours:'', sub:'Whale EV/TAR Run', desc:'EV/TAR Run' },
+      { id:'wh3', window:'week1', date:'4/11', type:'fsv', gl:'GL 13a', hours:'', sub:'Whale FSV', desc:'FSV – Crawfish Boil 4/11' },
+      { id:'wh4', window:'week1', date:'4/12', type:'ev',  gl:'GL 15',  hours:'', sub:'Whale EV/TAR Run', desc:'EV/TAR Run' },
+      { id:'wh5', window:'week2', date:'4/18', type:'ev',  gl:'GL 16',  hours:'', sub:'Whale EV/TAR Run', desc:'EV/TAR Run' },
+      { id:'wh6', window:'week2', date:'4/18', type:'osv', gl:'GL 17a', hours:'7 days', sub:'Whale TAR W/H Boat Run', desc:'OSV – TAR Warehouse Boat Run / DI Water Storage (7 days)' },
+      { id:'wh7', window:'week2', date:'4/25', type:'fsv', gl:'GL 17b', hours:'', sub:'Whale FSV', desc:'FSV – Crawfish Boil 4/12' },
+      { id:'wh8', window:'week3', date:'4/30', type:'osv', gl:'GL 18a', hours:'240 hrs', sub:'Whale TAR W/H Boat Run 2', desc:'OSV – Warehouse Boat Run 2 (240 hours)' },
+      { id:'wh9', window:'concerns', date:'', type:'concern', gl:'', hours:'', sub:'TAR Concerns', desc:'TAR Scheduled May 2026. Flotel is HOS Achiever (foreign flagged vessel). No OSV to De-inventory asset.' },
+      { id:'wh10',window:'concerns', date:'', type:'flight', gl:'', hours:'', sub:'Aviation', desc:'Work HOS Achiever Mobilization Plan with TAR Team. Mobilize 55 Passengers via HOS Woodland. Transfer passengers via HOS Achiever\'s crane at Perdido.' }
+    ]
+  },
+  {
+    id: 'turritella', name: 'Turritella', coordinator: 'Jennifer Palmisano',
+    status: 'warning', statusLabel: 'TAR Start 04/11/26',
+    entries: [
+      { id:'tu1', window:'week1', date:'4/12', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run – TA Shipments (Weather permitting). Running Buck.' },
+      { id:'tu2', window:'week2', date:'4/19', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run – TA Shipments. Running Buck.' },
+      { id:'tu3', window:'week3', date:'4/26', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run – Running Buck / TA Shipments' },
+      { id:'tu4', window:'week3', date:'5/5',  type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run – Running Buck' },
+      { id:'tu5', window:'week3', date:'5/10', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'tu6', window:'week3', date:'5/17', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'tu7', window:'week3', date:'5/24', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'tu8', window:'week3', date:'5/31', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'tu9', window:'concerns', date:'', type:'concern', gl:'', hours:'', sub:'TAR', desc:'TAR start 04/11/26.' }
+    ]
+  },
+  {
+    id: 'auger', name: 'Auger', coordinator: 'Jennifer Palmisano',
+    status: 'active', statusLabel: 'STORM EV Run Cadence',
+    entries: [
+      { id:'au1', window:'week1', date:'4/11', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM (Weather permitting)' },
+      { id:'au2', window:'week2', date:'4/18', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM' },
+      { id:'au3', window:'week2', date:'',     type:'note', gl:'', hours:'', sub:'Site Visit', desc:'Auger site visit for Project Sparta – 04/21/26' },
+      { id:'au4', window:'week3', date:'4/25', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM' },
+      { id:'au5', window:'week3', date:'5/2',  type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'au6', window:'week3', date:'5/9',  type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'au7', window:'week3', date:'5/16', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'au8', window:'week3', date:'5/23', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'au9', window:'concerns', date:'4/26', type:'flight', gl:'', hours:'', sub:'Safety Leadership Visit', desc:'Auger Safety Leadership visit 04/26/26 – Fairburn' }
+    ]
+  },
+  {
+    id: 'esa', name: 'ESA', coordinator: 'Jennifer Palmisano',
+    status: 'active', statusLabel: 'STORM EV Run Cadence / P&A Planning',
+    entries: [
+      { id:'es1', window:'week1', date:'4/11', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM (Weather permitting)' },
+      { id:'es2', window:'week2', date:'4/18', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM' },
+      { id:'es3', window:'week3', date:'4/25', type:'ev', gl:'', hours:'', sub:'STORM EV Run', desc:'EV Run – STORM' },
+      { id:'es4', window:'week3', date:'5/2',  type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'es5', window:'week3', date:'5/9',  type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'es6', window:'week3', date:'5/16', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'es7', window:'week3', date:'5/23', type:'ev', gl:'', hours:'', sub:'EV Run', desc:'EV Run' },
+      { id:'es8', window:'concerns', date:'', type:'concern', gl:'', hours:'', sub:'SALSA P&A Planning', desc:'SALSA P&A Planning – Sept 1, 2026 POB Planning. Pre P&A Construction – June/July.' }
+    ]
+  },
+  {
+    id: 'vito', name: 'Vito', coordinator: 'Daphne Barrera',
+    status: 'active', statusLabel: 'Weekly EV Run Cadence (Shared w/ OLY)',
+    entries: [
+      { id:'vi1', window:'week1', date:'4/16', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run (Shared w/ OLY)', desc:'OSV – 12-Hour shared with Olympus. Pecan Mars Data.' },
+      { id:'vi2', window:'week2', date:'4/23', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run (Shared w/ OLY)', desc:'OSV – 12-Hour shared with Olympus' },
+      { id:'vi3', window:'week3', date:'4/30', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run', desc:'EV Run (Shared w/ OLY)' },
+      { id:'vi4', window:'week3', date:'5/7',  type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run', desc:'EV Run (Shared w/ OLY)' },
+      { id:'vi5', window:'week3', date:'5/14', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run', desc:'EV Run (Shared w/ OLY)' },
+      { id:'vi6', window:'week3', date:'5/21', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run', desc:'EV Run (Shared w/ OLY)' },
+      { id:'vi7', window:'week3', date:'5/28', type:'ev',  gl:'', hours:'12 hrs', sub:'Vito EV Run', desc:'EV Run (Shared w/ OLY)' },
+      { id:'vi8', window:'concerns', date:'5/4',  type:'note', gl:'', hours:'', sub:'Inspections', desc:'Annual Hiller Inspections – May 4' },
+      { id:'vi9', window:'concerns', date:'5/6',  type:'note', gl:'', hours:'', sub:'Maintenance', desc:'Vito Air Duct Cleaning – May 6' },
+      { id:'vi10',window:'concerns', date:'6/15', type:'note', gl:'', hours:'', sub:'Maintenance', desc:'YR Galley Vent Hood – Jun 15 / Vito Meter Swap – Jun 15' },
+      { id:'vi11',window:'concerns', date:'mid-July', type:'note', gl:'', hours:'', sub:'Waterflood Project', desc:'Waterflood – decent size deck shipping offshore mid-July' }
+    ]
+  },
+  {
+    id: 'appomattox', name: 'Appomattox', coordinator: 'Daphne Barrera',
+    status: 'active', statusLabel: 'EV Run Cadence / DV02 Well Q3',
+    entries: [
+      { id:'ap1', window:'week1', date:'4/18', type:'ev',  gl:'GL 03', hours:'36 hrs', sub:'EV Run', desc:'OSV – Hilda Weather' },
+      { id:'ap2', window:'week2', date:'4/26', type:'ev',  gl:'GL 04', hours:'36 hrs', sub:'EV Run', desc:'OSV – EV Run' },
+      { id:'ap3', window:'week3', date:'5/4',  type:'ev',  gl:'GL 05', hours:'36 hrs', sub:'EV Run', desc:'OSV – EV Run' },
+      { id:'ap4', window:'week3', date:'5/11', type:'ev',  gl:'GL 06', hours:'36 hrs', sub:'EV Run', desc:'OSV – EV Run' },
+      { id:'ap5', window:'week3', date:'5/18', type:'ev',  gl:'GL 07', hours:'36 hrs', sub:'EV Run', desc:'OSV – EV Run' },
+      { id:'ap6', window:'week3', date:'5/25', type:'ev',  gl:'GL 08', hours:'36 hrs', sub:'EV Run', desc:'OSV – EV Run' },
+      { id:'ap7', window:'concerns', date:'', type:'note', gl:'', hours:'', sub:'Schedule Change', desc:'Request to move EV Runs Mon. April 27th to Sun. April 26th due to Away Day/Support. 2026 TAR moved to 2027.' },
+      { id:'ap8', window:'concerns', date:'4/28', type:'flight', gl:'', hours:'', sub:'VIP Flights', desc:'Day Trip for Jim, Ariana, and Colette – 04/28. Daphne visiting 04/26–04/29.' }
+    ]
+  },
+  {
+    id: 'ursa', name: 'Ursa', coordinator: 'Bryan Barron',
+    status: 'active', statusLabel: 'EV Run Cadence',
+    entries: [
+      { id:'ur1', window:'week1', date:'4/15', type:'ev',  gl:'GL 16', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries' },
+      { id:'ur2', window:'week2', date:'4/22', type:'ev',  gl:'GL 17', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries, Crane Stands' },
+      { id:'ur3', window:'week3', date:'4/29', type:'ev',  gl:'GL 18', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries' },
+      { id:'ur4', window:'week3', date:'5/6',  type:'ev',  gl:'GL 19', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries, Cane Boom' },
+      { id:'ur5', window:'week3', date:'5/13', type:'ev',  gl:'GL 20', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries' },
+      { id:'ur6', window:'week3', date:'5/20', type:'ev',  gl:'GL 21', hours:'', sub:'EV Run', desc:'EV Run – Cargo and Groceries, Backhaul Crane Boom' },
+      { id:'ur7', window:'concerns', date:'4/20', type:'tug', gl:'', hours:'', sub:'Tug & Barge', desc:'Tug and Barge from GIS Lafitte – April 20' },
+      { id:'ur8', window:'concerns', date:'6/29', type:'flight', gl:'', hours:'', sub:'Leadership Visit', desc:'Ursa Leadership Visit – Colette Hirstius & Kevin McMahon, June 29–30 (on existing flights)' }
+    ]
+  },
+  {
+    id: 'olympus', name: 'Olympus', coordinator: 'Bryan Barron',
+    status: 'active', statusLabel: 'MB09 Slot Recovery / Side Track',
+    entries: [
+      { id:'ol1', window:'week1', date:'4/16', type:'ev',  gl:'',      hours:'', sub:'TLP EV Run (Shared w/ Vito)', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol2', window:'week1', date:'4/14', type:'osv', gl:'GL 06', hours:'54 hrs', sub:'MB09 Slot Recovery', desc:'OSV – L/D LTB, Run IDR, Cleanout Run, Cement' },
+      { id:'ol3', window:'week1', date:'4/19', type:'osv', gl:'GL 07', hours:'',       sub:'MB09 Slot Recovery', desc:'OSV – Wireline Equipment' },
+      { id:'ol4', window:'week1', date:'4/21', type:'osv', gl:'GL 01', hours:'',       sub:'MB09 Side Track', desc:'OSV – Wireline (TBD)' },
+      { id:'ol5', window:'week1', date:'4/25', type:'osv', gl:'GL 02', hours:'',       sub:'MB09 Side Track', desc:'OSV – Drill 10-5/8" Hole Section / LCM Spike (TBD)' },
+      { id:'ol6', window:'week2', date:'4/23', type:'ev',  gl:'',      hours:'', sub:'TLP EV Run (Shared w/ Vito)', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol7', window:'week2', date:'5/2',  type:'osv', gl:'GL 03', hours:'', sub:'MB09 Side Track', desc:'OSV – Run 7-5/8" Production Liner & Cement' },
+      { id:'ol8', window:'week2', date:'5/8',  type:'osv', gl:'GL 04', hours:'', sub:'MB09 Side Track', desc:'OSV – WBCO and Negative Test' },
+      { id:'ol9', window:'week3', date:'4/30', type:'ev',  gl:'',      hours:'', sub:'TLP EV Run', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol10',window:'week3', date:'5/7',  type:'ev',  gl:'',      hours:'', sub:'TLP EV Run', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol11',window:'week3', date:'',     type:'osv', gl:'GL 05', hours:'', sub:'MB09 Side Track', desc:'OSV – Retrieve IDR & Install Lower Production Tieback' },
+      { id:'ol12',window:'week3', date:'',     type:'osv', gl:'GL 06', hours:'', sub:'MB09 Side Track', desc:'OSV – TA, Riser Swap, N/U and Test BOP' },
+      { id:'ol13',window:'week3', date:'',     type:'osv', gl:'GL 07', hours:'', sub:'MB09 Side Track', desc:'OSV – Run Upper Production Tieback' },
+      { id:'ol14',window:'week3', date:'5/14', type:'ev',  gl:'',      hours:'', sub:'TLP EV Run', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol15',window:'week3', date:'5/21', type:'ev',  gl:'',      hours:'', sub:'TLP EV Run', desc:'EV Run – Vito/OLY shared' },
+      { id:'ol16',window:'concerns', date:'', type:'note', gl:'', hours:'', sub:'Xylene', desc:'Q3 will start using bulk xylene – align marine/aviation with asset needs.' }
+    ]
+  },
+  {
+    id: 'mars', name: 'Mars', coordinator: 'Bryan Barron',
+    status: 'active', statusLabel: 'TLP EV Runs / A17 & A23 Well Work',
+    entries: [
+      { id:'ma1', window:'week1', date:'4/12', type:'ev',  gl:'GL 15',  hours:'12 hrs', sub:'TLP EV Run', desc:'FSV – EV Run' },
+      { id:'ma2', window:'week1', date:'4/16', type:'osv', gl:'GL 06',  hours:'',       sub:'A17 Decomplete', desc:'OSV – Upper Completion: Set Prod Packer, Open FLDs' },
+      { id:'ma3', window:'week1', date:'4/10', type:'osv', gl:'GL 05',  hours:'',       sub:'A17 Decomplete', desc:'OSV – Run Upper Completion & Land Tbg Hanger' },
+      { id:'ma4', window:'week1', date:'4/19', type:'ev',  gl:'GL 16',  hours:'12 hrs', sub:'TLP EV Run', desc:'OSV – EV Run (12 hrs)' },
+      { id:'ma5', window:'week2', date:'4/25', type:'ev',  gl:'GL 16A', hours:'12 hrs', sub:'TLP EV Run', desc:'FSV – EV Run (Crawfish)' },
+      { id:'ma6', window:'week2', date:'4/26', type:'ev',  gl:'GL 17',  hours:'12 hrs', sub:'TLP EV Run', desc:'FSV – EV Run' },
+      { id:'ma7', window:'week2', date:'5/3',  type:'ev',  gl:'GL 18',  hours:'12 hrs', sub:'TLP EV Run', desc:'FSV – EV Run' },
+      { id:'ma8', window:'week3', date:'5/10', type:'ev',  gl:'GL 19',  hours:'12 hrs', sub:'TLP EV Run', desc:'OSV – EV Run (Project)' },
+      { id:'ma9', window:'week3', date:'4/24', type:'osv', gl:'GL 01',  hours:'',       sub:'2026-A-23 Decomplete', desc:'OSV – ND Tree NU BOPs' },
+      { id:'ma10',window:'week3', date:'4/27', type:'osv', gl:'GL 02',  hours:'',       sub:'2026-A-23 Decomplete', desc:'OSV – POOH with current tubing and accessories' },
+      { id:'ma11',window:'week3', date:'4/30', type:'osv', gl:'GL 03',  hours:'',       sub:'2026-A-23 Decomplete', desc:'OSV – Set EZSV-B Cement Retainer, Spot Balanced Plug' },
+      { id:'ma12',window:'concerns', date:'4/15', type:'flight', gl:'', hours:'', sub:'Crew Change', desc:'Mars Crew Swap 4/15 – 7 Flights needed for 45/45 production crew + 20–25 for Construction.' }
+    ]
+  },
+  {
+    id: 'sparta', name: 'SPARTA', coordinator: 'Jennifer Palmisano',
+    status: 'active', statusLabel: 'Project Planning / Flight & Crew Change',
+    entries: [
+      { id:'sp1', window:'week1', date:'', type:'flight', gl:'', hours:'', sub:'Crew Change Planning', desc:'Flight/crew change planning – Monday/Tuesday' },
+      { id:'sp2', window:'week1', date:'', type:'note',   gl:'', hours:'', sub:'EV Run Cadence', desc:'EV Run cadence planning' },
+      { id:'sp3', window:'week1', date:'', type:'note',   gl:'', hours:'', sub:'Sparta Project Planning', desc:'Sparta project planning' }
+    ]
+  }
+];
+
+// ── State ──────────────────────────────────────────────────
+let currentTab = 'overview';
+let activeTypes = new Set(['osv','fsv','ev','flight']);
+let editingEntry = null; // { assetId, entryId } or null for new
+let editingAssetId = null;
+let weekStart = null;
+let dragEntryContext = null;
+
+const DATA_KEY = 'logistics_lookahead_data';
+const WEEK_KEY = 'logistics_week_start';
+const TREND_KEY = 'logistics_lookahead_trend_history';
+const KABAL_SOURCE_URL = 'https://eu001-sp.shell.com/:x:/r/sites/UGPTDWGOMSupplyChain/Shared%20Documents/SC%20Delivery/Logistics%20New%20Ways%20of%20Working/Logistics%20Lookahead/Kabal%20Group%20Load%20Export.xlsx?d=wf114f3272d38453eae10ca1cac324ad9&csf=1&web=1&e=XMtcCc';
+const DEFAULT_SP_SITE_URL = 'https://eu001-sp.shell.com/sites/UGPTDWGOMSupplyChain';
+const DEFAULT_APP_WEB_URL = 'http://127.0.0.1:3000/Library/01_Websites/Logistics_Lookahead/index.html?vscode-livepreview=true';
+
+const CLOUD_API = {
+  enabled: true,
+  basePath: '/api',
+  hostPattern: /(azurestaticapps\.net|localhost|127\.0\.0\.1)/i,
+  timeoutMs: 12000
+};
+
+function deriveSpSiteUrlFromLocation() {
+  const ctx = window._spPageContextInfo;
+  if (ctx && ctx.webAbsoluteUrl) {
+    return String(ctx.webAbsoluteUrl).replace(/\/$/, '');
+  }
+
+  const loc = window.location;
+  if (!loc) {
+    return DEFAULT_SP_SITE_URL;
+  }
+
+  if (loc.protocol === 'file:') {
+    return DEFAULT_SP_SITE_URL;
+  }
+
+  if (!loc.origin || loc.origin === 'null') {
+    return DEFAULT_SP_SITE_URL;
+  }
+
+  const path = String(loc.pathname || '');
+  const siteMatch = path.match(/^(.*?\/(sites|teams)\/[^/]+)/i);
+  if (siteMatch && siteMatch[1]) {
+    return `${loc.origin}${siteMatch[1]}`.replace(/\/$/, '');
+  }
+
+  return String(loc.origin).replace(/\/$/, '') || DEFAULT_SP_SITE_URL;
+}
+
+const SHARED_SYNC = {
+  enabled: true,
+  siteUrl: deriveSpSiteUrlFromLocation() || DEFAULT_SP_SITE_URL,
+  stateListTitle: 'LogisticsState',
+  stateItemTitle: 'Current',
+  changeLogListTitle: 'LogisticsChangeLog',
+  autoRefreshMs: 45000
+};
+
+let trendHistory = loadTrendHistory();
+const seededAssets = JSON.parse(JSON.stringify(assets));
+let sharedStateItemId = null;
+let sharedDigestCache = { value: '', expiresAt: 0 };
+let sharedLastSeenUpdatedAt = '';
+let sharedRefreshHandle = null;
+let sharedSyncWarningShown = false;
+
+function useBackendApi() {
+  if (!CLOUD_API.enabled) return false;
+  const host = String((window.location && window.location.host) || '');
+  return CLOUD_API.hostPattern.test(host);
+}
+
+async function apiFetchJson(path, method = 'GET', body = null, timeoutMs = CLOUD_API.timeoutMs) {
+  const headers = { 'Accept': 'application/json' };
+  if (body !== null) headers['Content-Type'] = 'application/json';
+  const url = `${CLOUD_API.basePath}${path}`;
+  const res = await fetchWithTimeout(url, {
+    method,
+    headers,
+    body: body === null ? undefined : JSON.stringify(body),
+    credentials: 'same-origin'
+  }, timeoutMs);
+
+  let payload = null;
+  try { payload = await res.json(); } catch (_) {}
+  if (!res.ok) {
+    const msg = payload?.error || payload?.message || `API request failed (${res.status})`;
+    throw new Error(msg);
+  }
+  return payload;
+}
+
+function setSyncStatus(mode, text) {
+  const pill = document.getElementById('syncStatusPill');
+  if (!pill) return;
+  pill.className = `sync-indicator ${mode}`;
+  pill.textContent = text;
+}
+
+function formatIsoLocal(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function showConflictBanner(msg) {
+  const banner = document.getElementById('syncConflictBanner');
+  const text = document.getElementById('syncConflictText');
+  if (!banner || !text) return;
+  text.textContent = msg;
+  banner.style.display = 'flex';
+}
+
+function dismissConflictBanner() {
+  const banner = document.getElementById('syncConflictBanner');
+  if (!banner) return;
+  banner.style.display = 'none';
+}
+
+function showLaunchBanner() {
+  const el = document.getElementById('syncLaunchBanner');
+  if (!el) return;
+  el.style.display = 'flex';
+}
+
+function enforceLocalFileLock() {
+  const lock = document.getElementById('localFileLock');
+  const url = document.getElementById('localFileLockUrl');
+  if (url) {
+    url.textContent = getSharePointWebAppUrl();
+  }
+  if (lock) {
+    lock.style.display = 'flex';
+  }
+}
+
+function getSharePointWebAppUrl() {
+  return DEFAULT_APP_WEB_URL;
+}
+
+function openSharePointWebApp() {
+  const targetUrl = getSharePointWebAppUrl();
+  if (window.location && window.location.protocol === 'file:') {
+    window.location.href = targetUrl;
+    return;
+  }
+  window.open(targetUrl, '_blank', 'noopener,noreferrer');
+}
+
+function copySharePointWebAppUrl() {
+  const url = getSharePointWebAppUrl();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url)
+      .then(() => setDiagStatus('Live Preview URL copied to clipboard.'))
+      .catch(() => setDiagStatus('Could not copy URL automatically; copy from diagnostics output.'));
+  } else {
+    setDiagStatus('Clipboard API unavailable; copy URL manually from diagnostics output.');
+  }
+}
+
+function toggleDiagnosticsPanel() {
+  const panel = document.getElementById('diagPanel');
+  if (!panel) return;
+  panel.classList.toggle('open');
+}
+
+function setDiagStatus(text) {
+  const el = document.getElementById('diagStatus');
+  if (!el) return;
+  el.textContent = text;
+}
+
+function renderDiagResults(rows) {
+  const wrap = document.getElementById('diagResults');
+  if (!wrap) return;
+  wrap.innerHTML = rows.map(r => {
+    const tone = r.status === 'PASS' ? 'pass' : (r.status === 'WARN' ? 'warn' : 'fail');
+    return `<div class="diag-row"><span class="diag-tag ${tone}">${r.status}</span><div class="diag-detail"><strong>${r.title}:</strong> ${r.detail}</div></div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function spFetchJson(url, method = 'GET', body = null, timeoutMs = 8000) {
+  const headers = { 'Accept': 'application/json;odata=nometadata' };
+  if (body !== null) {
+    headers['Content-Type'] = 'application/json;odata=nometadata';
+  }
+  try {
+    const res = await fetchWithTimeout(url, {
+      method,
+      headers,
+      body: body === null ? undefined : JSON.stringify(body),
+      credentials: 'same-origin'
+    }, timeoutMs);
+    let payload = null;
+    try { payload = await res.json(); } catch (_) {}
+    return { ok: res.ok, status: res.status, payload };
+  } catch (err) {
+    const message = (err && err.name === 'AbortError') ? `Request timed out after ${timeoutMs}ms` : (err?.message || String(err));
+    return { ok: false, status: 0, payload: null, error: message };
+  }
+}
+
+async function runSyncDiagnostics() {
+  const rows = [];
+  const runAt = new Date();
+  setDiagStatus(`Running checks... ${runAt.toLocaleTimeString('en-US')}`);
+
+  if (useBackendApi()) {
+    rows.push({
+      status: 'PASS',
+      title: 'Sync Mode',
+      detail: `Azure API mode (${escHtml(CLOUD_API.basePath)})`
+    });
+
+    try {
+      const health = await apiFetchJson('/health');
+      rows.push({ status: 'PASS', title: 'API Health', detail: escHtml(health?.status || 'ok') });
+    } catch (err) {
+      rows.push({ status: 'FAIL', title: 'API Health', detail: escHtml(err.message || String(err)) });
+    }
+
+    try {
+      const state = await apiFetchJson('/state');
+      rows.push({
+        status: 'PASS',
+        title: 'State Endpoint',
+        detail: state?.item ? `Current item found (Id ${state.item.Id || 'n/a'})` : 'No Current state item yet'
+      });
+    } catch (err) {
+      rows.push({ status: 'FAIL', title: 'State Endpoint', detail: escHtml(err.message || String(err)) });
+    }
+
+    rows.push({
+      status: 'PASS',
+      title: 'Runtime Sync State',
+      detail: `LastSeen=${escHtml(sharedLastSeenUpdatedAt || 'n/a')} | ItemId=${escHtml(sharedStateItemId || 'n/a')} | InFlight=${sharedPersistInFlight}`
+    });
+
+    renderDiagResults(rows);
+    const failCount = rows.filter(r => r.status === 'FAIL').length;
+    const warnCount = rows.filter(r => r.status === 'WARN').length;
+    setDiagStatus(`Completed ${new Date().toLocaleTimeString('en-US')} - ${failCount} fail, ${warnCount} warn`);
+    return;
+  }
+
+  rows.push({
+    status: SHARED_SYNC.enabled ? 'PASS' : 'WARN',
+    title: 'Shared Sync Enabled',
+    detail: SHARED_SYNC.enabled ? 'enabled=true' : 'enabled=false (app is local only)'
+  });
+
+  const baseUrl = getSpBaseUrl();
+  const isLocalFileContext = window.location && window.location.protocol === 'file:';
+  rows.push({
+    status: (baseUrl && !isLocalFileContext) ? 'PASS' : (baseUrl ? 'WARN' : 'FAIL'),
+    title: 'Base URL',
+    detail: escHtml(baseUrl || 'Missing SharePoint site URL')
+  });
+
+  rows.push({
+    status: (baseUrl && !isLocalFileContext) ? 'PASS' : (baseUrl ? 'WARN' : 'FAIL'),
+    title: 'API Endpoint',
+    detail: escHtml(baseUrl ? `${baseUrl}/_api/contextinfo` : 'Cannot build endpoint without a valid SharePoint base URL')
+  });
+
+  rows.push({
+    status: isLocalFileContext ? 'WARN' : 'PASS',
+    title: 'Execution Context',
+    detail: isLocalFileContext
+      ? 'Page is running as file://. Open from the configured Live Preview URL for synced access.'
+      : `Page protocol is ${escHtml(window.location.protocol || 'unknown')}`
+  });
+
+  const ctx = window._spPageContextInfo;
+  rows.push({
+    status: ctx ? 'PASS' : 'WARN',
+    title: 'SharePoint Context',
+    detail: ctx ? `Detected page context for ${escHtml(ctx.webTitle || 'site')}` : 'No _spPageContextInfo detected; using URL path auto-detection for /sites or /teams'
+  });
+
+  try {
+    const digest = await spGetDigest(8000);
+    rows.push({
+      status: digest ? 'PASS' : 'FAIL',
+      title: 'Form Digest',
+      detail: digest ? 'Received context digest for write operations' : 'Digest missing'
+    });
+  } catch (err) {
+    rows.push({ status: 'FAIL', title: 'Form Digest', detail: escHtml(err.message || String(err)) });
+  }
+
+  const stateListTitle = escSpListTitle(SHARED_SYNC.stateListTitle);
+  const logListTitle = escSpListTitle(SHARED_SYNC.changeLogListTitle);
+
+  const stateListRes = await spFetchJson(`${baseUrl}/_api/web/lists/getbytitle('${stateListTitle}')?$select=Id,Title,ItemCount`);
+  rows.push({
+    status: stateListRes.ok ? 'PASS' : 'FAIL',
+    title: 'State List',
+    detail: stateListRes.ok
+      ? `Found ${escHtml(SHARED_SYNC.stateListTitle)} (items: ${Number(stateListRes.payload?.ItemCount || 0)})`
+      : `Unable to read ${escHtml(SHARED_SYNC.stateListTitle)} (HTTP ${stateListRes.status || 'n/a'})${stateListRes.error ? ` - ${escHtml(stateListRes.error)}` : ''}`
+  });
+
+  const logListRes = await spFetchJson(`${baseUrl}/_api/web/lists/getbytitle('${logListTitle}')?$select=Id,Title,ItemCount`);
+  rows.push({
+    status: logListRes.ok ? 'PASS' : 'FAIL',
+    title: 'Change Log List',
+    detail: logListRes.ok
+      ? `Found ${escHtml(SHARED_SYNC.changeLogListTitle)} (items: ${Number(logListRes.payload?.ItemCount || 0)})`
+      : `Unable to read ${escHtml(SHARED_SYNC.changeLogListTitle)} (HTTP ${logListRes.status || 'n/a'})${logListRes.error ? ` - ${escHtml(logListRes.error)}` : ''}`
+  });
+
+  const stateFieldRes = await spFetchJson(`${baseUrl}/_api/web/lists/getbytitle('${stateListTitle}')/fields?$select=InternalName&$filter=InternalName eq 'StateJson'`);
+  const hasStateField = !!(stateFieldRes.ok && Array.isArray(stateFieldRes.payload?.value) && stateFieldRes.payload.value.length);
+  rows.push({
+    status: hasStateField ? 'PASS' : 'FAIL',
+    title: 'StateJson Field',
+    detail: hasStateField ? 'Field StateJson exists on LogisticsState' : `Field StateJson missing or unreadable (HTTP ${stateFieldRes.status || 'n/a'})${stateFieldRes.error ? ` - ${escHtml(stateFieldRes.error)}` : ''}`
+  });
+
+  const summaryFieldRes = await spFetchJson(`${baseUrl}/_api/web/lists/getbytitle('${logListTitle}')/fields?$select=InternalName&$filter=InternalName eq 'SummaryJson'`);
+  const hasSummaryField = !!(summaryFieldRes.ok && Array.isArray(summaryFieldRes.payload?.value) && summaryFieldRes.payload.value.length);
+  rows.push({
+    status: hasSummaryField ? 'PASS' : 'FAIL',
+    title: 'SummaryJson Field',
+    detail: hasSummaryField ? 'Field SummaryJson exists on LogisticsChangeLog' : `Field SummaryJson missing or unreadable (HTTP ${summaryFieldRes.status || 'n/a'})${summaryFieldRes.error ? ` - ${escHtml(summaryFieldRes.error)}` : ''}`
+  });
+
+  const itemTitle = encodeURIComponent(SHARED_SYNC.stateItemTitle);
+  const itemRes = await spFetchJson(`${baseUrl}/_api/web/lists/getbytitle('${stateListTitle}')/items?$select=Id,Title&$filter=Title eq '${itemTitle}'&$top=1`, 'GET', null, 8000);
+  const currentItems = Array.isArray(itemRes.payload?.value) ? itemRes.payload.value : [];
+  rows.push({
+    status: itemRes.ok ? (currentItems.length ? 'PASS' : 'WARN') : 'FAIL',
+    title: 'Current Shared Item',
+    detail: itemRes.ok
+      ? (currentItems.length
+        ? `Item found (Id ${currentItems[0].Id}, Title ${escHtml(currentItems[0].Title || '')})`
+        : 'No Current item yet (will be created on first successful save)')
+      : `Unable to query Current item (HTTP ${itemRes.status || 'n/a'})${itemRes.error ? ` - ${escHtml(itemRes.error)}` : ''}`
+  });
+
+  rows.push({
+    status: 'PASS',
+    title: 'Runtime Sync State',
+    detail: `LastSeen=${escHtml(sharedLastSeenUpdatedAt || 'n/a')} | ItemId=${escHtml(sharedStateItemId || 'n/a')} | InFlight=${sharedPersistInFlight}`
+  });
+
+  renderDiagResults(rows);
+  const failCount = rows.filter(r => r.status === 'FAIL').length;
+  const warnCount = rows.filter(r => r.status === 'WARN').length;
+  setDiagStatus(`Completed ${new Date().toLocaleTimeString('en-US')} - ${failCount} fail, ${warnCount} warn`);
+}
+
+function copyDiagnosticsSummary() {
+  const statusEl = document.getElementById('diagStatus');
+  const wrap = document.getElementById('diagResults');
+  const status = statusEl ? statusEl.textContent : '';
+  const lines = [];
+  lines.push(`Sync Diagnostics - ${new Date().toISOString()}`);
+  lines.push(status);
+  if (wrap) {
+    const rows = wrap.querySelectorAll('.diag-row');
+    rows.forEach(r => {
+      const tag = r.querySelector('.diag-tag')?.textContent || '';
+      const txt = r.querySelector('.diag-detail')?.textContent || '';
+      lines.push(`${tag}: ${txt.replace(/\s+/g, ' ').trim()}`);
+    });
+  }
+
+  const payload = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(payload)
+      .then(() => setDiagStatus('Diagnostics summary copied to clipboard.'))
+      .catch(() => setDiagStatus('Could not access clipboard. Copy manually from panel.'));
+  } else {
+    setDiagStatus('Clipboard API unavailable in this browser context.');
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────
+async function init() {
+  setSyncStatus('local', 'Sync: Local only');
+
+  // Load from localStorage first so the UI always has a fast fallback.
+  const saved = localStorage.getItem(DATA_KEY);
+  if (saved) {
+    try {
+      const savedAssets = JSON.parse(saved);
+      assets = mergeMissingSeedAssets(savedAssets, seededAssets);
+    } catch(e) {}
+  }
+
+  if (SHARED_SYNC.enabled) {
+    setSyncStatus('syncing', 'Sync: Connecting...');
+    await hydrateFromSharedState();
+  }
+
+  const savedWeek = localStorage.getItem(WEEK_KEY);
+  if (savedWeek) {
+    weekStart = new Date(savedWeek);
+    document.getElementById('weekStartPicker').value = savedWeek;
+  } else {
+    // Default to most recent Monday
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart = new Date(now.setDate(diff));
+    document.getElementById('weekStartPicker').value = toDateInputVal(weekStart);
+  }
+  updateWeekLabel();
+  populateCoordFilter();
+  buildTabs();
+
+  if (!trendHistory.length) {
+    captureTrendSnapshot('initial', false);
+  }
+
+  renderAll();
+
+  const xlsxInput = document.getElementById('kabalXlsxInput');
+  xlsxInput.addEventListener('change', handleKabalWorkbookSelected);
+
+  document.getElementById('weekStartPicker').addEventListener('change', e => {
+    weekStart = new Date(e.target.value);
+    localStorage.setItem(WEEK_KEY, e.target.value);
+    queueSharedPersist('week_start_changed');
+    updateWeekLabel();
+    renderAll();
+  });
+
+  if (SHARED_SYNC.enabled) {
+    startSharedAutoRefresh();
+    setSyncStatus('ok', 'Sync: Connected');
+  }
+}
+
+function mergeMissingSeedAssets(currentAssets, seedAssets) {
+  if (!Array.isArray(currentAssets)) return JSON.parse(JSON.stringify(seedAssets));
+  const merged = [...currentAssets];
+  const existingIds = new Set(currentAssets.map(a => a.id));
+  seedAssets.forEach(seed => {
+    if (!existingIds.has(seed.id)) {
+      merged.push(JSON.parse(JSON.stringify(seed)));
+    }
+  });
+  return merged;
+}
+
+function loadTrendHistory() {
+  try {
+    const saved = localStorage.getItem(TREND_KEY);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveTrendHistory() {
+  localStorage.setItem(TREND_KEY, JSON.stringify(trendHistory));
+}
+
+function getSpBaseUrl() {
+  const candidate = SHARED_SYNC.siteUrl || deriveSpSiteUrlFromLocation();
+  return String(candidate || '').replace(/\/$/, '');
+}
+
+function escSpListTitle(title) {
+  return String(title || '').replace(/'/g, "''");
+}
+
+function getSpUserName() {
+  const ctx = window._spPageContextInfo;
+  if (ctx && ctx.userDisplayName) return String(ctx.userDisplayName);
+  return 'Unknown User';
+}
+
+function showSharedSyncWarning(err) {
+  if (sharedSyncWarningShown) return;
+  sharedSyncWarningShown = true;
+  setSyncStatus('warn', 'Sync: Fallback to local');
+  console.warn('Shared sync is not active. App is using local browser storage only.', err || '');
+}
+
+async function spGetDigest(timeoutMs = 12000) {
+  if (useBackendApi()) {
+    return 'api-mode';
+  }
+
+  const now = Date.now();
+  if (sharedDigestCache.value && sharedDigestCache.expiresAt > now + 15000) {
+    return sharedDigestCache.value;
+  }
+
+  let res;
+  try {
+    res = await fetchWithTimeout(`${getSpBaseUrl()}/_api/contextinfo`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json;odata=nometadata'
+      },
+      credentials: 'same-origin'
+    }, timeoutMs);
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error(`contextinfo timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  }
+
+  if (!res.ok) {
+    throw new Error(`contextinfo failed (${res.status})`);
+  }
+
+  const json = await res.json();
+  const digest = json?.FormDigestValue;
+  const timeoutSec = Number(json?.FormDigestTimeoutSeconds || 1800);
+  if (!digest) {
+    throw new Error('No FormDigestValue returned by SharePoint contextinfo');
+  }
+
+  sharedDigestCache = {
+    value: digest,
+    expiresAt: now + (timeoutSec * 1000)
+  };
+  return digest;
+}
+
+function buildSharedEnvelope(reason = 'update') {
+  return {
+    updatedAt: new Date().toISOString(),
+    updatedBy: getSpUserName(),
+    reason,
+    weekStart: weekStart ? toDateInputVal(weekStart) : '',
+    assets,
+    trendHistory
+  };
+}
+
+async function getSharedStateItem() {
+  if (useBackendApi()) {
+    const payload = await apiFetchJson('/state');
+    return payload?.item || null;
+  }
+
+  const title = encodeURIComponent(SHARED_SYNC.stateItemTitle);
+  const listTitle = escSpListTitle(SHARED_SYNC.stateListTitle);
+  const url = `${getSpBaseUrl()}/_api/web/lists/getbytitle('${listTitle}')/items?$select=Id,Title,StateJson&$filter=Title eq '${title}'&$top=1`;
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json;odata=nometadata' },
+    credentials: 'same-origin'
+  });
+
+  if (!res.ok) {
+    throw new Error(`Read shared state failed (${res.status})`);
+  }
+
+  const json = await res.json();
+  const rows = Array.isArray(json?.value) ? json.value : [];
+  return rows.length ? rows[0] : null;
+}
+
+async function hydrateFromSharedState() {
+  try {
+    const item = await getSharedStateItem();
+    if (!item || !item.StateJson) {
+      setSyncStatus('ok', 'Sync: Connected (new state)');
+      return;
+    }
+
+    sharedStateItemId = item.Id;
+    const payload = JSON.parse(item.StateJson);
+    if (Array.isArray(payload.assets)) {
+      assets = mergeMissingSeedAssets(payload.assets, seededAssets);
+      localStorage.setItem(DATA_KEY, JSON.stringify(assets));
+    }
+    if (Array.isArray(payload.trendHistory)) {
+      trendHistory = payload.trendHistory;
+      saveTrendHistory();
+    }
+    if (payload.weekStart) {
+      localStorage.setItem(WEEK_KEY, String(payload.weekStart));
+    }
+    if (payload.updatedAt) {
+      sharedLastSeenUpdatedAt = payload.updatedAt;
+    }
+    setSyncStatus('ok', `Sync: Connected (${formatIsoLocal(sharedLastSeenUpdatedAt) || 'just now'})`);
+  } catch (err) {
+    showSharedSyncWarning(err);
+  }
+}
+
+async function upsertSharedState(reason = 'update') {
+  const envelope = buildSharedEnvelope(reason);
+
+  if (useBackendApi()) {
+    const payload = await apiFetchJson('/state', 'POST', { envelope });
+    if (payload?.itemId) sharedStateItemId = payload.itemId;
+    if (payload?.updatedAt) sharedLastSeenUpdatedAt = payload.updatedAt;
+    return;
+  }
+
+  const digest = await spGetDigest();
+  const listTitle = escSpListTitle(SHARED_SYNC.stateListTitle);
+
+  if (!sharedStateItemId) {
+    const found = await getSharedStateItem();
+    if (found) sharedStateItemId = found.Id;
+  }
+
+  if (!sharedStateItemId) {
+    const createRes = await fetch(`${getSpBaseUrl()}/_api/web/lists/getbytitle('${listTitle}')/items`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json;odata=nometadata',
+        'Content-Type': 'application/json;odata=nometadata',
+        'X-RequestDigest': digest
+      },
+      body: JSON.stringify({
+        Title: SHARED_SYNC.stateItemTitle,
+        StateJson: JSON.stringify(envelope)
+      }),
+      credentials: 'same-origin'
+    });
+
+    if (!createRes.ok) {
+      throw new Error(`Create shared state failed (${createRes.status})`);
+    }
+    const created = await createRes.json();
+    sharedStateItemId = created?.Id || null;
+  } else {
+    const updateRes = await fetch(`${getSpBaseUrl()}/_api/web/lists/getbytitle('${listTitle}')/items(${sharedStateItemId})`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json;odata=nometadata',
+        'Content-Type': 'application/json;odata=nometadata',
+        'X-RequestDigest': digest,
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'MERGE'
+      },
+      body: JSON.stringify({
+        Title: SHARED_SYNC.stateItemTitle,
+        StateJson: JSON.stringify(envelope)
+      }),
+      credentials: 'same-origin'
+    });
+
+    if (!updateRes.ok && updateRes.status !== 204) {
+      throw new Error(`Update shared state failed (${updateRes.status})`);
+    }
+  }
+
+  sharedLastSeenUpdatedAt = envelope.updatedAt;
+}
+
+async function appendSharedChangeLog(reason = 'update') {
+  const summary = {
+    reason,
+    updatedBy: getSpUserName(),
+    at: new Date().toISOString(),
+    totalAssets: assets.length,
+    totalRuns: assets.reduce((sum, a) => sum + a.entries.filter(e => e.window === 'week1' || e.window === 'week2' || e.window === 'week3').length, 0)
+  };
+
+  if (useBackendApi()) {
+    await apiFetchJson('/changelog', 'POST', { summary });
+    return;
+  }
+
+  const digest = await spGetDigest();
+  const listTitle = escSpListTitle(SHARED_SYNC.changeLogListTitle);
+
+  const res = await fetch(`${getSpBaseUrl()}/_api/web/lists/getbytitle('${listTitle}')/items`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json;odata=nometadata',
+      'Content-Type': 'application/json;odata=nometadata',
+      'X-RequestDigest': digest
+    },
+    body: JSON.stringify({
+      Title: `${reason} @ ${new Date().toISOString()}`,
+      SummaryJson: JSON.stringify(summary)
+    }),
+    credentials: 'same-origin'
+  });
+
+  if (!res.ok) {
+    throw new Error(`Write change log failed (${res.status})`);
+  }
+}
+
+let sharedPersistQueued = false;
+let sharedPersistInFlight = false;
+let sharedPersistReason = 'update';
+
+function queueSharedPersist(reason = 'update') {
+  if (!SHARED_SYNC.enabled) return;
+  sharedPersistReason = reason;
+  if (sharedPersistQueued || sharedPersistInFlight) return;
+  sharedPersistQueued = true;
+
+  setTimeout(async () => {
+    sharedPersistQueued = false;
+    sharedPersistInFlight = true;
+    setSyncStatus('syncing', 'Sync: Saving...');
+    try {
+      await upsertSharedState(sharedPersistReason);
+      await appendSharedChangeLog(sharedPersistReason);
+      setSyncStatus('ok', `Sync: Saved ${formatIsoLocal(sharedLastSeenUpdatedAt) || 'just now'}`);
+    } catch (err) {
+      showSharedSyncWarning(err);
+    } finally {
+      sharedPersistInFlight = false;
+    }
+  }, 350);
+}
+
+async function pullSharedIfChanged() {
+  if (!SHARED_SYNC.enabled || sharedPersistInFlight) return;
+  try {
+    const item = await getSharedStateItem();
+    if (!item?.StateJson) return;
+
+    sharedStateItemId = item.Id;
+    const payload = JSON.parse(item.StateJson);
+    if (!payload.updatedAt || payload.updatedAt === sharedLastSeenUpdatedAt) return;
+
+    const priorStamp = sharedLastSeenUpdatedAt;
+    const incomingBy = payload.updatedBy || 'another user';
+    const incomingReason = payload.reason || 'update';
+    const incomingWhen = formatIsoLocal(payload.updatedAt) || 'just now';
+
+    if (Array.isArray(payload.assets)) {
+      assets = mergeMissingSeedAssets(payload.assets, seededAssets);
+      localStorage.setItem(DATA_KEY, JSON.stringify(assets));
+    }
+    if (Array.isArray(payload.trendHistory)) {
+      trendHistory = payload.trendHistory;
+      saveTrendHistory();
+    }
+    if (payload.weekStart) {
+      weekStart = new Date(payload.weekStart);
+      document.getElementById('weekStartPicker').value = payload.weekStart;
+      localStorage.setItem(WEEK_KEY, payload.weekStart);
+      updateWeekLabel();
+    }
+
+    sharedLastSeenUpdatedAt = payload.updatedAt;
+    setSyncStatus('ok', `Sync: Updated ${incomingWhen}`);
+    if (priorStamp && incomingBy !== getSpUserName()) {
+      showConflictBanner(`New shared update pulled from ${incomingBy} (${incomingReason}) at ${incomingWhen}.`);
+    }
+    populateCoordFilter();
+    buildTabs();
+    renderAll();
+  } catch (err) {
+    showSharedSyncWarning(err);
+  }
+}
+
+function startSharedAutoRefresh() {
+  if (sharedRefreshHandle) {
+    clearInterval(sharedRefreshHandle);
+  }
+  setSyncStatus('ok', 'Sync: Auto-refresh active');
+  sharedRefreshHandle = setInterval(() => {
+    pullSharedIfChanged();
+  }, SHARED_SYNC.autoRefreshMs);
+}
+
+function toDateInputVal(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function updateWeekLabel() {
+  if (!weekStart) return;
+  const end = new Date(weekStart);
+  end.setDate(end.getDate() + 20);
+  const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  document.getElementById('weekLabel').textContent = `${fmt(weekStart)} – ${fmt(end)}`;
+}
+
+function getDateRange(window) {
+  if (!weekStart) return '';
+  const start = new Date(weekStart);
+  const d = n => { const x = new Date(start); x.setDate(x.getDate()+n); return x; };
+  const fmt = x => x.toLocaleDateString('en-US', { month:'numeric', day:'numeric' });
+  if (window === 'week1') return `${fmt(d(7))} – ${fmt(d(13))}`;
+  if (window === 'week2') return `${fmt(d(14))} – ${fmt(d(20))}`;
+  if (window === 'week3') return `${fmt(d(21))}+`;
+  return '';
+}
+
+function populateCoordFilter() {
+  const coords = [...new Set(assets.map(a => a.coordinator))].sort();
+  const sel = document.getElementById('coordFilter');
+  sel.innerHTML = '<option value="">All Coordinators</option>';
+  coords.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Tabs ───────────────────────────────────────────────────
+function buildTabs() {
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = '';
+
+  // Fleet overview tab
+  const ov = document.createElement('span');
+  ov.className = 'tab-btn' + (currentTab === 'overview' ? ' active' : '');
+  ov.dataset.tabId = 'overview';
+  ov.innerHTML = 'Fleet Overview <span class="tab-badge">' + assets.length + '</span>';
+  ov.onclick = () => switchTab('overview');
+  container.appendChild(ov);
+
+  // Heat map tab
+  const hm = document.createElement('span');
+  hm.className = 'tab-btn' + (currentTab === 'heatmap' ? ' active' : '');
+  hm.dataset.tabId = 'heatmap';
+  hm.innerHTML = 'Heat Map <span class="tab-badge">Trend</span>';
+  hm.onclick = () => switchTab('heatmap');
+  container.appendChild(hm);
+
+  assets.forEach(a => {
+    const btn = document.createElement('span');
+    btn.className = 'tab-btn' + (currentTab === a.id ? ' active' : '');
+    btn.dataset.tabId = a.id;
+    const concerns = a.entries.filter(e => e.window === 'concerns' && e.type === 'concern').length;
+    btn.innerHTML = a.name + (concerns > 0 ? `<span class="tab-badge">${concerns}⚠</span>` : '');
+    btn.onclick = () => switchTab(a.id);
+    container.appendChild(btn);
+  });
+}
+
+function switchTab(id) {
+  currentTab = id;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tabId === id);
+  });
+  renderAll();
+}
+
+// ── Render ─────────────────────────────────────────────────
+function renderAll() {
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+
+  if (currentTab === 'overview') {
+    renderOverview(main);
+  } else if (currentTab === 'heatmap') {
+    renderHeatmapView(main);
+  } else {
+    const asset = assets.find(a => a.id === currentTab);
+    if (asset) renderAsset(asset, main);
+  }
+}
+
+function renderOverview(container) {
+  const h = document.createElement('div');
+  h.innerHTML = `<div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:1.2rem">Fleet Overview</h2>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:3px">Click any asset card to view detailed lookahead. Sync updates from the Kabal export with Sync XLSX.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${renderLegend()}
+    </div>
+  </div>`;
+  container.appendChild(h);
+
+  const grid = document.createElement('div');
+  grid.className = 'overview-grid';
+
+  const coordFilter = document.getElementById('coordFilter').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  assets.forEach(asset => {
+    if (coordFilter && asset.coordinator !== coordFilter) return;
+    if (search && !asset.name.toLowerCase().includes(search) &&
+        !asset.coordinator.toLowerCase().includes(search) &&
+        !asset.statusLabel.toLowerCase().includes(search)) return;
+
+    const totalEntries = asset.entries.length;
+    const concerns = asset.entries.filter(e => e.type === 'concern').length;
+    const osv = asset.entries.filter(e => e.type === 'osv').length;
+    const nextEntry = asset.entries.filter(e => e.window === 'week1' && e.date).sort((a,b) => a.date.localeCompare(b.date))[0];
+
+    const card = document.createElement('div');
+    card.className = 'overview-card';
+    card.onclick = () => switchTab(asset.id);
+
+    const statusCls = asset.status === 'critical' ? 'critical' : asset.status === 'warning' ? 'warning' : '';
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <div class="oc-asset">${asset.name}</div>
+        <span class="asset-status-badge ${statusCls}" style="font-size:.65rem;padding:2px 8px;white-space:nowrap">${asset.status === 'critical' ? 'Critical' : asset.status === 'warning' ? 'Monitor' : 'Active'}</span>
+      </div>
+      <div class="oc-coord">📋 ${asset.coordinator}</div>
+      <div style="font-size:.73rem;color:var(--text-muted);margin-bottom:8px;line-height:1.3">${asset.statusLabel}</div>
+      <div class="oc-stats">
+        <div class="oc-stat">Runs: <span>${totalEntries}</span></div>
+        <div class="oc-stat">OSV: <span>${osv}</span></div>
+        ${concerns > 0 ? `<div class="oc-stat" style="color:#f87171">Issues: <span style="color:#f87171">${concerns}</span></div>` : ''}
+        ${nextEntry ? `<div class="oc-stat" style="width:100%;margin-top:3px">Next: <span>${nextEntry.date} ${nextEntry.gl}</span></div>` : ''}
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+}
+
+function renderHeatmapView(container) {
+  const h = document.createElement('div');
+  h.innerHTML = `<div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:1.2rem">Heat Map & Activity Trends</h2>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:3px">Cross-asset vessel activity intensity and ranked activity counts by asset.</p>
+    </div>
+  </div>`;
+  container.appendChild(h);
+  renderTrendPanel(container);
+}
+
+function renderLegend() {
+  return `<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>OSV</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>FSV</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div>EV Run</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div>Flight</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Note</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Concern</div>
+  </div>`;
+}
+
+function renderAsset(asset, container) {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const coordFilter = document.getElementById('coordFilter').value;
+  if (coordFilter && asset.coordinator !== coordFilter) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'asset-panel active';
+
+  const statusCls = asset.status === 'critical' ? 'critical' : asset.status === 'warning' ? 'warning' : '';
+
+  panel.innerHTML = `
+    <div class="asset-header">
+      <div class="asset-name-block">
+        <h2>${asset.name}</h2>
+        <div class="coord-line">Logistics Coordinator: <strong>${asset.coordinator}</strong> &nbsp;|&nbsp; Week of: <strong id="weekOfLabel"></strong></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="asset-status-badge ${statusCls}">${asset.statusLabel}</span>
+        <button class="btn btn-secondary" style="font-size:.75rem;padding:5px 12px" onclick="openAddEntryModal('${asset.id}', 'add')">+ Add Entry</button>
+      </div>
+    </div>
+    ${renderLegend()}
+  `;
+
+  // Set week label
+  panel.querySelector('#weekOfLabel').textContent = document.getElementById('weekLabel').textContent;
+
+  const grid = document.createElement('div');
+  grid.className = 'timeline-grid';
+
+  ['week1','week2','week3','concerns'].forEach(win => {
+    const entries = asset.entries.filter(e => {
+      if (e.window !== win) return false;
+      if (search && !e.desc.toLowerCase().includes(search) &&
+          !e.date.toLowerCase().includes(search) &&
+          !e.sub.toLowerCase().includes(search) &&
+          !(e.gl||'').toLowerCase().includes(search)) return false;
+      if (!activeTypes.has('osv') && e.type === 'osv') return false;
+      if (!activeTypes.has('fsv') && e.type === 'fsv') return false;
+      if (!activeTypes.has('ev') && e.type === 'ev') return false;
+      if (!activeTypes.has('flight') && e.type === 'flight') return false;
+      return true;
+    });
+
+    const col = document.createElement('div');
+    col.className = `time-col ${WINDOWS[win].cls}`;
+
+    const dateRange = getDateRange(win);
+    col.innerHTML = `<div class="col-header">
+      <span>${WINDOWS[win].label} <span class="col-dates">${dateRange}</span></span>
+      <span class="entry-count">${entries.length}</span>
+    </div>
+    <div class="col-body" id="col-${asset.id}-${win}" data-asset-id="${asset.id}" data-window="${win}" ondragover="handleCardDragOver(event)" ondrop="handleCardDrop(event)" ondragleave="handleCardDragLeave(event)"></div>`;
+
+    const body = col.querySelector('.col-body');
+    if (entries.length === 0) {
+      body.innerHTML = `<div class="empty-col">No entries</div>`;
+    } else {
+      entries.forEach(e => {
+        body.appendChild(buildRunCard(e, asset.id));
+      });
+    }
+
+    grid.appendChild(col);
+  });
+
+  panel.appendChild(grid);
+  container.appendChild(panel);
+}
+
+function buildRunCard(entry, assetId) {
+  const card = document.createElement('div');
+  card.className = `run-card ${entry.type}`;
+  if (entry.window !== 'concerns') {
+    card.classList.add('draggable');
+    card.draggable = true;
+    card.addEventListener('dragstart', handleCardDragStart);
+    card.addEventListener('dragend', handleCardDragEnd);
+  }
+  card.dataset.assetId = assetId;
+  card.dataset.entryId = entry.id;
+  card.dataset.window = entry.window;
+  card.onclick = () => openAddEntryModal(assetId, 'edit', entry.id);
+
+  const typeTag = ['osv','fsv','ev','flight','note','tug'].includes(entry.type)
+    ? `<span class="run-type-tag tag-${entry.type === 'tug' ? 'tug' : entry.type}">${entry.type.toUpperCase()}</span>`
+    : '';
+
+  card.innerHTML = `
+    <div class="run-date">${entry.date || ''}${entry.gl ? ' — ' + entry.gl : ''} ${typeTag}</div>
+    ${entry.sub ? `<div style="font-size:.74rem;color:#93c5fd;margin-top:2px">${entry.sub}</div>` : ''}
+    <div class="run-desc">${entry.desc}</div>
+    ${entry.hours ? `<div class="run-hours">${entry.hours}</div>` : ''}
+  `;
+  return card;
+}
+
+function renderTrendPanel(container) {
+  const latest = trendHistory[trendHistory.length - 1];
+  const prev = trendHistory.length > 1 ? trendHistory[trendHistory.length - 2] : null;
+  if (!latest) return;
+
+  const fmtDelta = (n) => {
+    if (!prev || n === 0) return `<span class="trend-flat">0 vs prev</span>`;
+    const cls = n > 0 ? 'trend-up' : 'trend-down';
+    const sign = n > 0 ? '+' : '';
+    return `<span class="${cls}">${sign}${n} vs prev</span>`;
+  };
+
+  const totalPrev = prev ? prev.totalRuns : latest.totalRuns;
+  const w1Prev = prev ? prev.windows.week1 : latest.windows.week1;
+  const w2Prev = prev ? prev.windows.week2 : latest.windows.week2;
+  const w3Prev = prev ? prev.windows.week3 : latest.windows.week3;
+
+  const assetRows = assets.map(a => {
+    const stats = latest.byAsset[a.id] || { week1: 0, week2: 0, week3: 0, total: 0 };
+    return {
+      id: a.id,
+      name: a.name,
+      week1: stats.week1 || 0,
+      week2: stats.week2 || 0,
+      week3: stats.week3 || 0,
+      total: stats.total || 0
+    };
+  }).sort((a, b) => b.total - a.total);
+
+  const maxWindowVal = Math.max(1, ...assetRows.flatMap(r => [r.week1, r.week2, r.week3]));
+  const maxTotalVal = Math.max(1, ...assetRows.map(r => r.total));
+
+  const heatCell = (value) => {
+    const intensity = value / maxWindowVal;
+    const alpha = (0.12 + intensity * 0.72).toFixed(2);
+    return `<div class="hm-cell" style="background: rgba(34,197,94,${alpha})">${value}</div>`;
+  };
+
+  const heatRowsHtml = assetRows.map(r => `
+    <div class="hm-asset" title="${r.name}">${r.name}</div>
+    ${heatCell(r.week1)}
+    ${heatCell(r.week2)}
+    ${heatCell(r.week3)}
+    <div class="hm-total">${r.total}</div>
+  `).join('');
+
+  const barsHtml = assetRows.map(r => {
+    const pct = ((r.total / maxTotalVal) * 100).toFixed(1);
+    return `<div class="bar-row">
+      <div class="bar-name" title="${r.name}">${r.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="bar-val">${r.total}</div>
+    </div>`;
+  }).join('');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'trend-panel';
+  wrap.innerHTML = `
+    <div class="trend-head">
+      <strong style="font-size:.92rem">Cross-Asset Activity Trend</strong>
+      <span style="font-size:.72rem;color:var(--text-muted)">Snapshots: ${trendHistory.length}</span>
+    </div>
+    <div class="trend-grid">
+      <div class="trend-card">
+        <div class="k">Total Runs</div>
+        <div class="v">${latest.totalRuns}</div>
+        <div class="d">${fmtDelta(latest.totalRuns - totalPrev)}</div>
+      </div>
+      <div class="trend-card">
+        <div class="k">7-14 Days</div>
+        <div class="v">${latest.windows.week1}</div>
+        <div class="d">${fmtDelta(latest.windows.week1 - w1Prev)}</div>
+      </div>
+      <div class="trend-card">
+        <div class="k">14-21 Days</div>
+        <div class="v">${latest.windows.week2}</div>
+        <div class="d">${fmtDelta(latest.windows.week2 - w2Prev)}</div>
+      </div>
+      <div class="trend-card">
+        <div class="k">Beyond 21 Days</div>
+        <div class="v">${latest.windows.week3}</div>
+        <div class="d">${fmtDelta(latest.windows.week3 - w3Prev)}</div>
+      </div>
+    </div>
+    <div class="trend-viz-grid">
+      <div class="trend-subpanel">
+        <h4>Asset Heat Map (Window Counts)</h4>
+        <div class="heatmap-wrap">
+          <div class="heatmap">
+            <div class="hm-head">Asset</div>
+            <div class="hm-head">7-14</div>
+            <div class="hm-head">14-21</div>
+            <div class="hm-head">21+</div>
+            <div class="hm-head" style="text-align:right">Total</div>
+            ${heatRowsHtml}
+          </div>
+        </div>
+      </div>
+      <div class="trend-subpanel">
+        <h4>Activity by Asset (Ranked)</h4>
+        <div class="bar-list">${barsHtml}</div>
+      </div>
+    </div>`;
+
+  container.appendChild(wrap);
+}
+
+function captureTrendSnapshot(reason = 'manual', shouldRender = true) {
+  const snap = {
+    ts: new Date().toISOString(),
+    reason,
+    totalRuns: 0,
+    windows: { week1: 0, week2: 0, week3: 0 },
+    byAsset: {}
+  };
+
+  assets.forEach(a => {
+    const aStats = { week1: 0, week2: 0, week3: 0, total: 0 };
+    a.entries.forEach(e => {
+      if (e.window === 'week1' || e.window === 'week2' || e.window === 'week3') {
+        snap.totalRuns += 1;
+        snap.windows[e.window] += 1;
+        aStats[e.window] += 1;
+        aStats.total += 1;
+      }
+    });
+    snap.byAsset[a.id] = aStats;
+  });
+
+  trendHistory.push(snap);
+  if (trendHistory.length > 40) trendHistory = trendHistory.slice(-40);
+  saveTrendHistory();
+  queueSharedPersist(`trend_${reason}`);
+  if (shouldRender) renderAll();
+}
+
+function toggleTrendPanel() {
+  switchTab('heatmap');
+}
+
+function handleCardDragStart(ev) {
+  const card = ev.currentTarget;
+  dragEntryContext = {
+    assetId: card.dataset.assetId,
+    entryId: card.dataset.entryId,
+    fromWindow: card.dataset.window
+  };
+  card.classList.add('dragging');
+  ev.dataTransfer.effectAllowed = 'move';
+}
+
+function handleCardDragEnd(ev) {
+  ev.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.col-body.drop-target').forEach(el => el.classList.remove('drop-target'));
+}
+
+function handleCardDragOver(ev) {
+  if (!dragEntryContext) return;
+  ev.preventDefault();
+  ev.currentTarget.classList.add('drop-target');
+}
+
+function handleCardDragLeave(ev) {
+  ev.currentTarget.classList.remove('drop-target');
+}
+
+function handleCardDrop(ev) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drop-target');
+  if (!dragEntryContext) return;
+
+  const toAssetId = ev.currentTarget.dataset.assetId;
+  const toWindow = ev.currentTarget.dataset.window;
+  if (!toAssetId || !toWindow || toWindow === 'concerns') return;
+
+  const fromAsset = assets.find(a => a.id === dragEntryContext.assetId);
+  const toAsset = assets.find(a => a.id === toAssetId);
+  if (!fromAsset || !toAsset) return;
+
+  const idx = fromAsset.entries.findIndex(e => e.id === dragEntryContext.entryId);
+  if (idx === -1) return;
+
+  const entry = fromAsset.entries[idx];
+  if (entry.window === 'concerns') return;
+
+  if (fromAsset.id === toAsset.id) {
+    fromAsset.entries[idx] = { ...entry, window: toWindow };
+  } else {
+    fromAsset.entries.splice(idx, 1);
+    toAsset.entries.push({ ...entry, window: toWindow });
+  }
+
+  persist();
+  captureTrendSnapshot('drag_move', false);
+  buildTabs();
+  renderAll();
+}
+
+// ── Filters ────────────────────────────────────────────────
+function applyFilters() {
+  buildTabs();
+  renderAll();
+}
+
+function toggleType(chip) {
+  const t = chip.dataset.type;
+  if (activeTypes.has(t)) { activeTypes.delete(t); chip.classList.add('off'); }
+  else { activeTypes.add(t); chip.classList.remove('off'); }
+  renderAll();
+}
+
+// ── Modal ──────────────────────────────────────────────────
+function openAddEntryModal(assetId, mode, entryId) {
+  const modal = document.getElementById('modalOverlay');
+  const sel = document.getElementById('fAsset');
+
+  // Populate asset dropdown
+  sel.innerHTML = '';
+  assets.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.id;
+    opt.textContent = a.name;
+    if (a.id === assetId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  if (mode === 'edit' && entryId) {
+    const asset = assets.find(a => a.id === assetId);
+    const entry = asset?.entries.find(e => e.id === entryId);
+    if (entry) {
+      editingEntry = { assetId, entryId };
+      document.getElementById('modalTitle').textContent = 'Edit Entry';
+      document.getElementById('fWindow').value = entry.window;
+      document.getElementById('fDate').value = entry.date || '';
+      document.getElementById('fType').value = entry.type;
+      document.getElementById('fGL').value = entry.gl || '';
+      document.getElementById('fHours').value = entry.hours || '';
+      document.getElementById('fDesc').value = entry.desc || '';
+      document.getElementById('fSub').value = entry.sub || '';
+      document.getElementById('btnDeleteEntry').style.display = '';
+    }
+  } else {
+    editingEntry = null;
+    document.getElementById('modalTitle').textContent = 'Add New Entry';
+    document.getElementById('fWindow').value = 'week1';
+    document.getElementById('fDate').value = '';
+    document.getElementById('fType').value = 'osv';
+    document.getElementById('fGL').value = '';
+    document.getElementById('fHours').value = '';
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fSub').value = '';
+    document.getElementById('btnDeleteEntry').style.display = 'none';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingEntry = null;
+}
+
+function saveEntry() {
+  const assetId = document.getElementById('fAsset').value;
+  const asset = assets.find(a => a.id === assetId);
+  if (!asset) return;
+
+  const data = {
+    window: document.getElementById('fWindow').value,
+    date:   document.getElementById('fDate').value.trim(),
+    type:   document.getElementById('fType').value,
+    gl:     document.getElementById('fGL').value.trim(),
+    hours:  document.getElementById('fHours').value.trim(),
+    desc:   document.getElementById('fDesc').value.trim(),
+    sub:    document.getElementById('fSub').value.trim()
+  };
+
+  if (editingEntry) {
+    const srcAsset = assets.find(a => a.id === editingEntry.assetId);
+    const eIdx = srcAsset.entries.findIndex(e => e.id === editingEntry.entryId);
+    if (eIdx > -1) {
+      if (editingEntry.assetId !== assetId) {
+        // Move to different asset
+        const entry = { ...srcAsset.entries[eIdx], ...data };
+        srcAsset.entries.splice(eIdx, 1);
+        asset.entries.push(entry);
+      } else {
+        srcAsset.entries[eIdx] = { ...srcAsset.entries[eIdx], ...data };
+      }
+    }
+  } else {
+    asset.entries.push({ id: 'e_' + Date.now(), ...data });
+  }
+
+  persist();
+  closeModal();
+  buildTabs();
+  renderAll();
+}
+
+function deleteEntry() {
+  if (!editingEntry) return;
+  if (!confirm('Delete this entry?')) return;
+  const asset = assets.find(a => a.id === editingEntry.assetId);
+  if (!asset) return;
+  asset.entries = asset.entries.filter(e => e.id !== editingEntry.entryId);
+  persist();
+  closeModal();
+  buildTabs();
+  renderAll();
+}
+
+function openKabalSource() {
+  window.open(KABAL_SOURCE_URL, '_blank', 'noopener,noreferrer');
+}
+
+function syncKabalWorkbook() {
+  if (!window.XLSX) {
+    alert('Excel parser failed to load. Please refresh and try again.');
+    return;
+  }
+  const picker = document.getElementById('kabalXlsxInput');
+  picker.value = '';
+  picker.click();
+}
+
+async function handleKabalWorkbookSelected(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const wb = XLSX.read(buffer, { type: 'array' });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    const mapped = mapWorkbookRows(rows);
+
+    let updatedAssets = 0;
+    Object.entries(mapped.byAsset).forEach(([assetId, entries]) => {
+      const a = assets.find(x => x.id === assetId);
+      if (!a) return;
+      const concerns = a.entries.filter(e => e.window === 'concerns');
+      a.entries = concerns.concat(entries);
+      updatedAssets += 1;
+    });
+
+    persist();
+    captureTrendSnapshot('xlsx_sync', false);
+    buildTabs();
+    renderAll();
+
+    alert(`Sync complete. Updated ${updatedAssets} assets from workbook rows. Concerns/free-text entries were preserved.`);
+  } catch (err) {
+    console.error(err);
+    alert('Unable to parse workbook. Please verify the export format and try again.');
+  }
+}
+
+function mapWorkbookRows(rows) {
+  const byAsset = {};
+
+  rows.forEach((row, i) => {
+    const nRow = normalizeRow(row);
+    const assetName = pickValue(nRow, ['asset', 'assetname', 'facility', 'rig', 'installation', 'assetid']);
+    const windowRaw = pickValue(nRow, ['window', 'timewindow', 'bucket', 'lookaheadwindow', 'days']);
+    const typeRaw = pickValue(nRow, ['type', 'vessel', 'vesseltype', 'mode']);
+    const date = pickValue(nRow, ['date', 'rundate', 'saildate', 'deliverydate']);
+    const gl = pickValue(nRow, ['gl', 'groupload', 'grouploadnumber', 'glnumber']);
+    const hours = pickValue(nRow, ['hours', 'duration', 'hrs']);
+    const sub = pickValue(nRow, ['suboperation', 'sub', 'well', 'activity', 'route']);
+    const desc = pickValue(nRow, ['description', 'cargo', 'details', 'comment', 'comments', 'note', 'notes']);
+
+    if (!assetName) return;
+
+    const assetId = resolveAssetId(assetName);
+    if (!assetId) return;
+
+    const window = mapWindow(windowRaw);
+    if (!window || window === 'concerns') return;
+
+    const type = mapType(typeRaw);
+    if (!byAsset[assetId]) byAsset[assetId] = [];
+
+    byAsset[assetId].push({
+      id: `xlsx_${Date.now()}_${i}`,
+      window,
+      date: String(date || '').trim(),
+      type,
+      gl: String(gl || '').trim(),
+      hours: String(hours || '').trim(),
+      sub: String(sub || '').trim(),
+      desc: String(desc || '').trim()
+    });
+  });
+
+  return { byAsset };
+}
+
+function normalizeKey(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeRow(row) {
+  const out = {};
+  Object.keys(row || {}).forEach(k => {
+    out[normalizeKey(k)] = row[k];
+  });
+  return out;
+}
+
+function pickValue(row, aliases) {
+  for (const a of aliases) {
+    if (row[a] !== undefined && String(row[a]).trim() !== '') return row[a];
+  }
+  return '';
+}
+
+function mapWindow(raw) {
+  const v = String(raw || '').toLowerCase();
+  if (v.includes('7') && v.includes('14')) return 'week1';
+  if (v.includes('14') && v.includes('21')) return 'week2';
+  if (v.includes('beyond') || v.includes('21+') || v.includes('>21') || v.includes('21')) return 'week3';
+  if (v.includes('concern') || v.includes('issue') || v.includes('flight')) return 'concerns';
+  return '';
+}
+
+function mapType(raw) {
+  const v = String(raw || '').toLowerCase();
+  if (v.includes('osv')) return 'osv';
+  if (v.includes('fsv')) return 'fsv';
+  if (v.includes('ev')) return 'ev';
+  if (v.includes('flight') || v.includes('heli')) return 'flight';
+  if (v.includes('concern') || v.includes('issue')) return 'concern';
+  if (v.includes('tug')) return 'tug';
+  return 'other';
+}
+
+function resolveAssetId(assetName) {
+  const n = normalizeKey(assetName);
+  let match = assets.find(a => normalizeKey(a.name) === n || normalizeKey(a.id) === n);
+  if (match) return match.id;
+
+  match = assets.find(a => normalizeKey(a.name).includes(n) || n.includes(normalizeKey(a.name)));
+  return match ? match.id : '';
+}
+
+// ── Persistence ────────────────────────────────────────────
+function persist() {
+  localStorage.setItem(DATA_KEY, JSON.stringify(assets));
+  queueSharedPersist('asset_update');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(assets, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `logistics_lookahead_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// ── Close modal on overlay click ───────────────────────────
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Start ──────────────────────────────────────────────────
+init().catch(err => {
+  console.error('Initialization failed:', err);
+  alert('The page could not fully initialize. See console for details.');
+});
+</script>
+</body>
+</html>

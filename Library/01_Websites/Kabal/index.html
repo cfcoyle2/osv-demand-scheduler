@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kabal – Shell GoA Logistics Guide</title>
+<style>
+  :root{
+    --shell-yellow:#FBCE07;
+    --shell-red:#DD1D21;
+    --navy:#0D2340;
+    --navy-light:#1a3a5c;
+    --mid-blue:#2563EB;
+    --success:#16A34A;
+    --warning:#D97706;
+    --bg:#F1F5F9;
+    --card:#FFFFFF;
+    --text:#1E293B;
+    --text-muted:#64748B;
+    --border:#E2E8F0;
+    --sidebar-w:260px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+  /* ── SIDEBAR ── */
+  #sidebar{width:var(--sidebar-w);background:var(--navy);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+  #sidebar-logo{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+  #sidebar-logo .logo-title{font-size:20px;font-weight:700;color:var(--shell-yellow)}
+  #sidebar-logo .logo-sub{font-size:11px;color:#94A3B8;margin-top:2px}
+  #sidebar nav{flex:1;padding:10px 0}
+  .nav-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#64748B;padding:14px 18px 4px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;font-size:13.5px;color:#CBD5E1;border-left:3px solid transparent;transition:all .18s}
+  .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+  .nav-item.active{background:rgba(251,206,7,.1);color:var(--shell-yellow);border-left-color:var(--shell-yellow)}
+  .nav-item .icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+  .nav-sub{padding-left:46px;font-size:12.5px;color:#94A3B8;cursor:pointer;padding-top:5px;padding-bottom:5px;border-left:3px solid transparent;transition:all .15s}
+  .nav-sub:hover{color:#fff}
+  .nav-sub.active{color:var(--shell-yellow)}
+  #sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#64748B}
+
+  /* ── MAIN ── */
+  #main{margin-left:var(--sidebar-w);flex:1;overflow-y:auto;min-height:100vh}
+  .topbar{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90;border-bottom:3px solid var(--shell-yellow)}
+  .topbar-left{display:grid;gap:6px}
+  .brand-lockup{display:inline-flex;align-items:center;gap:8px;line-height:1}
+  .shell-brand{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;color:var(--shell-red);background:linear-gradient(180deg,#ffe86c 0%,var(--shell-yellow) 100%);border:1px solid #d9b400}
+  .shell-subbrand{font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.2px}
+  .topbar-title{font-size:16px;font-weight:600}
+  .topbar-badge{background:var(--shell-yellow);color:var(--navy);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+  .content{padding:28px 32px;max-width:1100px}
+
+  /* ── PAGES ── */
+  .page{display:none}
+  .page.active{display:block}
+
+  /* ── CARDS ── */
+  .card{background:var(--card);border-radius:10px;border:1px solid var(--border);padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .card-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+  .card-sub{font-size:12.5px;color:var(--text-muted);margin-bottom:14px}
+  .section-header{margin-bottom:22px}
+  .section-header h1{font-size:24px;font-weight:800;color:var(--navy)}
+  .section-header p{font-size:14px;color:var(--text-muted);margin-top:5px;max-width:700px}
+
+  /* ── HERO ── */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:#fff;border-radius:12px;padding:36px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-20px;right:-20px;width:200px;height:200px;border-radius:50%;background:rgba(251,206,7,.07)}
+  .hero h1{font-size:28px;font-weight:800;margin-bottom:8px}
+  .hero h1 span{color:var(--shell-yellow)}
+  .hero p{font-size:14.5px;color:#CBD5E1;max-width:620px;line-height:1.6}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .hero-tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#E2E8F0;font-size:12px;padding:4px 12px;border-radius:20px}
+
+  /* ── STAT GRID ── */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .stat-card .num{font-size:28px;font-weight:800;color:var(--navy)}
+  .stat-card .label{font-size:12px;color:var(--text-muted);margin-top:3px}
+  .stat-card.yellow .num{color:var(--warning)}
+  .stat-card.red .num{color:var(--shell-red)}
+  .stat-card.green .num{color:var(--success)}
+  .stat-card.blue .num{color:var(--mid-blue)}
+
+  /* ── QUICK LINKS ── */
+  .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  .quick-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .quick-card:hover{border-color:var(--shell-yellow);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .quick-card .q-icon{font-size:24px;margin-bottom:10px}
+  .quick-card .q-title{font-size:14px;font-weight:700;color:var(--navy)}
+  .quick-card .q-desc{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5}
+
+  /* ── PROCESS MAP ── */
+  .phase-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:28px}
+  .phase-block{display:flex;align-items:stretch;gap:0;cursor:pointer}
+  .phase-indicator{display:flex;flex-direction:column;align-items:center;width:50px;flex-shrink:0}
+  .phase-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;z-index:1;border:3px solid var(--card);box-shadow:0 0 0 2px var(--border)}
+  .phase-line{flex:1;width:2px;background:var(--border);margin:2px 0}
+  .phase-content{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:10px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .phase-content:hover{border-color:#93C5FD;box-shadow:0 4px 12px rgba(37,99,235,.1)}
+  .phase-content.expanded{border-color:var(--mid-blue)}
+  .phase-title{font-size:15px;font-weight:700;color:var(--navy);display:flex;align-items:center;justify-content:space-between}
+  .phase-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+  .phase-meta{font-size:12px;color:var(--text-muted);margin-top:3px}
+  .phase-steps{margin-top:14px;display:none;border-top:1px solid var(--border);padding-top:14px}
+  .phase-steps.show{display:block}
+  .step-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .step-item{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+  .step-num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-body .step-title{font-size:13px;font-weight:600;color:var(--navy)}
+  .step-body .step-desc{font-size:12px;color:var(--text-muted);margin-top:2px;line-height:1.5}
+  .role-pill{display:inline-block;background:rgba(37,99,235,.08);color:var(--mid-blue);font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:4px;border:1px solid rgba(37,99,235,.15)}
+
+  /* Phase colors */
+  .ph-planning .phase-dot{background:#7C3AED;color:#fff}
+  .ph-planning .phase-badge{background:#EDE9FE;color:#7C3AED}
+  .ph-scheduling .phase-dot{background:#2563EB;color:#fff}
+  .ph-scheduling .phase-badge{background:#DBEAFE;color:#1D4ED8}
+  .ph-execution .phase-dot{background:#D97706;color:#fff}
+  .ph-execution .phase-badge{background:#FEF3C7;color:#B45309}
+  .ph-transport .phase-dot{background:#059669;color:#fff}
+  .ph-transport .phase-badge{background:#D1FAE5;color:#065F46}
+  .ph-backhaul .phase-dot{background:#DC2626;color:#fff}
+  .ph-backhaul .phase-badge{background:#FEE2E2;color:#991B1B}
+
+  /* ── FLOW DIAGRAM ── */
+  .flow-diagram{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;overflow-x:auto;margin-bottom:24px}
+  .flow-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .flow-box{background:var(--navy);color:#fff;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:600;text-align:center;min-width:130px;white-space:nowrap}
+  .flow-box.yellow{background:var(--shell-yellow);color:var(--navy)}
+  .flow-box.blue{background:#2563EB}
+  .flow-box.green{background:#059669}
+  .flow-box.purple{background:#7C3AED}
+  .flow-box.orange{background:#D97706}
+  .flow-box.red{background:#DC2626}
+  .flow-box.gray{background:#94A3B8}
+  .flow-box.light{background:#EFF6FF;color:#1E3A5F;border:1px solid #BFDBFE}
+  .flow-arrow{color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .flow-label{font-size:10px;color:var(--text-muted);text-align:center;margin-top:2px}
+
+  /* ── ROLES ── */
+  .roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .role-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .role-card .role-name{font-size:14px;font-weight:700;color:var(--navy);display:flex;gap:8px;align-items:center}
+  .role-card .role-abbr{font-size:11px;background:var(--navy);color:var(--shell-yellow);padding:2px 7px;border-radius:5px;font-weight:700}
+  .role-card .role-desc{font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.55}
+  .role-card .role-duties{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+  .role-card .duty{font-size:12px;color:var(--text);padding-left:14px;position:relative}
+  .role-card .duty::before{content:'▸';position:absolute;left:0;color:var(--mid-blue)}
+
+  /* ── GUIDE SECTIONS ── */
+  .guide-toc{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+  .guide-toc-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .18s;display:flex;gap:10px;align-items:center}
+  .guide-toc-item:hover{border-color:var(--shell-yellow);background:#FFFBEB}
+  .guide-toc-item .g-icon{font-size:18px}
+  .guide-toc-item .g-title{font-size:13px;font-weight:600;color:var(--navy)}
+  .guide-toc-item .g-pages{font-size:11px;color:var(--text-muted)}
+
+  .guide-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 24px;margin-bottom:16px}
+  .guide-section h2{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .guide-section .source{font-size:11px;color:var(--text-muted);margin-bottom:14px}
+  .guide-section p{font-size:13.5px;color:var(--text);line-height:1.65;margin-bottom:10px}
+  .guide-section ul{padding-left:18px;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .guide-section ul li{font-size:13px;line-height:1.6;color:var(--text)}
+  .guide-section ol{padding-left:18px;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .guide-section ol li{font-size:13px;line-height:1.6;color:var(--text)}
+
+  .step-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--mid-blue)}
+  .step-box h3{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:6px}
+  .step-box p{font-size:12.5px;color:var(--text-muted);line-height:1.55}
+  .step-box ul{padding-left:16px;margin-top:6px}
+  .step-box ul li{font-size:12.5px;color:var(--text);line-height:1.55}
+  .step-box.yellow{border-left-color:var(--warning)}
+  .step-box.green{border-left-color:var(--success)}
+  .step-box.red{border-left-color:var(--shell-red)}
+  .step-box.purple{border-left-color:#7C3AED}
+
+  .timeline-pill{display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;margin-bottom:14px}
+  .timeline-pill .dot{width:8px;height:8px;border-radius:50%;background:#2563EB}
+
+  /* ── CONTACTS ── */
+  .contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .contact-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+  .contact-card .c-role{font-size:11px;font-weight:600;color:var(--mid-blue);text-transform:uppercase;letter-spacing:.05em}
+  .contact-card .c-name{font-size:13.5px;font-weight:700;color:var(--navy);margin-top:2px}
+  .contact-card .c-email{font-size:12px;color:var(--text-muted);margin-top:3px;word-break:break-all}
+  .contact-card .c-phone{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+  .asset-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .asset-table th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:12px}
+  .asset-table td{padding:9px 12px;border-bottom:1px solid var(--border)}
+  .asset-table tr:hover td{background:var(--bg)}
+
+  /* ── GLOSSARY ── */
+  .glossary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .gloss-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px 15px}
+  .gloss-item .term{font-size:13px;font-weight:700;color:var(--navy)}
+  .gloss-item .def{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5}
+
+  /* ── TIMELINE VISUAL ── */
+  .timeline-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-radius:10px;overflow:hidden;margin-bottom:24px;border:1px solid var(--border)}
+  .tbar-col{padding:14px 12px;font-size:12px;text-align:center}
+  .tbar-col .tbar-time{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:4px}
+  .tbar-col .tbar-label{font-size:12.5px;font-weight:700}
+  .tbar-col.t1{background:#7C3AED;color:#fff}
+  .tbar-col.t2{background:#2563EB;color:#fff}
+  .tbar-col.t3{background:#0EA5E9;color:#fff}
+  .tbar-col.t4{background:#059669;color:#fff}
+  .tbar-col.t5{background:#DC2626;color:#fff}
+
+  /* ── CHEVRON FLOW ── */
+  .chevron-flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-bottom:20px}
+  .chevron{position:relative;padding:10px 24px 10px 30px;font-size:12px;font-weight:700;color:#fff;clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);cursor:pointer;transition:filter .2s}
+  .chevron:first-child{clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);padding-left:16px}
+  .chevron:hover{filter:brightness(1.15)}
+  .ch1{background:#7C3AED}
+  .ch2{background:#2563EB}
+  .ch3{background:#0EA5E9}
+  .ch4{background:#059669}
+  .ch5{background:#DC2626}
+
+  /* ── ACCORDION ── */
+  .accordion{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
+  .accordion-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;color:var(--navy);background:var(--card);transition:background .15s;user-select:none}
+  .accordion-header:hover{background:var(--bg)}
+  .accordion-header .acc-arrow{transition:transform .25s;color:var(--text-muted);font-size:13px}
+  .accordion-header.open .acc-arrow{transform:rotate(90deg)}
+  .accordion-body{display:none;padding:0 18px 16px;background:var(--card);font-size:13px;line-height:1.65;color:var(--text)}
+  .accordion-body.show{display:block}
+  .accordion-body ul{padding-left:18px;margin-top:8px;display:flex;flex-direction:column;gap:5px}
+
+  /* ── BADGE ── */
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+  .badge-blue{background:#DBEAFE;color:#1D4ED8}
+  .badge-green{background:#D1FAE5;color:#065F46}
+  .badge-yellow{background:#FEF3C7;color:#B45309}
+  .badge-red{background:#FEE2E2;color:#991B1B}
+  .badge-purple{background:#EDE9FE;color:#5B21B6}
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .quick-grid{grid-template-columns:1fr}
+    .roles-grid{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    .glossary-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-logo">
+    <div class="logo-title">⚓ Kabal</div>
+    <div class="logo-sub">Shell GoA Logistics Platform</div>
+  </div>
+  <nav>
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="showPage('home',this)"><span class="icon">🏠</span>Home</div>
+    <div class="nav-item" onclick="showPage('processmap',this)"><span class="icon">🗺️</span>Process Map</div>
+
+    <div class="nav-section-label">Logistics Cycle</div>
+    <div class="nav-item" onclick="showPage('planning',this)"><span class="icon">📅</span>Planning Phase</div>
+    <div class="nav-item" onclick="showPage('scheduling',this)"><span class="icon">📋</span>Scheduling Phase</div>
+    <div class="nav-item" onclick="showPage('execution',this)"><span class="icon">🚀</span>Execution Phase</div>
+    <div class="nav-item" onclick="showPage('transport',this)"><span class="icon">🚢</span>Marine Transport</div>
+    <div class="nav-item" onclick="showPage('backhaul',this)"><span class="icon">🔄</span>Backhaul Process</div>
+
+    <div class="nav-section-label">How-To Guides</div>
+    <div class="nav-item" onclick="showPage('access',this)"><span class="icon">🔑</span>User Access & Setup</div>
+    <div class="nav-item" onclick="showPage('grouploads',this)"><span class="icon">📦</span>Group Loads & Cargo Pkgs</div>
+    <div class="nav-item" onclick="showPage('cargoitems',this)"><span class="icon">🗃️</span>Cargo Items & CCUs</div>
+    <div class="nav-item" onclick="showPage('v2v',this)"><span class="icon">🔀</span>Vendor-to-Vendor</div>
+    <div class="nav-item" onclick="showPage('dock',this)"><span class="icon">🏗️</span>Dock Appointments</div>
+    <div class="nav-item" onclick="showPage('costcodes',this)"><span class="icon">💰</span>Cost Codes</div>
+
+    <div class="nav-section-label">Reference</div>
+    <div class="nav-item" onclick="showPage('roles',this)"><span class="icon">👥</span>Roles & Responsibilities</div>
+    <div class="nav-item" onclick="showPage('contacts',this)"><span class="icon">📞</span>Contacts & Assets</div>
+    <div class="nav-item" onclick="showPage('glossary',this)"><span class="icon">📖</span>Glossary</div>
+  </nav>
+  <div id="sidebar-footer">Shell GoA Supply Chain · 2025</div>
+</aside>
+
+<!-- ============================================================ MAIN -->
+<main id="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand-lockup" aria-label="Shell brand">
+        <span class="shell-brand">Shell</span>
+        <span class="shell-subbrand">Gulf of America Logistics</span>
+      </div>
+      <span class="topbar-title" id="topbar-title">Home – Kabal Logistics Guide</span>
+    </div>
+    <span class="topbar-badge">Kabal Guide</span>
+  </div>
+
+  <!-- ════════════════════════════════ HOME ════════════════════════════ -->
+  <div id="page-home" class="page active content">
+    <div class="hero">
+      <h1>Shell GoA <span>Kabal</span> Logistics Guide</h1>
+      <p>Your end-to-end reference for the Kabal logistics platform — covering demand planning, cargo scheduling, supplier workflows, marine transport, and backhaul processes across the Gulf of America.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">⚓ Offshore Delivery</span>
+        <span class="hero-tag">📦 Cargo Management</span>
+        <span class="hero-tag">🚢 Vessel Scheduling</span>
+        <span class="hero-tag">🔄 Backhaul Tracking</span>
+        <span class="hero-tag">🏗️ Port Fourchon / C-Port 2</span>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card blue"><div class="num">5</div><div class="label">Process Phases</div></div>
+      <div class="stat-card yellow"><div class="num">21</div><div class="label">Days – Supplier Notification</div></div>
+      <div class="stat-card green"><div class="num">4</div><div class="label">Days – Cargo Package Closeout</div></div>
+      <div class="stat-card red"><div class="num">72h</div><div class="label">Before Departure – Manifest Lock</div></div>
+    </div>
+
+    <div class="section-header"><h1>What is Kabal?</h1></div>
+    <div class="card">
+      <p style="font-size:14px;line-height:1.7;color:var(--text)">
+        <strong>Kabal</strong> is a <strong>cloud-based logistics platform</strong> used across Shell's Gulf of America (GoA) operations to manage cargo movements between suppliers and offshore facilities. It enables supply chain partners to plan and execute logistics operations by providing visibility into upcoming cargo demand and helping Shell optimize marine resources.
+      </p>
+      <p style="font-size:14px;line-height:1.7;color:var(--text);margin-top:10px">
+        The Kabal workflow relies on <strong>collaboration between Shell, suppliers, logistics contractors, and marine teams</strong> to ensure timely and efficient cargo handling from source to offshore destination.
+      </p>
+    </div>
+
+    <div class="section-header" style="margin-top:8px"><h1>How the System Works</h1></div>
+    <div class="flow-diagram">
+      <div class="flow-row" style="justify-content:center">
+        <div>
+          <div class="flow-box purple">Shell Creates<br>Cargo Package</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div>
+          <div class="flow-box blue">Suppliers Update<br>Package Details</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div>
+          <div class="flow-box orange">Package<br>Approved</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div>
+          <div class="flow-box green">Cargo Moves<br>to Port</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div>
+          <div class="flow-box" style="background:#059669">Vessel<br>Loads & Departs</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div>
+          <div class="flow-box red">Offshore<br>Delivery</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header"><h1>Quick Navigation</h1></div>
+    <div class="quick-grid">
+      <div class="quick-card" onclick="showPage('processmap',null)">
+        <div class="q-icon">🗺️</div>
+        <div class="q-title">Full Process Map</div>
+        <div class="q-desc">Interactive end-to-end logistics flow from demand planning to offshore delivery.</div>
+      </div>
+      <div class="quick-card" onclick="showPage('access',null)">
+        <div class="q-icon">🔑</div>
+        <div class="q-title">New User Setup</div>
+        <div class="q-desc">Create your Kabal account, request a role, and subscribe to email lists.</div>
+      </div>
+      <div class="quick-card" onclick="showPage('scheduling',null)">
+        <div class="q-icon">📋</div>
+        <div class="q-title">Supplier Scheduling Guide</div>
+        <div class="q-desc">Step-by-step: fill out supplier info, add cargo items, and close out packages.</div>
+      </div>
+      <div class="quick-card" onclick="showPage('cargoitems',null)">
+        <div class="q-icon">🗃️</div>
+        <div class="q-title">Cargo Items & CCUs</div>
+        <div class="q-desc">Add cargo line items manually or via Excel and pack them into CCUs.</div>
+      </div>
+      <div class="quick-card" onclick="showPage('dock',null)">
+        <div class="q-icon">🏗️</div>
+        <div class="q-title">Dock Appointments</div>
+        <div class="q-desc">Understand vessel scheduling & dock appointment requirements at C-Port 2.</div>
+      </div>
+      <div class="quick-card" onclick="showPage('roles',null)">
+        <div class="q-icon">👥</div>
+        <div class="q-title">Roles & Responsibilities</div>
+        <div class="q-desc">Who does what — SCLC, OLC, Suppliers, Control Tower, and C-Logistics.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ PROCESS MAP ════════════════════ -->
+  <div id="page-processmap" class="page content">
+    <div class="section-header">
+      <h1>End-to-End Process Map</h1>
+      <p>The Kabal logistics cycle spans five phases. Click any phase to expand detailed steps and role assignments.</p>
+    </div>
+
+    <div class="timeline-bar">
+      <div class="tbar-col t1"><div class="tbar-time">3 Months→21 Days</div><div class="tbar-label">🔵 Planning</div></div>
+      <div class="tbar-col t2"><div class="tbar-time">21 Days→4 Days</div><div class="tbar-label">📋 Scheduling</div></div>
+      <div class="tbar-col t3"><div class="tbar-time">4 Days→Departure</div><div class="tbar-label">🚀 Execution</div></div>
+      <div class="tbar-col t4"><div class="tbar-time">Departure→Arrival</div><div class="tbar-label">🚢 Transport</div></div>
+      <div class="tbar-col t5"><div class="tbar-time">Post-Delivery</div><div class="tbar-label">🔄 Backhaul</div></div>
+    </div>
+
+    <div class="phase-timeline">
+      <!-- PHASE 1 -->
+      <div class="phase-block ph-planning" onclick="togglePhase(this)">
+        <div class="phase-indicator">
+          <div class="phase-dot">1</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-title">
+            Planning Horizon Phase
+            <span class="phase-badge">3 Months → 21 Days Before BDD</span>
+          </div>
+          <div class="phase-meta">Demand identification · Group Load creation · Supplier onboarding · Cost code setup</div>
+          <div class="phase-steps">
+            <ul class="step-list">
+              <li class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Identify Business Demand</div><div class="step-desc">SCLC engages stakeholders (Wells, Production, MTAC, TAR, Projects) to forecast logistics needs. Wells demand driven by rig sequence; Production demand via IAP meetings and direct functional leader communication.</div><span class="role-pill">Shell Logistics Coordinator (SCLC)</span></div></li>
+              <li class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Build Time Planners & Group Loads in Kabal</div><div class="step-desc">Well Operations Teams and OLCs build Time Planners. Group Loads are created from Time Planners. Cargo Packages are created within Group Loads for each planned voyage.</div><span class="role-pill">OLC / Well Ops Team</span></div></li>
+              <li class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Enter Cost Codes / Charge Codes</div><div class="step-desc">Associate correct project cost codes (IAP-sourced) with cargo packages. Cost codes link asset, project, and activity.</div><span class="role-pill">Logistics Coordinator</span></div></li>
+              <li class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">Supplier Onboarding & Email List Setup</div><div class="step-desc">SCLC identifies and onboards the correct Supplier Kabal Focal through the Shell Business Unit. Supplier creates account, requests Shell GoA role, and subscribes to relevant email lists.</div><span class="role-pill">SCLC + Supplier</span></div></li>
+              <li class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">Cargo Package Created & Notification Sent</div><div class="step-desc">SCLC/OLC creates cargo packages in Kabal (linked to correct Group Load) and sends automated email notifications to suppliers approximately 21 days before BDD.</div><span class="role-pill">SCLC / OLC</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- PHASE 2 -->
+      <div class="phase-block ph-scheduling" onclick="togglePhase(this)">
+        <div class="phase-indicator">
+          <div class="phase-dot">2</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-title">
+            Scheduling Horizon Phase
+            <span class="phase-badge">21 Days → 4 Days Before BDD</span>
+          </div>
+          <div class="phase-meta">Supplier data entry · Cargo items · CCUs · Route planning · Package approval</div>
+          <div class="phase-steps">
+            <ul class="step-list">
+              <li class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Supplier Fills Out Info Section (21–14 Days)</div><div class="step-desc">Supplier opens cargo package from email link. Completes: transport responsibility (Supplier organizes vs. Shell provides trucking), Supplier Ready Date, and container/basket footprint estimates.</div><span class="role-pill">Supplier Kabal Focal</span></div></li>
+              <li class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Control Tower Begins Route Planning</div><div class="step-desc">Marine Focal Point (MFP) creates routes based on MEL Group Load estimates. Cargo Packages begin to be allocated to routes, signaling deck and bulk capacity constraints.</div><span class="role-pill">Control Tower / Marine Focal Point</span></div></li>
+              <li class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supplier Adds Cargo Items (14–4 Days)</div><div class="step-desc">Supplier enters detailed cargo items (manually or via Excel upload). Rental items require individual line entries with serial numbers. Bulk chemicals entered with quantity and specific gravity.</div><span class="role-pill">Supplier Kabal Focal</span></div></li>
+              <li class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">Supplier Adds CCUs (7–4 Days)</div><div class="step-desc">Supplier adds actual containers (CCUs) from the Swire CCU catalog preloaded in Kabal. Enters serial/tag numbers with smart search. Packs cargo items into CCUs using drag-and-drop.</div><span class="role-pill">Supplier Kabal Focal</span></div></li>
+              <li class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">Cargo Package Approval</div><div class="step-desc">Asset Logistics Focal Point, OLC, Deck Supervisors, SC Specialists, or Offshore Warehouse approves cargo package between 7 and 4 days before vessel departure.</div><span class="role-pill">Asset Logistics / OLC / Deck Supt</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- PHASE 3 -->
+      <div class="phase-block ph-execution" onclick="togglePhase(this)">
+        <div class="phase-indicator">
+          <div class="phase-dot">3</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-title">
+            Execution Phase
+            <span class="phase-badge">4 Days Before BDD → Departure</span>
+          </div>
+          <div class="phase-meta">Package closeout · Dock appointment · Trucking · Manifest lock · Cargo to port</div>
+          <div class="phase-steps">
+            <ul class="step-list">
+              <li class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Supplier Closes Out Cargo Package</div><div class="step-desc">Supplier reviews all info for accuracy. Closes out the cargo package in Kabal. Clicks "Send Email" to notify Shell distribution list.</div><span class="role-pill">Supplier Kabal Focal</span></div></li>
+              <li class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Shell Reviews & Approves Package</div><div class="step-desc">Shell Logistics reviews and approves the cargo package approximately 3 days before shipment.</div><span class="role-pill">Shell Logistics / OLC</span></div></li>
+              <li class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Dock Appointment Set</div><div class="step-desc">C-Port Expeditor creates and communicates the 72-hour Dock Appointment Schedule for vessel loadout. Suppliers delivering their own cargo confirm dock appointment time. Dock appointment visible in Cargo Package, Transport Order, and email.</div><span class="role-pill">C-Logistics Expeditor</span></div></li>
+              <li class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">Ryder Schedules Trucking Pickup</div><div class="step-desc">Where Shell is providing trucking, Ryder contacts the supplier to confirm pickup arrangements based on the dock appointment time. Supplier delivers cargo at the scheduled time.</div><span class="role-pill">Ryder / Vendor Trucking</span></div></li>
+              <li class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">Manifest Locked (72 Hours Before Departure)</div><div class="step-desc">C-Logistics Load Planner creates the voyage manifest. Materials move to port at their specific dock appointment. Manifest is locked 72 hours prior to vessel departure. No changes after this point.</div><span class="role-pill">C-Logistics Load Planner</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- PHASE 4 -->
+      <div class="phase-block ph-transport" onclick="togglePhase(this)">
+        <div class="phase-indicator">
+          <div class="phase-dot">4</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-title">
+            Marine Transport Phase
+            <span class="phase-badge">Departure → Offshore Delivery</span>
+          </div>
+          <div class="phase-meta">Vessel loading · In-transit tracking · Manifest validation · Offshore receipt</div>
+          <div class="phase-steps">
+            <ul class="step-list">
+              <li class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Cargo Received at Port</div><div class="step-desc">Cargo arrives at C-Port 2 at scheduled dock appointment time. Staged for vessel loading according to manifest.</div><span class="role-pill">C-Logistics / Port Team</span></div></li>
+              <li class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Manifest Validated Before Departure</div><div class="step-desc">OLC and C-Logistics validate the final manifest before vessel departure. Road Planner updated as needed. Vessel notified that manifest is finalized.</div><span class="role-pill">OLC / C-Logistics Load Planner</span></div></li>
+              <li class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Vessel Loading and Departure</div><div class="step-desc">Cargo loaded onto the scheduled vessel per the finalized manifest. Vessel departs C-Port 2 for offshore assets.</div><span class="role-pill">C-Logistics / Vessel Crew</span></div></li>
+              <li class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">In-Transit Tracking</div><div class="step-desc">Vessel tracked in Kabal during transit. OLC and Deck Supervisors review preliminary manifest updates and provide any changes during transit window.</div><span class="role-pill">OLC / Deck Supervisor</span></div></li>
+              <li class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">Materials Received Offshore</div><div class="step-desc">Vessel offloads at the rig or offshore platform. Crane crew verifies each package against the offload sheet. Materials placed in designated staging areas offshore.</div><span class="role-pill">Crane Crew / Offshore Team</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- PHASE 5 -->
+      <div class="phase-block ph-backhaul" onclick="togglePhase(this)">
+        <div class="phase-indicator">
+          <div class="phase-dot">5</div>
+          <div class="phase-line" style="display:none"></div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-title">
+            Backhaul Process
+            <span class="phase-badge">Post-Delivery Return Flow</span>
+          </div>
+          <div class="phase-meta">Equipment return · Vendor pickup · Material receipt tracking · Waste/environmental staging</div>
+          <div class="phase-steps">
+            <ul class="step-list">
+              <li class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Backhaul Identified & Entered in Kabal</div><div class="step-desc">OLC and Deck Supervisor review if a backhaul Material Return (MR) is needed. If yes, backhaul is inputted into Kabal. Preliminary manifest created.</div><span class="role-pill">OLC / Deck Supervisor</span></div></li>
+              <li class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Dock Coordinator Walks Back Deck</div><div class="step-desc">Inbound Dock Coordinator walks the back deck of the returning vessel and confirms equipment matches Kabal records. Crane crew verifies through offload sheet.</div><span class="role-pill">Inbound Dock Coordinator</span></div></li>
+              <li class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Materials Staged at Base</div><div class="step-desc">Forklift moves materials to designated areas: Vendor/Supplier area, Waste/Trash, Environmental, Tank Cleaning, or Vessel Standby staging.</div><span class="role-pill">Base Operations</span></div></li>
+              <li class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">Vendor Contact for Pickup</div><div class="step-desc">Inbound Dock Coordinator contacts vendors for pickup. Vendor or Ryder receives the Material Return (MR). Materials transit to vendor facility.</div><span class="role-pill">Inbound Dock Coordinator / Ryder</span></div></li>
+              <li class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">Materials Received at Vendor</div><div class="step-desc">Vendor confirms receipt. Kabal records updated to reflect completed backhaul cycle. Equipment tracking closed out in system.</div><span class="role-pill">Supplier / Vendor</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ PLANNING PHASE ═════════════════ -->
+  <div id="page-planning" class="page content">
+    <div class="section-header">
+      <h1>Planning Horizon Phase</h1>
+      <p>Spans 3 months or more to 21 days before the Base Delivery Date (BDD). This is when demand is identified and logistics structures are built in Kabal.</p>
+    </div>
+    <div class="timeline-pill"><div class="dot" style="background:#7C3AED"></div>3 Months+ to 21 Days Before BDD</div>
+
+    <div class="guide-section" style="border-left:4px solid #7C3AED">
+      <h2>🎯 Purpose of This Phase</h2>
+      <div class="source">Sources: SC Delivery – Future Logistics Optimization, Marine Mapping Process</div>
+      <p>The Planning Horizon Phase is when the Area Logistics Coordinator (ALC/SCLC) engages business stakeholders to understand future cargo demand. The goal is to ensure <strong>accurate offshore demand is entered early</strong>, enabling a reliable schedule for the Control Tower and C-Logistics.</p>
+      <p>Success in this phase means fewer last-minute changes, better visibility, and meeting business needs with the <strong>leanest possible marine and aviation fleet</strong>.</p>
+    </div>
+
+    <div class="step-box purple">
+      <h3>📅 3 Months+ to 30 Days Before BDD</h3>
+      <ul>
+        <li>SCLC engages business stakeholders to identify future logistics needs</li>
+        <li>Wells demand informed by rig sequence and Well Operations Team conversations</li>
+        <li>Production, MTAC, TAR & Projects demand via IAP Logistics Flag meetings and direct functional leader communication</li>
+        <li>Historical demand averages pulled from Archetype activities to understand demand profile for Capacity Plan</li>
+        <li>Future demand will eventually be captured within Kabal</li>
+      </ul>
+    </div>
+
+    <div class="step-box purple">
+      <h3>📅 30 to 21 Days Before BDD</h3>
+      <ul>
+        <li>Well Operations Team and OLCs build Time Planners in Kabal</li>
+        <li>Group Loads are created from the Time Planners</li>
+        <li>Cargo Packages are created within Group Loads</li>
+        <li>Each Cargo Package placed in the correct Group Load (1 run before activity starts)</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>👥 Demand Signal by Business Type</h2>
+      <div class="source">Source: Marine Mapping Process with New WoW</div>
+      <ul>
+        <li><strong>Production EV Runs:</strong> Functional Leads / IAP Focal Points attend IAP meeting weekly and flag upcoming projects with material movement</li>
+        <li><strong>Projects:</strong> Projects Engineer</li>
+        <li><strong>Major Maintenance:</strong> MM Block Coordinator</li>
+        <li><strong>Campaigns:</strong> MM Block Coordinator</li>
+        <li><strong>Routine Maintenance:</strong> Onshore Maintenance Lead (OMC)</li>
+        <li><strong>TAR/Pit Stop:</strong> MM Block Coordinator</li>
+        <li><strong>Wells – Bulk (Mud, Brine, Cement):</strong> Well Engineer, Fluid/Mud Engineer, Cementer</li>
+        <li><strong>Wells – Vendor Equipment:</strong> Well Engineer selects vendor/supplier</li>
+        <li><strong>Wells – Tangibles (casing, wellheads):</strong> Well/Subsea Engineers</li>
+        <li><strong>Swire Containers / CCUs:</strong> Crane Crew</li>
+        <li><strong>Rig Supplies:</strong> Rig Owners (Noble, Transocean)</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>🔄 Control Tower Model</h2>
+      <p>The <strong>Control Tower model</strong> separates planning and execution to enable SCLC to focus forward:</p>
+      <div class="roles-grid" style="margin-top:10px">
+        <div class="role-card">
+          <div class="role-name">Control Tower <span class="role-abbr">Execution</span></div>
+          <div class="role-desc">Manages marine resource allocation and executes the daily plan. Makes fast, high-quality resource decisions.</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">Logistics Coordinators <span class="role-abbr">Planning</span></div>
+          <div class="role-desc">Focus on identifying future resource needs beyond 7 days, consolidating demand into fewer voyages, building the marine schedule.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ SCHEDULING PHASE ══════════════ -->
+  <div id="page-scheduling" class="page content">
+    <div class="section-header">
+      <h1>Scheduling Horizon Phase</h1>
+      <p>The 21 to 4 days window before the Base Delivery Date. Suppliers play a pivotal role — finalizing cargo footprints, fluid types and quantities, and container details.</p>
+    </div>
+    <div class="timeline-pill"><div class="dot"></div>21 Days → 4 Days Before BDD</div>
+
+    <div class="step-box">
+      <h3>📧 21–14 Days: Supplier Notification & Info Entry</h3>
+      <ul>
+        <li>Supplier receives automated Kabal email notification with a direct cargo package link</li>
+        <li>Supplier opens the cargo package and completes the <strong>Supplier Information Section</strong></li>
+        <li><strong>Required fields:</strong> Supplier Organizes Transport (Yes/No), Supplier Ready Date, Container/Basket Footprint Estimates, Lifts count</li>
+        <li>Supplier updates <strong>Delivery Info Section:</strong> Pickup Status (Ready/Not Ready), From Warehouse location, Contact Information</li>
+        <li>Control Tower Marine Focal begins scheduling routes to MEL Group Loads</li>
+      </ul>
+    </div>
+
+    <div class="step-box yellow">
+      <h3>📦 14–4 Days: Add Cargo Items</h3>
+      <ul>
+        <li>Supplier adds cargo line items — manually or via Excel template upload (recommended)</li>
+        <li>All <strong>rental items</strong> require individual lines with unique serial numbers for equipment tracking</li>
+        <li>Bulk chemicals: enter total quantity (barrels, gallons, or cubic feet) with specific gravity and fluid type</li>
+        <li>Key required fields: Delivered quantity, Type, Item Description, Serial No., Proc (Purchased/Stock/Consignment/Free/Rental), DG flag</li>
+        <li>Upload certifications, photos, BOLs in the Files section — no upload limit</li>
+        <li>For loose lifts (individual items not in CCUs): enter Length, Width, Height, Weight in the Loose field</li>
+      </ul>
+    </div>
+
+    <div class="step-box green">
+      <h3>📐 7–4 Days: Add CCUs & Pack Cargo</h3>
+      <ul>
+        <li>Supplier adds actual containers (CCUs) from the preloaded Swire CCU catalog</li>
+        <li>Enter CCU tag/serial number — smart search auto-fills dimensions and weight</li>
+        <li>Pack cargo items into CCUs using <strong>drag-and-drop</strong> within the cargo package</li>
+        <li>For chemicals split across multiple totes, enter the portion quantity per container</li>
+        <li>Try to order containers within 7 days of BDD to reduce rental costs</li>
+        <li>Cargo Package approved by Asset Logistics Focal Point or OLC between 7–4 days before departure</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>🎨 Supplier Layout Color Codes</h2>
+      <div class="source">Source: Kabal – Suppliers Guide for Offshore Deliveries REV1</div>
+      <p>Shell's Supplier Layout highlights cargo packages needing attention. To access it: click <strong>Layout Reports → Supplier Layout</strong>.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <div style="padding:8px 14px;background:#FEF3C7;border-radius:6px;border-left:4px solid #D97706;font-size:13px"><strong>⚠️ Yellow</strong> – Square footage estimates not entered at least 14 days before BDD (see Supplier Info section)</div>
+        <div style="padding:8px 14px;background:#FEE2E2;border-radius:6px;border-left:4px solid #DC2626;font-size:13px"><strong>🔴 Red</strong> – Correct warehouse in Delivery Info Section not chosen, or Cargo Package still Open within 4 days of BDD</div>
+        <div style="padding:8px 14px;background:#D1FAE5;border-radius:6px;border-left:4px solid #059669;font-size:13px"><strong>✅ Green</strong> – Cargo Package complete and Approved by Shell</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📅 Finding Cargo Packages in Kabal</h2>
+      <ul>
+        <li>Navigate to the <strong>Loadout Request Page</strong></li>
+        <li>Default date filter shows only 7 days — adjust to 3 weeks ahead to see all upcoming packages</li>
+        <li>Click the Date Range filter → select today as start date → select 3 weeks ahead as end date → click Apply</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ EXECUTION PHASE ══════════════ -->
+  <div id="page-execution" class="page content">
+    <div class="section-header">
+      <h1>Execution Phase</h1>
+      <p>The final 4 days before departure. Cargo is closed out, approved, dock appointments are set, trucking is arranged, and the manifest is locked.</p>
+    </div>
+    <div class="timeline-pill"><div class="dot" style="background:#D97706"></div>4 Days Before BDD → Vessel Departure</div>
+
+    <div class="step-box">
+      <h3>✅ Step 1: Close Out the Cargo Package (4 Days Before BDD)</h3>
+      <ul>
+        <li>Supplier reviews all cargo package fields for accuracy</li>
+        <li>Clicks <strong>"Close Out"</strong> to finalize the package</li>
+        <li>Clicks <strong>"Send Email"</strong> to notify the Shell distribution list</li>
+        <li>Shell Logistics reviews and approves the package ~3 days before shipment</li>
+      </ul>
+    </div>
+
+    <div class="step-box yellow">
+      <h3>🏗️ Step 2: Dock Appointment Scheduling</h3>
+      <ul>
+        <li>C-Port Expeditor creates and communicates the <strong>72-hour Dock Appointment Schedule</strong></li>
+        <li>4 places to view your Dock Appointment:
+          <ol style="padding-left:16px;margin-top:4px">
+            <li>Within the Cargo Package – Operator Request Delivery Field</li>
+            <li>Within the Transport Order Tab – Latest Delivery Date</li>
+            <li>In the Transport Order Email – body of the email</li>
+            <li>In the Transport Order PDF attachment</li>
+          </ol>
+        </li>
+        <li>Requires <strong>completed and approved Cargo Packages at least 3 days before BDD</strong></li>
+        <li>Requires complete and accurate Project/Activity fields, weights, dimensions, and CCU info</li>
+      </ul>
+    </div>
+
+    <div class="step-box green">
+      <h3>🚛 Step 3: Trucking & Cargo to Port</h3>
+      <ul>
+        <li>If Shell provides trucking: Ryder contacts supplier to confirm pickup arrangements</li>
+        <li>If Supplier provides trucking: Supplier delivers cargo to port at the scheduled appointment time</li>
+        <li>Cargo received at C-Port 2 and staged for loading</li>
+      </ul>
+    </div>
+
+    <div class="step-box red">
+      <h3>🔒 Step 4: Manifest Locked (72 Hours Before Departure)</h3>
+      <ul>
+        <li>C-Logistics Load Planner creates the final voyage manifest</li>
+        <li>All materials move to port at their specific dock appointment time</li>
+        <li>Manifest is considered <strong>locked 72 hours prior to vessel departure</strong></li>
+        <li>No changes to the manifest after this point without authorization</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>📋 Terminal Delivery Framework</h2>
+      <div class="source">Source: Kabal – Suppliers Guide – Dock Appointments</div>
+      <p>Shell and ECO have moved from a time-and-materials model to a <strong>service level and performance-based approach</strong> at C-Port 2. This Terminal Delivery Framework:</p>
+      <ul>
+        <li>Improves truck turnaround time</li>
+        <li>Reduces lifts and exposure</li>
+        <li>Strengthens end-to-end planning capability</li>
+        <li>Requires scheduled delivery appointments for most materials</li>
+        <li>ECO uses Kabal data to plan vessel manifests, schedule appointments, and optimize terminal operations</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ MARINE TRANSPORT ══════════════ -->
+  <div id="page-transport" class="page content">
+    <div class="section-header">
+      <h1>Marine Transport Phase</h1>
+      <p>Covers vessel loading, in-transit tracking, and offshore delivery – from port departure to receipt at the rig or platform.</p>
+    </div>
+    <div class="timeline-pill"><div class="dot" style="background:#059669"></div>Vessel Departure → Offshore Delivery</div>
+
+    <div class="flow-diagram">
+      <div class="flow-row" style="justify-content:center;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div style="text-align:center"><div class="flow-box blue">Cargo Received<br>at C-Port 2</div><div class="flow-label">Staged for loading</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box orange">Manifest Validated<br>& Finalized</div><div class="flow-label">OLC + C-Logistics</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box" style="background:#059669">Vessel Loads<br>& Departs</div><div class="flow-label">C-Port 2</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box" style="background:#0EA5E9">In Transit<br>(Outbound)</div><div class="flow-label">Tracked in Kabal</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box red">Vessel Offloads<br>at Rig</div><div class="flow-label">Offshore receipt</div></div>
+      </div>
+    </div>
+
+    <div class="step-box">
+      <h3>⚓ Vessel Loading</h3>
+      <ul>
+        <li>Cargo loaded onto vessel according to finalized manifest</li>
+        <li>C-Logistics Load Planner confirms all manifested items are on board</li>
+        <li>Vessel departs C-Port 2 for offshore assets per scheduled route</li>
+      </ul>
+    </div>
+
+    <div class="step-box yellow">
+      <h3>📍 In-Transit Tracking</h3>
+      <ul>
+        <li>Vessel tracked via Kabal and Ryder Share platform during transit</li>
+        <li>OLC and Deck Supervisors review manifest and provide updates</li>
+        <li>Road Planner and Vessel notified of any last instructions</li>
+        <li>C-Log updates load plan per rig instructions during transit window</li>
+      </ul>
+    </div>
+
+    <div class="step-box green">
+      <h3>🛢️ Offshore Receipt</h3>
+      <ul>
+        <li>Vessel arrives at offshore asset (rig, TLP, FPSO, spar)</li>
+        <li>Crane crew offloads cargo and verifies against offload sheet</li>
+        <li>Each package placed in general staging area first</li>
+        <li>Forklift moves materials to designated area (vendor area, waste, Ryder pickup, etc.)</li>
+        <li>Materials confirmed received in Kabal system</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>🗺️ Tracking Tools</h2>
+      <ul>
+        <li><strong>Kabal</strong> – primary cargo and vessel tracking platform</li>
+        <li><strong>Ryder Share</strong> – <a href="https://www.rydershare.com/main" target="_blank" style="color:var(--mid-blue)">rydershare.com/main</a> – trucking and logistics visibility</li>
+        <li><strong>IAP Dashboard</strong> – activity and logistics readiness tracking for offshore activities</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ BACKHAUL ══════════════════════ -->
+  <div id="page-backhaul" class="page content">
+    <div class="section-header">
+      <h1>Backhaul Process</h1>
+      <p>The return flow of materials from offshore back to vendor facilities or the Houma DC after offshore activities are complete.</p>
+    </div>
+    <div class="timeline-pill"><div class="dot" style="background:#DC2626"></div>Post-Delivery Return Flow</div>
+
+    <div class="flow-diagram">
+      <div class="flow-row" style="justify-content:center;align-items:flex-start;gap:10px;flex-wrap:wrap">
+        <div style="text-align:center"><div class="flow-box red">Backhaul<br>Identified</div><div class="flow-label">OLC inputs in Kabal</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box" style="background:#0EA5E9">Vessel Returns<br>to Base</div><div class="flow-label">Inbound</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box orange">Dock Coord.<br>Verifies Cargo</div><div class="flow-label">Walks back deck</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box" style="background:#059669">Materials<br>Staged</div><div class="flow-label">Vendor / Waste / Ryder</div></div>
+        <div class="flow-arrow" style="margin-top:14px">→</div>
+        <div style="text-align:center"><div class="flow-box purple">Vendor<br>Pickup</div><div class="flow-label">MR issued</div></div>
+      </div>
+    </div>
+
+    <div class="step-box red">
+      <h3>📥 Step 1: Backhaul Identification</h3>
+      <ul>
+        <li>OLC and Deck Supervisor review if a backhaul Material Return (MR) is needed</li>
+        <li>Backhaul inputted into Kabal when confirmed</li>
+        <li>Preliminary manifest created and sent to OLC for approval</li>
+        <li>OLC validates the manifest before departure and sends to C-Logistics for review</li>
+      </ul>
+    </div>
+
+    <div class="step-box yellow">
+      <h3>🚢 Step 2: Vessel Arrives & Dock Coordinator Verifies</h3>
+      <ul>
+        <li>Inbound Dock Coordinator walks the back deck of the returning vessel</li>
+        <li>Confirms each item on the vessel matches records in Kabal</li>
+        <li>Crane crew verifies through offload sheet and moves each package to general staging</li>
+      </ul>
+    </div>
+
+    <div class="step-box">
+      <h3>🏭 Step 3: Staging Areas</h3>
+      <p>Forklift picks up each material and places it in designated area:</p>
+      <ul>
+        <li>🏢 <strong>Vendor/Supplier Area</strong> – rental equipment returning to supplier</li>
+        <li>♻️ <strong>Waste/Trash Area</strong> – materials for disposal</li>
+        <li>🧪 <strong>Environmental Staging</strong> – chemicals, hazardous materials</li>
+        <li>🚿 <strong>Tank Cleaning</strong> – tanks requiring cleaning before reuse</li>
+        <li>⚓ <strong>Vessel Standby</strong> – materials staying at base for next run</li>
+      </ul>
+    </div>
+
+    <div class="step-box green">
+      <h3>📦 Step 4: Vendor Contact & Pickup</h3>
+      <ul>
+        <li>Inbound Dock Coordinator contacts vendors for pickup</li>
+        <li>Vendor or Ryder receives the Material Return (MR)</li>
+        <li>Materials transported to vendor facility</li>
+        <li>Vendor confirms receipt — Kabal records updated and backhaul cycle closed out</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>📞 Inbound Dock Contact</h2>
+      <p>For picking up cargo from port after backhaul:</p>
+      <ul>
+        <li>Email: <strong>inbound.dock@c-logistics.com</strong></li>
+        <li>Phone: <strong>504-425-3948</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ USER ACCESS ═══════════════════ -->
+  <div id="page-access" class="page content">
+    <div class="section-header">
+      <h1>User Access & Setup</h1>
+      <p>How to create a Kabal account, request a Shell GoA role, and subscribe to email notification lists.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>🔐 Creating a Kabal Account</h2>
+      <div class="source">Source: Kabal_Shell GoA – New User Access Guide (October 2025)</div>
+      <ol>
+        <li>Go to <strong>https://kabal.com</strong></li>
+        <li>Click <strong>"Login"</strong> then select <strong>"Kabal"</strong></li>
+        <li>Click <strong>"Sign up for Kabal"</strong></li>
+        <li>Enter your <strong>company email address</strong> (not a private email — approved domains only)</li>
+        <li>Select Work Location (country of the operator) and Work for (Company)</li>
+        <li>Click <strong>"Request New User Account"</strong></li>
+        <li>Enter the authorization code sent to your email and click <strong>"Confirm Account"</strong></li>
+        <li>Set your account password</li>
+        <li>Read and accept the Kabal Privacy Policy (required on first login)</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>🔑 Requesting a Shell GoA User Role</h2>
+      <ol>
+        <li>Search for the application <strong>"Shell GoA"</strong></li>
+        <li>Click <strong>"Shell GoA – Operator (US)"</strong></li>
+        <li>Click <strong>"Apply for an Application Role"</strong></li>
+        <li>Fill out the request form — be <strong>specific and clear</strong> about your purpose</li>
+        <li>Submit Role Request for Approval</li>
+      </ol>
+      <div class="step-box" style="margin-top:12px">
+        <h3>📝 What to Include in Your Role Request</h3>
+        <ul>
+          <li>Purpose: e.g., "I will be sending equipment offshore to Shell Assets for Company X"</li>
+          <li>For suppliers — specify Parent Company, Sub Company, and address (e.g., Halliburton US – WellDynamics, New Iberia, LA)</li>
+          <li>Indicate if Kabal Training Guides are needed from a Shell Super User</li>
+          <li>State if you want to be included in your Company's Kabal Email List</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📧 Subscribing to Email Notification Lists</h2>
+      <div class="source">Source: Kabal – Get Added to Email Lists</div>
+      <ol>
+        <li>From the Home Page, click the <strong>Settings icon</strong> in the Navigation Pane (left side)</li>
+        <li>Expand the <strong>Application</strong> dropdown</li>
+        <li>Click <strong>"Email List"</strong></li>
+        <li>Select your list from the Email List dropdown</li>
+        <li>Select <strong>Constraint → Company</strong> to filter to your company</li>
+        <li>Add your email address and click the green <strong>"Add New"</strong> button</li>
+      </ol>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <div style="padding:10px 14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)"><strong>📬 Loadout Request List</strong> – Receive emails for offshore delivery requests</div>
+        <div style="padding:10px 14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)"><strong>📬 Manifests Email List</strong> – Receive emails when items are on outbound/inbound manifests</div>
+        <div style="padding:10px 14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)"><strong>📬 Redelivery Manifest</strong> – Receive emails for items shipped from port back to vendor yards</div>
+        <div style="padding:10px 14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)"><strong>📬 Warehouse Order List</strong> – Receive emails for vendor-to-vendor movements</div>
+        <div style="padding:10px 14px;background:var(--bg);border-radius:7px;border:1px solid var(--border)"><strong>📬 Transport Order List</strong> – Receive emails regarding trucking information</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>🛠️ Shell GoA Kabal Super Users</h2>
+      <div class="contact-grid">
+        <div class="contact-card"><div class="c-role">Super User</div><div class="c-name">Jennifer Palmisano</div><div class="c-email">Jennifer.Palmisano@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">Super User</div><div class="c-name">Bryan Barron</div><div class="c-email">Bryan.Barron@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">Super User</div><div class="c-name">Christopher Coyle</div><div class="c-email">Chris.Coyle@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">Super User</div><div class="c-name">Daphne Barrera</div><div class="c-email">Daphne.Barrera@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">General Support</div><div class="c-name">Kabal Help Desk</div><div class="c-email">help@kabal.com</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ GROUP LOADS & CARGO PACKAGES ══ -->
+  <div id="page-grouploads" class="page content">
+    <div class="section-header">
+      <h1>Group Loads & Cargo Packages</h1>
+      <p>How Shell Logistics Coordinators and OLCs create Group Loads, set up Cargo Packages, and track status through the IAP dashboard.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📦 Creating Group Loads</h2>
+      <div class="source">Source: Step by Step – Creating Group Loads and Cargo Packages in Kabal</div>
+      <ol>
+        <li>Navigate to <strong>Kabal → Cargo Tab → Activity Planning</strong></li>
+        <li>Select your Rig/Asset</li>
+        <li>Click <strong>"Add New"</strong> to add a group load for the remainder of the year</li>
+        <li>Click into the overall group load to add each weekly EV (every voyage) run</li>
+        <li>For each run, select: <strong>Base Delivery Date, Offshore Req. Date, Base Port, Account Code</strong></li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>💰 Entering Charge / Cost Codes</h2>
+      <ol>
+        <li>Under <strong>"Account Code"</strong>, enter the marine cost code provided by the Deck Supervisor / OLC / Foreman</li>
+        <li>If a new cost code is needed, follow the Cost Codes guide (see Cost Codes section)</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📊 Reading the IAP Plan</h2>
+      <ol>
+        <li>Under the IAP Tab, view the <strong>"Activity List View"</strong> and filter to your asset</li>
+        <li>Sort activity Start Date in chronological order</li>
+        <li>Filter activities that have <strong>material movement</strong> — either flagged activities or those confirmed with your functional lead in the IAP meeting</li>
+        <li>Copy the <strong>ID number</strong> to paste into the Kabal cargo package</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📋 Inputting a Cargo Package in Kabal</h2>
+      <ol>
+        <li>Go to <strong>Cargo → Equipment List → Select Asset/Rig</strong></li>
+        <li>Open a new cargo package into the proper Group Load / run (1 run before the activity starts offshore)</li>
+        <li>Enter the <strong>Supplier Name</strong></li>
+        <li>Paste the Cargo Package number from IAP Activity List, prefix it with <strong>#IAP</strong></li>
+        <li>Click <strong>"Add New Cargo Package"</strong></li>
+        <li>Add any other known information (basket estimates, quantities, etc.)</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📨 Sending Cargo Package to Supplier</h2>
+      <ol>
+        <li>Under <strong>Actions</strong>, click <strong>"Send Email"</strong></li>
+        <li>Confirm the correct supplier contact is listed on the email distribution</li>
+        <li>Ask your functional lead for the correct supplier contact if unsure</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📍 Tracking Cargo Package Status in IAP</h2>
+      <p>Use the <strong>IAP with Logistics View</strong> to track cargo package readiness against offshore activity start dates. Click the Cargo Package ID in IAP to jump directly to the package in Kabal.</p>
+      <ul>
+        <li><strong>IAP Readiness Color</strong> — changes based on whether the activity date changes relative to cargo readiness</li>
+        <li>Update the manifest date in Kabal manually as needed</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ CARGO ITEMS & CCUs ═══════════ -->
+  <div id="page-cargoitems" class="page content">
+    <div class="section-header">
+      <h1>Cargo Items & CCUs</h1>
+      <p>Detailed guide for adding cargo line items (manually or via Excel) and packing them into Cargo Carrying Units (CCUs).</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📌 What Is a Cargo Item?</h2>
+      <div class="source">Source: Kabal – Suppliers Guide for Offshore Deliveries REV1</div>
+      <p>A Cargo Item is any equipment or material either packed into a container or shipped as a loose lift or bulk material. Examples include:</p>
+      <ul>
+        <li>Tools, temporary piping, drill string crossovers</li>
+        <li>Pails or sacks of chemicals</li>
+        <li>Loose lifts rated for offshore dynamic lifting (filter presses, pumps, tool houses, IWOCS reels, coil tubing reels)</li>
+        <li>Total quantity of a chemical in tote tanks</li>
+      </ul>
+      <p style="margin-top:8px">Cargo line-item details are required for <strong>all rental items in baskets</strong> to enable virtual tracking in Kabal.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>✏️ Adding Cargo Items Manually</h2>
+      <ol>
+        <li>Under Cargo Items section, click <strong>"Add New Item"</strong></li>
+        <li>Complete all required (highlighted) fields:</li>
+      </ol>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Delivered</strong> – Quantity of the line item</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Type</strong> – Select from picklist ("Item, Other" acceptable for most items)</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Item Description</strong> – Thread type, casing weight/type, etc.</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Serial No.</strong> – One line per unique serial number</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Proc</strong> – Purchased / Stock / Consignment / Free / <span style="color:var(--shell-red);font-weight:700">Rental</span></div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>DG</strong> – Check if Dangerous Goods</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Loose</strong> – Length, Width, Height, Weight for individual lifts</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:12.5px"><strong>Files</strong> – Certifications, photos, BOLs (no limit)</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📊 Adding Cargo Items via Excel (Recommended)</h2>
+      <ol>
+        <li>From the Kabal Home Page, download the <strong>Cargo Package Upload Template</strong></li>
+        <li>Complete the yellow-shaded Material Details section</li>
+        <li>Save the completed Excel file</li>
+        <li>In Kabal, click the dropdown arrow next to <strong>"Add New Item"</strong> → select <strong>"Add from Excel"</strong></li>
+        <li>Drag and drop the Excel file into the <strong>Auto Import</strong> area</li>
+        <li>Kabal returns to the Cargo Package with items populated</li>
+        <li><strong>Note:</strong> Dimensions are not imported from Excel — add Loose dimensions manually for rental items and individual lifts</li>
+      </ol>
+      <div class="step-box yellow" style="margin-top:12px">
+        <h3>💡 Excel Entry Tips</h3>
+        <ul>
+          <li>Use quantity &gt;1 only for items that don't need individual tracking (e.g., consumables)</li>
+          <li>List rental items individually — one line per serial number</li>
+          <li>For chemicals: enter total quantity as one line (e.g., 3,000 gallons of MEG)</li>
+          <li>Use the correct Value Unit for each item</li>
+          <li>Add containers directly in Kabal (not via Excel) — Swire CCUs have pre-filled weight/dimensions</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📐 Adding CCUs (Cargo Carrying Units)</h2>
+      <ol>
+        <li>Click the green <strong>"Add New Unit"</strong> button in the cargo package</li>
+        <li>Select from the first 10 options in the dropdown (CCUs only — do not select Packing Units)</li>
+        <li>In the <strong>Tag Number</strong> field, type the CCU serial number — smart search suggests matching CCUs from Kabal master data</li>
+        <li>If adding a new CCU not in the system: click <strong>"Add [name]"</strong> → click Edit Status → provide reason "Container does not exist" → fill mandatory fields → add certifications → click the orange <strong>"Open – Click to Close Out"</strong> button</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>🤝 Packing Cargo Items into CCUs</h2>
+      <ol>
+        <li>Click and hold the <strong>hand icon</strong> next to the cargo line item</li>
+        <li><strong>Drag and drop</strong> the item into the appropriate CCU</li>
+        <li>For multiple items: hold <strong>Ctrl</strong> to select additional items (they turn green), then drag all at once</li>
+        <li>For bulk items split across containers: enter the portion quantity in the popup and click <strong>"Pack"</strong></li>
+        <li>Confirm the Container column on the line item shows the correct CCU</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ VENDOR-TO-VENDOR ══════════════ -->
+  <div id="page-v2v" class="page content">
+    <div class="section-header">
+      <h1>Vendor-to-Vendor Movements</h1>
+      <p>For Shell-owned equipment moving between vendors, or Swire container movements — not direct offshore delivery.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📌 What Is a Vendor-to-Vendor Movement?</h2>
+      <div class="source">Source: Kabal – Vendor to Vendor Movements (February 2025)</div>
+      <p>Covers two scenarios:</p>
+      <ol>
+        <li><strong>Shell-owned equipment</strong> requiring movement from one vendor to another vendor or to the Houma DC</li>
+        <li><strong>Swire container movements</strong> — containerizing cargo going offshore when the contract doesn't include supplier-provided containers, or returning empty containers back to Swire</li>
+      </ol>
+      <p style="margin-top:8px">The supplier shipping the cargo is responsible for completing the Kabal <strong>Warehouse Order</strong>. This process does not include cargo going directly to port for offshore delivery.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📋 Creating a Warehouse Order</h2>
+      <ol>
+        <li>From the Kabal Home Page, add a <strong>Warehouse Orders</strong> favorite:
+          <ul>
+            <li>Click the Star icon → search "Warehouse" → select "Warehouse/Orders" → click Save</li>
+          </ul>
+        </li>
+        <li>On the Warehouse Order Home Page, use the <strong>Warehouse Filter</strong> to select the warehouse the cargo is shipping from</li>
+        <li>Click the green <strong>"Add WH Order"</strong> button</li>
+        <li>Select <strong>"Add New Item Package"</strong></li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📝 Completing the Warehouse Order Info Section</h2>
+      <p><strong>Mandatory Fields:</strong></p>
+      <ul>
+        <li><strong>Est. Delivery Date</strong> – Pick a date giving Ryder at least 48 hours to coordinate</li>
+        <li><strong>Order Name</strong> – Unique description of the cargo being moved</li>
+        <li><strong>Warehouse</strong> – The destination of the cargo</li>
+      </ul>
+      <p style="margin-top:8px"><strong>Optional Fields:</strong> PO Number, Workorder Number, MMR No., Remarks</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📦 Completing the Order Items Section</h2>
+      <ol>
+        <li>Click the <strong>"Add New Item"</strong> button</li>
+        <li>Fill out the Order Item fields for each cargo item</li>
+        <li>For items not containerized (drill pipe, equipment for dynamic lifting, etc.) — completing the <strong>Loose field is Mandatory</strong></li>
+        <li>Click the Loose Icon to open the shipping info box:
+          <ul>
+            <li>Unit Weight, Lifts# (usually 1), Total Length, Total Width, Total Height</li>
+            <li>Close the popup — information saves automatically</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ DOCK APPOINTMENTS ═══════════ -->
+  <div id="page-dock" class="page content">
+    <div class="section-header">
+      <h1>Dock Appointments</h1>
+      <p>Requirements and procedures for scheduled cargo delivery appointments at C-Port 2 under the Terminal Delivery Framework.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>🏗️ Terminal Delivery Framework Overview</h2>
+      <div class="source">Source: Kabal – Suppliers Guide – Dock Appointments (June 2025)</div>
+      <p>C-Port 2 now requires <strong>scheduled delivery appointments</strong> for most materials. This is part of Shell's performance-based contract with ECO for terminal services at Port Fourchon.</p>
+      <p style="margin-top:8px"><strong>Key Requirements:</strong></p>
+      <ul>
+        <li>Completed and approved Kabal Cargo Packages <strong>at least 3 days before the Base Delivery Date</strong></li>
+        <li>Complete and accurate Project/Activity (Group Load) fields</li>
+        <li>Full shipping details: weights, dimensions, CCU information</li>
+        <li>ECO uses this data to plan vessel manifests, schedule appointments, and optimize terminal operations</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h2>📍 Where to View Your Dock Appointment Time</h2>
+      <p>There are <strong>4 places</strong> to find your dock appointment:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+        <div class="step-box"><h3>1️⃣ Within the Cargo Package</h3><p>The Dock Appointment Time is displayed in the <strong>Operator Request Delivery Field</strong> of the cargo package.</p></div>
+        <div class="step-box"><h3>2️⃣ Within the Transport Order</h3><p>On an approved Cargo Package, click the <strong>Transport Order Tab</strong>. The Dock Appointment Time is the <strong>Latest Delivery Date</strong>.</p></div>
+        <div class="step-box"><h3>3️⃣ In the Transport Order Email</h3><p>The Dock Appointment Time is included in the <strong>body of the Transport Order email</strong> sent automatically from Kabal.</p></div>
+        <div class="step-box"><h3>4️⃣ In the Transport Order PDF</h3><p>The Dock Appointment Time is also contained in the <strong>Transport Order PDF attachment</strong>.</p></div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📞 Port Expeditor Contacts</h2>
+      <div class="contact-grid">
+        <div class="contact-card"><div class="c-role">Port Expeditor (Dock Appointment Times)</div><div class="c-name">Shell Expeditor</div><div class="c-email">shell.expeditor@c-logistics.com</div><div class="c-phone">985-601-5214</div></div>
+        <div class="contact-card"><div class="c-role">Inbound Dock (Picking up Cargo)</div><div class="c-name">C-Logistics Inbound Dock</div><div class="c-email">inbound.dock@c-logistics.com</div><div class="c-phone">504-425-3948</div></div>
+        <div class="contact-card"><div class="c-role">SC Logistics Coordinators</div><div class="c-name">General Logistics Contact</div><div class="c-email">SEPCO-SC-Logistics-Coordinators@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">Outside Business Hours Support</div><div class="c-name">Kabal Help Desk</div><div class="c-email">help@kabal.com</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ COST CODES ════════════════════ -->
+  <div id="page-costcodes" class="page content">
+    <div class="section-header">
+      <h1>Cost Codes</h1>
+      <p>How to create and manage project cost codes in Kabal to ensure correct financial charging for cargo movements.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>💰 Creating a New Cost Code</h2>
+      <div class="source">Source: Kabal – Entering Cost Codes (February 2025)</div>
+      <ol>
+        <li>Navigate to <strong>Settings → Application → Cost Codes</strong></li>
+        <li>Use the search bar to <strong>verify whether the cost code already exists</strong> before creating a new one</li>
+        <li>If no results found, click the green <strong>"Add New Cost Code"</strong> button</li>
+        <li>Populate all required fields:
+          <ul>
+            <li><strong>Code Name / Project Name</strong> – The name displayed in Kabal</li>
+            <li><strong>Cost Code / Project Code</strong> – Copy and paste the exact cost code</li>
+            <li><strong>Rig/Location</strong> – Choose from the picklist</li>
+            <li><strong>Active Dates</strong> – Start and end dates. If no end date in IAP, use 12/31 of the current year</li>
+          </ul>
+        </li>
+        <li>Click the orange <strong>Activate</strong> button to make the cost code available</li>
+        <li>The new cost code is now available to select in Kabal cargo packages</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2>📌 When Are Cost Codes Needed?</h2>
+      <ul>
+        <li>When creating Group Loads for upcoming production projects or campaigns</li>
+        <li>For MTAC and TAR activities requiring dedicated cost tracking</li>
+        <li>Obtained from: Deck Supervisor, OLC, or Foreman</li>
+        <li>Source of truth for new cost codes: the <strong>IAP Activity Dashboard</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ ROLES ═════════════════════════ -->
+  <div id="page-roles" class="page content">
+    <div class="section-header">
+      <h1>Roles & Responsibilities</h1>
+      <p>Key stakeholders in the Kabal logistics workflow and what each is accountable for.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="role-name">Shell Logistics Coordinator <span class="role-abbr">SCLC</span></div>
+        <div class="role-desc">The primary Shell planning role. Focuses on strategic demand management and building the marine schedule beyond 7 days.</div>
+        <div class="role-duties">
+          <div class="duty">Identify business demand (Wells, Production, MTAC, TAR, Projects)</div>
+          <div class="duty">Create MEL Group Loads and Cargo Packages in Kabal</div>
+          <div class="duty">Onboard and support Supplier Kabal Focals</div>
+          <div class="duty">Send cargo package notifications to suppliers</div>
+          <div class="duty">Monitor supplier KPIs and develop improvement plans</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Offshore Logistics Coordinator <span class="role-abbr">OLC</span></div>
+        <div class="role-desc">Manages logistics at the asset level, builds Time Planners, and approves cargo packages.</div>
+        <div class="role-duties">
+          <div class="duty">Build Time Planners and Group Loads in Kabal</div>
+          <div class="duty">Create Cargo Packages with SCLC</div>
+          <div class="duty">Approve cargo packages (7–4 days before departure)</div>
+          <div class="duty">Validate manifests before vessel departure</div>
+          <div class="duty">Manage backhaul identification and MR entry</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Supplier Kabal Focal <span class="role-abbr">Supplier</span></div>
+        <div class="role-desc">The supplier's designated point of contact in Kabal. Responsible for all cargo package data entry.</div>
+        <div class="role-duties">
+          <div class="duty">Maintain an active Kabal account and email list subscription</div>
+          <div class="duty">Open cargo packages from Kabal notification emails</div>
+          <div class="duty">Complete Supplier Info section (21–14 days before BDD)</div>
+          <div class="duty">Add cargo items and CCUs (14–4 days before BDD)</div>
+          <div class="duty">Close out cargo package and send email (4 days before BDD)</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Control Tower / Marine Focal Point <span class="role-abbr">MFP</span></div>
+        <div class="role-desc">Executes the marine plan. Manages resource allocation and vessel scheduling based on confirmed demand.</div>
+        <div class="role-duties">
+          <div class="duty">Create routes based on MEL Group Load estimates</div>
+          <div class="duty">Allocate Cargo Packages to routes</div>
+          <div class="duty">Signal deck/bulk capacity constraints</div>
+          <div class="duty">Revise route plan as Cargo Packages mature</div>
+          <div class="duty">Manage daily marine resource decisions</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">C-Logistics Expeditor <span class="role-abbr">C-Log</span></div>
+        <div class="role-desc">Port Fourchon C-Port 2 terminal operations team responsible for dock appointments and manifest execution.</div>
+        <div class="role-duties">
+          <div class="duty">Create and communicate the 72-hour Dock Appointment Schedule</div>
+          <div class="duty">Create the voyage manifest (locked 72 hours before departure)</div>
+          <div class="duty">Move materials to port at scheduled appointment times</div>
+          <div class="duty">Optimize terminal loadout operations</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Deck Supervisor / Inbound Dock Coord. <span class="role-abbr">Deck / IDC</span></div>
+        <div class="role-desc">Manages the physical cargo at the offshore asset and at the base dock upon return.</div>
+        <div class="role-duties">
+          <div class="duty">Approve cargo packages for their asset</div>
+          <div class="duty">Walk back deck of returning vessels to verify cargo</div>
+          <div class="duty">Coordinate staging of backhaul materials</div>
+          <div class="duty">Contact vendors for pickup of returned equipment</div>
+          <div class="duty">Provide rig-specific loading instructions</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Ryder <span class="role-abbr">Trucking</span></div>
+        <div class="role-desc">Shell's primary trucking contractor. Manages cargo pickup from suppliers and delivery to C-Port 2.</div>
+        <div class="role-duties">
+          <div class="duty">Schedule cargo pickup with suppliers (when Shell provides trucking)</div>
+          <div class="duty">Transport materials to port at dock appointment time</div>
+          <div class="duty">Execute backhaul Material Return (MR) pickups</div>
+          <div class="duty">Provide tracking through Ryder Share platform</div>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-name">Functional Leads / IAP Focal Points <span class="role-abbr">IAP</span></div>
+        <div class="role-desc">Business unit representatives who flag upcoming material movements in IAP meetings.</div>
+        <div class="role-duties">
+          <div class="duty">Attend IAP meetings weekly to flag upcoming projects</div>
+          <div class="duty">Feed information on large material movements going offshore</div>
+          <div class="duty">Provide supplier contact information to the ALC/SCLC</div>
+          <div class="duty">Supply correct cost codes to Logistics Coordinators</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ CONTACTS ══════════════════════ -->
+  <div id="page-contacts" class="page content">
+    <div class="section-header">
+      <h1>Contacts & Offshore Assets</h1>
+      <p>Key contacts for Shell GoA logistics and the full list of offshore assets across the Gulf of America.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📞 Key Logistics Contacts</h2>
+      <div class="contact-grid">
+        <div class="contact-card"><div class="c-role">SC Logistics Coordinators</div><div class="c-name">General Logistics</div><div class="c-email">SEPCO-SC-Logistics-Coordinators@shell.com</div></div>
+        <div class="contact-card"><div class="c-role">Port Expeditor (Dock Appointments)</div><div class="c-name">Shell Expeditor</div><div class="c-email">shell.expeditor@c-logistics.com</div><div class="c-phone">985-601-5214</div></div>
+        <div class="contact-card"><div class="c-role">Inbound Dock (Cargo Pickup)</div><div class="c-name">C-Logistics Inbound Dock</div><div class="c-email">inbound.dock@c-logistics.com</div><div class="c-phone">504-425-3948</div></div>
+        <div class="contact-card"><div class="c-role">Kabal Technical Support</div><div class="c-name">Kabal Help Desk</div><div class="c-email">help@kabal.com</div></div>
+      </div>
+    </div>
+
+    <div class="guide-section" style="margin-top:8px">
+      <h2>🛢️ Offshore Asset Contact Directory</h2>
+      <div class="source">Source: Kabal – Suppliers Guide – Dock Appointments</div>
+      <table class="asset-table">
+        <thead><tr><th>Asset</th><th>Email</th><th>Phone</th><th>Key Contact</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Proteus</strong></td><td>Proteus-Logistics-DW@shell.com</td><td>504-425-0541</td><td>—</td></tr>
+          <tr><td><strong>Poseidon</strong></td><td>SEPCO-Poseidon-Logistics-DW@shell.com</td><td>504-425-2808</td><td>—</td></tr>
+          <tr><td><strong>Pontus</strong></td><td>SEPCO-Pontus-Logistics-DW@shell.com</td><td>504-425-0403</td><td>—</td></tr>
+          <tr><td><strong>Stena Evolution</strong></td><td>SEPCOEvolutionLogisticsDW@shell.com</td><td>713-445-1222</td><td>—</td></tr>
+          <tr><td><strong>Mars TLP / H&P 201</strong></td><td>—</td><td>504-425-1635</td><td>stuart.dunlap@shell.com / jeff.reaux@shell.com</td></tr>
+          <tr><td><strong>Olympus TLP / N88</strong></td><td>—</td><td>504-425-2610</td><td>chad.galliano@shell.com</td></tr>
+          <tr><td><strong>Auger TLP / H&P 406</strong></td><td>sepco-gx-pt-dw-wells-hp406-auger-deck-supervisor@shell.com</td><td>504-425-5023</td><td>doug.bridges@shell.com</td></tr>
+          <tr><td><strong>Ursa TLP / H&P 204</strong></td><td>—</td><td>504-425-5023</td><td>trevor.thornhill@shell.com / c.thomas2@shell.com</td></tr>
+          <tr><td><strong>Appomattox</strong></td><td>—</td><td>504-425-3134</td><td>brian.donald@shell.com / evan.steil@shell.com</td></tr>
+          <tr><td><strong>Vito</strong></td><td>—</td><td>504-425-1028</td><td>chris.rollins@shell.com / dennis.randall@shell.com</td></tr>
+          <tr><td><strong>Turritella FPSO</strong></td><td>—</td><td>615-870-9710</td><td>matthew.vidrine@shell.com</td></tr>
+          <tr><td><strong>Enchilada / Salsa</strong></td><td>—</td><td>Ench: 504-425-8444 / Salsa: 504-425-8323</td><td>j.livas@shell.com / antoine.a.white@shell.com</td></tr>
+          <tr><td><strong>Thalassa</strong></td><td>SEPCO-Thalassa-Logistics-DW@shell.com</td><td>504-425-0171</td><td>darrin.lanchbury@shell.com</td></tr>
+          <tr><td><strong>Perdido Spar / H&P 205</strong></td><td>—</td><td>504-425-4852</td><td>charles.c.waller@shell.com</td></tr>
+          <tr><td><strong>Whale</strong></td><td>—</td><td>601-757-9844 / 601-757-3186</td><td>Jebediah.Gallman@shell.com / Anthony.Chalk@shell.com</td></tr>
+          <tr><td><strong>Q5000</strong></td><td>—</td><td>—</td><td>weston.desormeaux@shell.com</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ GLOSSARY ══════════════════════ -->
+  <div id="page-glossary" class="page content">
+    <div class="section-header">
+      <h1>Glossary</h1>
+      <p>Key terms and abbreviations used in Kabal and Shell GoA logistics operations.</p>
+    </div>
+    <div class="glossary-grid">
+      <div class="gloss-item"><div class="term">BDD – Base Delivery Date</div><div class="def">The estimated date a scheduled vessel run is planned to depart C-Port 2 for offshore assets. Drives all planning KPIs and scheduling windows.</div></div>
+      <div class="gloss-item"><div class="term">CCU – Cargo Carrying Unit</div><div class="def">Any container used to carry cargo offshore — baskets, boxes, totes, tank containers. Shell uses Swire CCUs. Each has a unique tag/serial number.</div></div>
+      <div class="gloss-item"><div class="term">MEL – Marine Equipment List / Group Load</div><div class="def">A Group Load in Kabal that represents a planned future voyage. Cargo Packages are assigned to Group Loads which feed route planning.</div></div>
+      <div class="gloss-item"><div class="term">CP – Cargo Package</div><div class="def">A Kabal record representing a single shipment from one supplier to one offshore asset. Contains supplier info, cargo items, CCUs, and logistics details.</div></div>
+      <div class="gloss-item"><div class="term">SCLC – Shell Logistics Coordinator</div><div class="def">The primary planning-focused logistics role. Responsible for demand identification, Group Load creation, and supplier engagement beyond 7 days.</div></div>
+      <div class="gloss-item"><div class="term">OLC – Offshore Logistics Coordinator</div><div class="def">Asset-level logistics coordinator. Builds Time Planners, creates Cargo Packages, approves packages, and validates manifests.</div></div>
+      <div class="gloss-item"><div class="term">ALC – Area Logistics Coordinator</div><div class="def">Predecessor to the SCLC role. Managed all logistics for a cluster of assets. Now separated into SCLC (planning) and Control Tower (execution).</div></div>
+      <div class="gloss-item"><div class="term">IAP – Integrated Activity Planning</div><div class="def">Shell's activity planning system. Used to flag upcoming projects with material movement. Cargo Package IDs are linked to IAP activity numbers.</div></div>
+      <div class="gloss-item"><div class="term">MFP – Marine Focal Point</div><div class="def">Control Tower role responsible for creating vessel routes, allocating Cargo Packages to voyages, and managing the marine schedule.</div></div>
+      <div class="gloss-item"><div class="term">BOL – Bill of Lading</div><div class="def">Shipping document that details the type, quantity, and destination of cargo. Uploaded to Cargo Package Files section in Kabal.</div></div>
+      <div class="gloss-item"><div class="term">DG – Dangerous Goods</div><div class="def">Cargo classified as hazardous under offshore transport regulations. Must be flagged on the Cargo Item in Kabal.</div></div>
+      <div class="gloss-item"><div class="term">SDS – Safety Data Sheet</div><div class="def">Required documentation for chemical/fluid cargo items. Uploaded to the Files section of the cargo item in Kabal.</div></div>
+      <div class="gloss-item"><div class="term">MR – Material Return</div><div class="def">A backhaul order in Kabal. Issued when offshore equipment is being returned to a vendor or the Houma DC.</div></div>
+      <div class="gloss-item"><div class="term">MTAC – Maintenance, Technical, and Campaigns</div><div class="def">A category of offshore work requiring logistics support. Demand flagged through IAP meetings with MM Block Coordinators.</div></div>
+      <div class="gloss-item"><div class="term">TAR – Turnaround</div><div class="def">A planned maintenance shutdown of a facility. Significant logistics demand event. Demand flagged by MM Block Coordinator.</div></div>
+      <div class="gloss-item"><div class="term">GoA – Gulf of America</div><div class="def">The operational geography for Shell's offshore assets.</div></div>
+      <div class="gloss-item"><div class="term">C-Port 2</div><div class="def">Shell's primary supply base port in Port Fourchon, Louisiana. Primary departure point for all offshore cargo. Operated by ECO under a performance-based contract.</div></div>
+      <div class="gloss-item"><div class="term">Houma DC</div><div class="def">Shell's distribution center in Houma, Louisiana. Used for staging, storage, and vendor-to-vendor movements before cargo goes to port.</div></div>
+      <div class="gloss-item"><div class="term">NPT – Non-Productive Time</div><div class="def">Time lost on offshore operations due to logistics delays. Reducing NPT is a key driver of the Kabal and Control Tower logistics model.</div></div>
+      <div class="gloss-item"><div class="term">Proc – Procurement Category</div><div class="def">Field on cargo items indicating ownership: Purchased, Stock, Consignment, Free, or Rental. Rental items require individual serial number entries.</div></div>
+      <div class="gloss-item"><div class="term">EV Run – Efficient/Value Run</div><div class="def">A scheduled recurring vessel run to a specific offshore asset. EV runs are set up as individual Group Load entries in Kabal for each planned departure.</div></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Page navigation ──────────────────────────────────────────────────
+const titles = {
+  home:'Home – Kabal Logistics Guide',
+  processmap:'End-to-End Process Map',
+  planning:'Planning Horizon Phase',
+  scheduling:'Scheduling Horizon Phase',
+  execution:'Execution Phase',
+  transport:'Marine Transport Phase',
+  backhaul:'Backhaul Process',
+  access:'User Access & Setup',
+  grouploads:'Group Loads & Cargo Packages',
+  cargoitems:'Cargo Items & CCUs',
+  v2v:'Vendor-to-Vendor Movements',
+  dock:'Dock Appointments',
+  costcodes:'Cost Codes',
+  roles:'Roles & Responsibilities',
+  contacts:'Contacts & Offshore Assets',
+  glossary:'Glossary'
+};
+
+function showPage(id, navEl){
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  // Update topbar
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+  else {
+    // Find matching nav item
+    document.querySelectorAll('.nav-item').forEach(n => {
+      const onclick = n.getAttribute('onclick');
+      if(onclick && onclick.includes("'"+id+"'")){n.classList.add('active')}
+    });
+  }
+  // Scroll to top
+  document.getElementById('main').scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Phase accordion toggle ────────────────────────────────────────────
+function togglePhase(block){
+  const steps = block.querySelector('.phase-steps');
+  const content = block.querySelector('.phase-content');
+  if(steps.classList.contains('show')){
+    steps.classList.remove('show');
+    content.classList.remove('expanded');
+  } else {
+    steps.classList.add('show');
+    content.classList.add('expanded');
+  }
+}
+
+// ── Generic accordion toggle ─────────────────────────────────────────
+document.addEventListener('click', function(e){
+  const hdr = e.target.closest('.accordion-header');
+  if(!hdr) return;
+  const body = hdr.nextElementSibling;
+  const isOpen = hdr.classList.contains('open');
+  hdr.classList.toggle('open', !isOpen);
+  body.classList.toggle('show', !isOpen);
+});
+</script>
+</body>
+</html>

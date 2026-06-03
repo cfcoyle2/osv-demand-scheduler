@@ -1,0 +1,7 @@
+[InternetShortcut]
+URL=http://127.0.0.1:8000/?v=20260602
+IconIndex=0
+HotKey=0
+ShowCommand=1
+; TODO: After Azure deployment, update URL to:
+; URL=https://YOUR-APP-NAME.azurestaticapps.net/

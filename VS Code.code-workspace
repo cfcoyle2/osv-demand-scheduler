@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../Kabal"
+		},
+		{
+			"path": "./Library"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

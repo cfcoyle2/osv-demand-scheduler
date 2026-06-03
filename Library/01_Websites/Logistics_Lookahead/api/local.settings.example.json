@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "SP_TENANT_ID": "<your-tenant-id-guid>",
+    "SP_CLIENT_ID": "<your-app-registration-client-id>",
+    "SP_CLIENT_SECRET": "<your-app-registration-secret>",
+    "SP_SITE_HOSTNAME": "eu001-sp.shell.com",
+    "SP_SITE_PATH": "/sites/UGPTDWGOMSupplyChain",
+    "SP_STATE_LIST_NAME": "LogisticsState",
+    "SP_CHANGELOG_LIST_NAME": "LogisticsChangeLog",
+    "SP_STATE_ITEM_TITLE": "Current"
+  }
+}

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kabal Logistics Guide - Project README</title>
+  <style>
+    :root {
+      --shell-navy: #003c71;
+      --shell-yellow: #ffd500;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #d9e2ec;
+      --soft: #f5f7fa;
+      --code: #102a43;
+    }
+
+    @page {
+      size: Letter;
+      margin: 0.58in 0.62in 0.62in;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 10.5pt;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
+      background: #ffffff;
+    }
+
+    header {
+      border-bottom: 4px solid var(--shell-yellow);
+      padding: 0 0 18px;
+      margin-bottom: 24px;
+    }
+
+    .kicker {
+      color: var(--shell-navy);
+      font-size: 9pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      color: var(--shell-navy);
+      line-height: 1.18;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 25pt;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      border-top: 1px solid var(--line);
+      font-size: 17pt;
+      margin-top: 26px;
+      padding-top: 18px;
+      break-after: avoid;
+    }
+
+    h3 {
+      color: #0b4f8a;
+      font-size: 12.5pt;
+      margin-top: 18px;
+      break-after: avoid;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    .meta {
+      display: grid;
+      gap: 4px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 10pt;
+    }
+
+    .meta strong {
+      color: var(--ink);
+    }
+
+    .summary {
+      background: var(--soft);
+      border-left: 5px solid var(--shell-yellow);
+      margin: 18px 0 20px;
+      padding: 12px 14px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      width: 100%;
+      break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef4f8;
+      color: var(--shell-navy);
+      font-weight: 700;
+    }
+
+    ul, ol {
+      margin: 8px 0 14px 22px;
+      padding: 0;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    code {
+      background: #eef4f8;
+      border: 1px solid #d8e2eb;
+      border-radius: 4px;
+      color: var(--code);
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 9.2pt;
+      padding: 1px 4px;
+    }
+
+    pre {
+      background: #102a43;
+      border-radius: 6px;
+      color: #f0f4f8;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 8.8pt;
+      line-height: 1.4;
+      margin: 10px 0 16px;
+      overflow-wrap: anywhere;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      break-inside: avoid;
+    }
+
+    pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+    }
+
+    blockquote {
+      border-left: 4px solid var(--shell-yellow);
+      color: var(--muted);
+      margin: 10px 0 16px;
+      padding: 4px 0 4px 12px;
+    }
+
+    .file-tree {
+      font-size: 8.6pt;
+    }
+
+    .footer-note {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 9.5pt;
+      margin-top: 24px;
+      padding-top: 12px;
+      text-align: center;
+    }
+
+    .page-break {
+      break-before: page;
+    }
+
+    @media print {
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Shell GoA Supply Chain</div>
+    <h1>Kabal Logistics Guide - Project README</h1>
+    <div class="meta">
+      <div><strong>Created:</strong> April 13, 2026</div>
+      <div><strong>Author:</strong> Chris Coyle - Shell GoA Supply Chain</div>
+      <div><strong>Purpose:</strong> Interactive HTML reference guide for Kabal platform users on the Logistics Delivery Team</div>
+    </div>
+  </header>
+
+  <section class="summary">
+    This document summarizes the source materials, build process, project structure, and team sharing instructions for the Kabal logistics reference guide.
+  </section>
+
+  <main>
+    <h2>What Was Built</h2>
+    <p>We created an <strong>interactive, locally-hosted HTML web application</strong> called <code>kabal-guide.html</code> that serves as a comprehensive, navigable reference guide for the Kabal logistics platform. The guide was built entirely from Shell's existing Kabal PDF training documents and covers the full end-to-end logistics process from demand planning through offshore delivery and backhaul.</p>
+    <p>The app requires no internet connection, no server, and no installation. It opens directly in any web browser.</p>
+
+    <h2>Source Documents Used</h2>
+    <p>All content was extracted from the following PDF documents located in this folder:</p>
+    <table>
+      <thead>
+        <tr><th>Document</th><th>Content</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Kabal - Entering Cost Codes.pdf</code></td><td>Creating and activating project cost codes</td></tr>
+        <tr><td><code>Kabal - Get Added to Email Lists.pdf</code></td><td>Subscribing to Kabal notification email lists</td></tr>
+        <tr><td><code>Kabal - Suppliers Guide - Dock Appointments.pdf</code></td><td>Terminal Delivery Framework, dock appointment times</td></tr>
+        <tr><td><code>Kabal - Suppliers Guide for Offshore Deliveries_REV1.pdf</code></td><td>Full supplier workflow - scheduling, cargo items, CCUs</td></tr>
+        <tr><td><code>Kabal - Vendor to Vendor Movements.pdf</code></td><td>Warehouse Orders for inter-supplier movements</td></tr>
+        <tr><td><code>Kabal Route Cheat Code.xlsx</code></td><td>Route reference data</td></tr>
+        <tr><td><code>Kabal_Shell GoM - New User Access Guide.pdf</code></td><td>Account creation, role requests, user setup</td></tr>
+        <tr><td><code>Marine Mapping Process with New WoW.pdf</code></td><td>End-to-end logistics process map (New Ways of Working)</td></tr>
+        <tr><td><code>SC Delivery - Future Logistics Optimization_Production LT Pack.pdf</code></td><td>Control Tower model, planning phases, future state</td></tr>
+        <tr><td><code>Step by Step- Creating Group Loads and Cargo Packages in Kabal.pdf</code></td><td>Group Load and Cargo Package creation workflow</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="page-break">Steps Completed Today</h2>
+    <h3>Step 1 - Locate Python Installation</h3>
+    <p>Python was not available on the system PATH because the Windows Store app execution alias was shadowing it. We located the actual Python installation by querying the Windows Registry:</p>
+    <pre><code>Get-ItemProperty "HKCU:\SOFTWARE\Python\PythonCore\*\InstallPath"</code></pre>
+    <p><strong>Result:</strong> Python 3.14.4 found at:</p>
+    <pre><code>C:\Users\Chris.Coyle\AppData\Local\Python\pythoncore-3.14-64\python.exe</code></pre>
+
+    <h3>Step 2 - Create a Python Virtual Environment</h3>
+    <p>A virtual environment isolates the project's Python packages from the rest of the system. This prevents version conflicts and keeps the project self-contained.</p>
+    <p><strong>Command run:</strong></p>
+    <pre><code>$python = "C:\Users\Chris.Coyle\AppData\Local\Python\pythoncore-3.14-64\python.exe"
+cd "C:\Users\Chris.Coyle\OneDrive - Shell\Kabal"
+&amp; $python -m venv .venv</code></pre>
+    <p><strong>What this did:</strong></p>
+    <ul>
+      <li>Created a <code>.venv</code> folder inside the Kabal project directory</li>
+      <li>This folder contains its own Python interpreter and a clean package environment</li>
+    </ul>
+
+    <h3>Step 3 - Activate the Virtual Environment and Install PDF Libraries</h3>
+    <pre><code>cd "C:\Users\Chris.Coyle\OneDrive - Shell\Kabal"
+.venv\Scripts\Activate.ps1
+python --version
+pip install pdfplumber pymupdf</code></pre>
+    <p><strong>What this did:</strong></p>
+    <ul>
+      <li><code>.venv\Scripts\Activate.ps1</code> - activated the virtual environment (prompt changes to show <code>(.venv)</code>)</li>
+      <li><code>pip install pdfplumber pymupdf</code> - installed two PDF extraction libraries:</li>
+      <li><strong>pdfplumber</strong> - best for extracting structured text and tables from PDF files</li>
+      <li><strong>pymupdf</strong> - fast PDF rendering library for complex layouts</li>
+    </ul>
+
+    <h3>Step 4 - Extract Text from All PDF Documents</h3>
+    <p>We created and ran a Python script (<code>extract_pdfs.py</code>) that automatically processed every PDF in the Kabal folder.</p>
+    <p><strong>Script:</strong> <code>extract_pdfs.py</code></p>
+    <p><strong>Command run:</strong></p>
+    <pre><code>python extract_pdfs.py</code></pre>
+    <p><strong>What this did:</strong></p>
+    <ul>
+      <li>Opened each PDF using <code>pdfplumber</code></li>
+      <li>Extracted all text content page by page</li>
+      <li>Extracted any tables found within each page</li>
+      <li>Saved the extracted content as <code>.txt</code> files in the <code>extracted_text/</code> subfolder</li>
+      <li>Output example: <code>Kabal - Suppliers Guide for Offshore Deliveries_REV1.txt</code> (25,876 characters extracted)</li>
+    </ul>
+    <p><strong>Output files created in <code>extracted_text/</code>:</strong></p>
+    <pre class="file-tree"><code>extracted_text/
+|-- Kabal - Entering Cost Codes.txt
+|-- Kabal - Get Added to Email Lists.txt
+|-- Kabal - Suppliers Guide - Dock Appointments.txt
+|-- Kabal - Suppliers Guide for Offshore Deliveries_REV1.txt
+|-- Kabal - Vendor to Vendor Movements.txt
+|-- Kabal_Shell GoM - New User Access Guide.txt
+|-- Marine Mapping Process with New WoW.txt
+|-- SC Delivery - Future Logistics Optimization_Production LT Pack.txt
+`-- Step by Step- Creating Group Loads and Cargo Packages in Kabal.txt</code></pre>
+
+    <h3>Step 5 - Analyze Document Themes</h3>
+    <p>After extraction, all text files were reviewed and the following major themes were identified across the documents:</p>
+    <table>
+      <thead>
+        <tr><th>Theme</th><th>Source Documents</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>End-to-end logistics lifecycle (Planning &rarr; Scheduling &rarr; Execution &rarr; Transport &rarr; Backhaul)</td><td>Marine Mapping, SC Delivery Optimization</td></tr>
+        <tr><td>Supplier workflow and responsibilities</td><td>Suppliers Guide for Offshore Deliveries, Email Lists</td></tr>
+        <tr><td>Cargo Package creation and management</td><td>Step by Step Guide, Suppliers Guide</td></tr>
+        <tr><td>Cargo item entry (manual and Excel) + CCU packing</td><td>Suppliers Guide for Offshore Deliveries</td></tr>
+        <tr><td>Vendor-to-vendor (warehouse order) movements</td><td>Vendor to Vendor Movements</td></tr>
+        <tr><td>Dock appointment scheduling at C-Port 2</td><td>Dock Appointments Guide</td></tr>
+        <tr><td>Cost code setup and management</td><td>Entering Cost Codes</td></tr>
+        <tr><td>User onboarding and access</td><td>New User Access Guide</td></tr>
+        <tr><td>Control Tower model and New WoW</td><td>SC Delivery Optimization, Marine Mapping</td></tr>
+        <tr><td>Roles and responsibilities (SCLC, OLC, Supplier, MFP, C-Log)</td><td>All documents</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Step 6 - Build the Interactive HTML Web Application</h3>
+    <p>Based on the themes and process flows identified, a single-file HTML web application was created: <code>kabal-guide.html</code>.</p>
+    <p><strong>No libraries, frameworks, or internet connection required</strong>. The entire app is self-contained in one HTML file using plain HTML, CSS, and JavaScript.</p>
+    <p><strong>Features built into the app:</strong></p>
+    <ul>
+      <li>Left sidebar navigation with 16 sections</li>
+      <li>Shell brand colors (navy, yellow)</li>
+      <li>Interactive process map with expandable phase steps</li>
+      <li>Visual timeline bar showing the full logistics cycle</li>
+      <li>Step-by-step formatted guides for each topic</li>
+      <li>Roles &amp; Responsibilities cards for all 8 key stakeholders</li>
+      <li>Full offshore asset contact directory (16 platforms)</li>
+      <li>20-term glossary</li>
+      <li>Color-coded status legend (matches Kabal's Supplier Layout)</li>
+      <li>Responsive design (works on smaller screens)</li>
+    </ul>
+
+    <h2 class="page-break">File Structure</h2>
+    <p>After today's work, your Kabal folder contains:</p>
+    <pre class="file-tree"><code>Kabal/
+|-- kabal-guide.html          &lt;- The interactive web app (OPEN THIS FILE)
+|-- extract_pdfs.py           &lt;- Python script used to extract PDF text
+|-- extract_pdf_text.ps1      &lt;- Earlier PowerShell extraction attempt (can be deleted)
+|-- README.md                 &lt;- This file
+|-- .venv/                    &lt;- Python virtual environment (do not edit)
+|-- extracted_text/           &lt;- Raw text extracted from each PDF
+|   `-- *.txt                 &lt;- One file per PDF document
+`-- [Original PDF files]      &lt;- Source documents (unchanged)</code></pre>
+
+    <h2>How to Open and Use the Kabal Guide</h2>
+    <h3>Opening the App</h3>
+    <ol>
+      <li>Navigate to your Kabal folder: <code>C:\Users\Chris.Coyle\OneDrive - Shell\Kabal</code></li>
+      <li>Double-click <strong><code>kabal-guide.html</code></strong></li>
+      <li>The app opens in your default web browser (Chrome, Edge, Firefox all work)</li>
+    </ol>
+    <blockquote>No internet connection, login, or installation required.</blockquote>
+
+    <h3>Navigating the App</h3>
+    <p>The app has a <strong>dark blue left sidebar</strong> with all sections grouped by category:</p>
+    <p><strong>Overview</strong></p>
+    <ul>
+      <li><strong>Home</strong> - What Kabal is, how the system works, quick navigation cards</li>
+      <li><strong>Process Map</strong> - The full end-to-end flow; click any phase to expand it</li>
+    </ul>
+    <p><strong>Logistics Cycle</strong> (follow these in order)</p>
+    <ul>
+      <li><strong>Planning Phase</strong> - 3 months to 21 days before BDD</li>
+      <li><strong>Scheduling Phase</strong> - 21 to 4 days before BDD (supplier actions)</li>
+      <li><strong>Execution Phase</strong> - 4 days to vessel departure</li>
+      <li><strong>Marine Transport</strong> - Vessel loading through offshore delivery</li>
+      <li><strong>Backhaul Process</strong> - Equipment return flow</li>
+    </ul>
+    <p><strong>How-To Guides</strong> (reference as needed)</p>
+    <ul>
+      <li><strong>User Access &amp; Setup</strong> - New user onboarding steps</li>
+      <li><strong>Group Loads &amp; Cargo Packages</strong> - For Shell Logistics Coordinators / OLCs</li>
+      <li><strong>Cargo Items &amp; CCUs</strong> - For suppliers entering cargo details</li>
+      <li><strong>Vendor-to-Vendor</strong> - Warehouse Order process</li>
+      <li><strong>Dock Appointments</strong> - C-Port 2 appointment requirements</li>
+      <li><strong>Cost Codes</strong> - Creating project cost codes</li>
+    </ul>
+    <p><strong>Reference</strong></p>
+    <ul>
+      <li><strong>Roles &amp; Responsibilities</strong> - Who does what</li>
+      <li><strong>Contacts &amp; Assets</strong> - All 16 offshore platform contacts</li>
+      <li><strong>Glossary</strong> - 20 key terms defined</li>
+    </ul>
+
+    <h2 class="page-break">Tip: Sharing the App with Your Team</h2>
+    <p>Because <code>kabal-guide.html</code> is a single self-contained file, you can share it with your team by:</p>
+    <ul>
+      <li><strong>Email attachment</strong> - attach the <code>.html</code> file directly</li>
+      <li><strong>Shared drive</strong> - copy to any OneDrive, SharePoint, or Teams shared folder</li>
+      <li><strong>Teams message</strong> - drag and drop the file into a Teams chat or channel</li>
+    </ul>
+    <p>The recipient simply double-clicks the file to open it. No setup required.</p>
+
+    <h2>Re-Running the PDF Extraction (If Documents Are Updated)</h2>
+    <p>If any of the source PDF documents are updated and you want to re-extract their content:</p>
+    <ol>
+      <li>Open a PowerShell terminal in the Kabal folder</li>
+      <li>Activate the virtual environment:</li>
+    </ol>
+    <pre><code>.venv\Scripts\Activate.ps1</code></pre>
+    <ol start="3">
+      <li>Run the extraction script:</li>
+    </ol>
+    <pre><code>python extract_pdfs.py</code></pre>
+    <ol start="4">
+      <li>Updated <code>.txt</code> files will be saved to the <code>extracted_text/</code> folder</li>
+    </ol>
+
+    <h2>Requirements</h2>
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>Version</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Python</td><td>3.14.4</td><td>Running the PDF extraction script</td></tr>
+        <tr><td>pdfplumber</td><td>0.11.9</td><td>PDF text and table extraction</td></tr>
+        <tr><td>pymupdf</td><td>1.27.2.2</td><td>PDF library (installed alongside pdfplumber)</td></tr>
+        <tr><td>Any web browser</td><td>Any</td><td>Opening the <code>kabal-guide.html</code> app</td></tr>
+      </tbody>
+    </table>
+    <p>Python install location: <code>C:\Users\Chris.Coyle\AppData\Local\Python\pythoncore-3.14-64\</code></p>
+
+    <p class="footer-note">Shell GoA Supply Chain Delivery &middot; Confidential &middot; April 2026</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "months": {
+    "2026-04": {
+      "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Cedar Ridge off hire starting April 1",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-05-21T19:50:51.433184"
+    },
+    "2026-01": {
+      "text": "\u2022Stena - Well control issues adding additional unplanned OSV demand and SP203 sidetrack, added ~ 9 days of drilling and additional unplanned OSV demand.\n\n\u2022Harvey Freedom (Spot Hire OSV) Planned to begin cleaning for release on 28 January\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n",
+      "base_fleet": "13",
+      "frac_spot_hires": "1",
+      "operational_spot_hires": "2",
+      "updated_at": "2026-05-22T00:12:53.435529"
+    },
+    "2026-02": {
+      "text": "\u2022Western GOA assets (Whale, Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast carry high risk of not being supported.\n\n\u2022Timeplanner schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus forecast assumes adding 3x additional Pilot Holes and Llano PA",
+      "base_fleet": "14",
+      "frac_spot_hires": "12",
+      "operational_spot_hires": "2 (Including HOS Commander)",
+      "updated_at": "2026-05-21T18:08:41.596210"
+    },
+    "2026-03": {
+      "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus unknown schedule direction with Dover 002 Deepen, only accounting for 1 OSV run.\n\n\u2022Mud Demand adding extra tension in the system, as well as supplier return constraints\n\n\u2022Cedar Ridge moves into cleaning last week of March \n",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-05-21T18:23:28.441224"
+    },
+    "2026-05": {
+      "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any time planner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022HOS Carolina maintained to support Dover's swap from drilling to completions\n",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-05-21T19:58:38.319117"
+    },
+    "2026-06": {
+      "text": "",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-06-01T17:55:07.385099"
+    },
+    "2026-09": {
+      "text": "test",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-05-26T19:39:30.881870"
+    },
+    "2026-07": {
+      "text": "",
+      "base_fleet": "",
+      "frac_spot_hires": "",
+      "operational_spot_hires": "",
+      "updated_at": "2026-06-02T19:37:40.478408"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "logistics-lookahead-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Azure Functions API for Logistics Look-Ahead shared state",
+  "engines": {
+    "node": ">=18"
+  }
+}
