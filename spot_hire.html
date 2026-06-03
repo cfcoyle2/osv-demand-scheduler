@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 Spot Hire Planner</title>
+  <link rel="stylesheet" href="styles.css?v=38">
+</head>
+<body class="spot-page">
+  <header class="topbar">
+    <div class="title-block">
+      <div class="brand-lockup" aria-label="Shell brand">
+        <span class="shell-brand">Shell</span>
+        <span class="shell-subbrand">Gulf of America Logistics</span>
+      </div>
+      <h1>Spot Hire Planner</h1>
+    </div>
+    <div class="header-actions">
+      <button id="refreshButton" type="button">Refresh</button>
+    </div>
+  </header>
+  <nav class="planner-tabbar" aria-label="Planner pages">
+    <a class="link-button" href="index.html">OSV Demand Scheduler</a>
+    <a class="link-button active" href="spot_hire.html" aria-current="page">Spot Hire Planner</a>
+  </nav>
+
+  <main class="spot-layout">
+    <section class="panel spot-hero-panel">
+      <div>
+        <h2>Spot Hire Schedule</h2>
+        <p id="sourceLabel">Loading 2026 Spot Hire Update...</p>
+      </div>
+      <div>
+        <div id="metricStrip" class="status-strip compact-metrics"></div>
+        <div id="metricDetails" class="metric-details" hidden></div>
+      </div>
+    </section>
+
+    <section class="spot-main-grid">
+      <aside class="panel controls-panel spot-controls">
+        <section>
+          <h2>New Activity</h2>
+          <form id="activityForm" class="form-grid">
+            <label>Asset<select id="assetInput" name="asset" required></select></label>
+            <label>Vessel Count<input name="vessel_count" type="number" min="1" step="1" inputmode="numeric" value="1"></label>
+            <label>Area<input name="area" placeholder="Perdido / Whale / Sparta"></label>
+            <label>Activity<input name="activity" required placeholder="Campaign / well scope"></label>
+            <label>Phase<select id="phaseInput" name="phase" required></select></label>
+            <label>Status<select name="status"><option>Planned</option><option>In Progress</option><option>Confirmed</option><option>Complete</option></select></label>
+            <div class="date-filter-grid">
+              <label>Start Date<input name="start_date" type="date" required></label>
+              <label>End Date<input name="end_date" type="date" required></label>
+            </div>
+            <label>Notes<input name="notes" placeholder="Optional update"></label>
+            <button type="submit" class="primary-button">Add Activity</button>
+          </form>
+        </section>
+
+        <section>
+          <h2>Filters</h2>
+          <label>Asset<select id="assetFilter" multiple size="7"><option value="all">All assets</option></select></label>
+          <label>Phase<select id="phaseFilter"><option value="all">All phases</option></select></label>
+          <label>Status<select id="statusFilter"><option value="all">All statuses</option></select></label>
+          <div class="date-filter-grid">
+            <label>View From<input id="dateFromFilter" type="date"></label>
+            <label>View To<input id="dateToFilter" type="date"></label>
+          </div>
+          <button id="clearDateFilter" type="button">Clear Dates</button>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <div class="panel gantt-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>2026 Spot Hire Update</h2>
+              <p id="rangeLabel" class="range-label"></p>
+            </div>
+            <div class="gantt-view-controls" aria-label="Gantt view controls">
+              <button id="jumpCurrentMonthBtn" type="button" title="Jump timeline to the current month">Current Month</button>
+              <label class="month-slider-label">View Month
+                <input id="monthViewSlider" type="range" min="0" max="11" step="1" value="0" title="Slide timeline month view">
+              </label>
+            </div>
+            <div class="legend" id="phaseLegend" aria-label="Spot hire color code legend"></div>
+          </div>
+          <div id="timeline" class="timeline spot-timeline"></div>
+          <div class="planning-notes-grid">
+            <section class="forecast-panel" aria-label="Monthly OSV forecast planning notes">
+              <div class="forecast-row forecast-demand-row">
+                <div class="forecast-title">Current OSV Forecasted Demand</div>
+                <div id="forecastDemand" class="forecast-value">Calculating monthly demand...</div>
+              </div>
+              <div class="forecast-row additional-runs-row">
+                <div class="forecast-title">Additional Runs During Activity</div>
+                <div id="additionalRunsDemand" class="forecast-value">Calculating additional runs...</div>
+              </div>
+              <label class="forecast-row base-fleet-row">
+                <span class="forecast-title">Current OSV Base Fleet</span>
+                <input id="baseFleetInput" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </label>
+              <label class="forecast-row frac-spot-row">
+                <span class="forecast-title">Frac Spot Hires</span>
+                <input id="fracSpotHiresInput" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </label>
+              <label class="forecast-row operational-spot-row">
+                <span class="forecast-title">Operational Spot Hires</span>
+                <input id="operationalSpotHiresInput" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </label>
+            </section>
+            <section class="impact-panel embedded-impact-panel">
+              <div class="panel-heading compact-heading">
+                <div>
+                  <h2>Potential Resourcing Impacts</h2>
+                  <p id="impactMeta">Monthly planning note saved on this link.</p>
+                </div>
+                <div class="impact-actions">
+                  <label>Month<select id="impactMonth"></select></label>
+                  <button id="saveImpactsButton" class="primary-button" type="button">Save Month Notes</button>
+                </div>
+              </div>
+              <textarea id="impactsInput" class="impact-textarea" placeholder="Enter current spot hire drivers, resource impacts, assumptions, and follow-up actions for the selected month."></textarea>
+            </section>
+          </div>
+        </div>
+
+        <div class="panel lower-panel demand-panel full-width-panel spot-table-panel">
+          <h2>Activity Table</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Asset</th>
+                  <th>Area</th>
+                  <th>Phase</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="activityTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="editDialog" class="dialog-backdrop" hidden>
+    <form id="editForm" class="dialog panel" aria-labelledby="editDialogTitle">
+      <h2 id="editDialogTitle" class="dialog-drag-handle">Adjust Activity</h2>
+      <input name="id" type="hidden">
+      <label>Asset<input name="asset" required></label>
+      <label>Vessel Count<input name="vessel_count" type="number" min="1" step="1" inputmode="numeric" value="1"></label>
+      <label>Area<input name="area"></label>
+      <label>Activity<input name="activity" required></label>
+      <label>Phase<select id="editPhase" name="phase"></select></label>
+      <label>Status<select name="status"><option>Planned</option><option>In Progress</option><option>Confirmed</option><option>Complete</option></select></label>
+      <div class="date-filter-grid">
+        <label>Start Date<input name="start_date" type="date"></label>
+        <label>End Date<input name="end_date" type="date"></label>
+      </div>
+      <label>Notes<input name="notes"></label>
+      <div class="dialog-actions">
+        <button id="deleteActivity" type="button" class="danger-button">Delete Activity</button>
+        <span class="dialog-spacer"></span>
+        <button id="cancelEdit" type="button">Cancel</button>
+        <button type="submit" class="primary-button">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="spot_hire.js?v=25"></script>
+</body>
+</html>
