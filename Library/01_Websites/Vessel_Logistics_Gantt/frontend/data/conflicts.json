@@ -3,12 +3,39 @@
     {
       "type": "on_location_overlap",
       "severity": "conflict",
+      "asset": "Pontus",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "9691dcfc08d2",
+        "2f4a412458b0"
+      ],
+      "tasks": [
+        {
+          "id": "9691dcfc08d2",
+          "activity": "GL 03 OSV / 36 hrs / 10,000 bbl of 16 ppg WBM, 22\" Casing, 22\" Casing Tools, 22\" HPWHH",
+          "project": "Sisco 001 Drill"
+        },
+        {
+          "id": "2f4a412458b0",
+          "activity": "GL 04 OSV / 48 hrs / 15,000 bbl of 16 ppg WBM",
+          "project": "Sisco 001 Drill"
+        }
+      ],
+      "overlap_minutes": 150,
+      "overlap_start": "2026-06-17T23:45:00",
+      "overlap_end": "2026-06-18T02:15:00",
+      "message": "Pontus: 2 routes are on location at the same time against 1 configured vessel (Jun 17 to Jun 18): 'GL 03 OSV / 36 hrs / 10,000 bbl of 16 ppg WBM, 22\" Casing, 22\" Casing Tools, 22\" HPWHH', 'GL 04 OSV / 48 hrs / 15,000 bbl of 16 ppg WBM'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
       "asset": "Poseidon",
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
         "6cc2762f29ec",
-        "0657e09f312a"
+        "1ccdba18e852"
       ],
       "tasks": [
         {
@@ -17,15 +44,15 @@
           "project": "Whale 10 Completion"
         },
         {
-          "id": "0657e09f312a",
+          "id": "1ccdba18e852",
           "activity": "GL 02 OSV-WBCO / HPDU / 3\" Iron / Tetra Filtration",
           "project": "Whale 10 Completion"
         }
       ],
       "overlap_minutes": 525,
-      "overlap_start": "2026-06-21T16:30:00",
-      "overlap_end": "2026-06-22T01:15:00",
-      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jun 21 to Jun 22): 'GL 01 OSV / 72hrs - Brine / DE / WBCO / THS', 'GL 02 OSV-WBCO / HPDU / 3\" Iron / Tetra Filtration'."
+      "overlap_start": "2026-06-22T14:30:00",
+      "overlap_end": "2026-06-22T23:15:00",
+      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jun 22 to Jun 22): 'GL 01 OSV / 72hrs - Brine / DE / WBCO / THS', 'GL 02 OSV-WBCO / HPDU / 3\" Iron / Tetra Filtration'."
     },
     {
       "type": "on_location_overlap",
@@ -50,9 +77,9 @@
         }
       ],
       "overlap_minutes": 2880,
-      "overlap_start": "2026-07-10T16:00:00",
-      "overlap_end": "2026-07-12T16:00:00",
-      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jul 10 to Jul 12): 'GL 06 HOS Carolina / 120 hrs - Frac Heads', 'GL 07 OSV- ROCS / Upper Completions Equipment / Packer Fluid'."
+      "overlap_start": "2026-07-11T14:00:00",
+      "overlap_end": "2026-07-13T14:00:00",
+      "message": "Poseidon: 2 routes are on location at the same time against 1 configured vessel (Jul 11 to Jul 13): 'GL 06 HOS Carolina / 120 hrs - Frac Heads', 'GL 07 OSV- ROCS / Upper Completions Equipment / Packer Fluid'."
     },
     {
       "type": "on_location_overlap",
