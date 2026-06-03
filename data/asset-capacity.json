@@ -1,0 +1,51 @@
+{
+  "asset_capacities": [
+    {
+      "asset": "Poseidon",
+      "vessel_count": 2,
+      "notes": "Whale 10 Campaign",
+      "date_from": "2026-05-10",
+      "date_to": "2026-07-12"
+    },
+    {
+      "asset": "Pontus",
+      "vessel_count": 2,
+      "notes": "Sisco Drill New Well",
+      "date_from": "2026-06-08",
+      "date_to": "2026-08-03"
+    },
+    {
+      "asset": "Stena Evolution",
+      "vessel_count": 2,
+      "notes": "Kaikias Campaign ",
+      "date_from": "2026-05-01",
+      "date_to": "2026-06-12"
+    },
+    {
+      "asset": "Olympus",
+      "vessel_count": 2,
+      "notes": "Riser Swap",
+      "date_from": "2026-06-12",
+      "date_to": "2026-06-30"
+    },
+    {
+      "asset": "Mars",
+      "vessel_count": 2,
+      "notes": "Riser Swap",
+      "date_from": "2026-05-25",
+      "date_to": "2026-06-05"
+    }
+  ],
+  "monthly_capacity_entries": [
+    {
+      "capacity_text": "9",
+      "date_from": "2026-06-01",
+      "date_to": "2026-06-30"
+    },
+    {
+      "capacity_text": "9",
+      "date_from": "2026-07-01",
+      "date_to": "2026-07-31"
+    }
+  ]
+}

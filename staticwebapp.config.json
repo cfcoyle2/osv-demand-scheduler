@@ -1,0 +1,36 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/data/*", "/static/*", "/*.css", "/*.js", "/*.png", "/*.jpg", "/*.svg", "/*.ico"]
+  },
+  "routes": [
+    {
+      "route": "/static/styles.css",
+      "rewrite": "/styles.css"
+    },
+    {
+      "route": "/static/app.js",
+      "rewrite": "/app.js"
+    },
+    {
+      "route": "/static/spot_hire.js",
+      "rewrite": "/spot_hire.js"
+    },
+    {
+      "route": "/spot-hire",
+      "rewrite": "/spot_hire.html"
+    },
+    {
+      "route": "/spot-hire.html",
+      "rewrite": "/spot_hire.html"
+    }
+  ],
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Cache-Control": "public, max-age=3600"
+  },
+  "mimeTypes": {
+    ".json": "application/json"
+  }
+}
