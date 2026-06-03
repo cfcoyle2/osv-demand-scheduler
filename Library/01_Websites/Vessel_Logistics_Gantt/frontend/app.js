@@ -1494,7 +1494,7 @@ enableSpotShiftDrag();
     const banner = document.createElement('div');
     banner.id = 'staticModeBanner';
     banner.style.cssText = 'background: #2d3748; color: #f7fafc; text-align: center; padding: 6px 12px; font-size: 13px; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;';
-    banner.innerHTML = '📖 Read-only mode — <a href="https://github.com/user/repo" style="color: #90cdf4;">Run locally</a> for full editing';
+    banner.innerHTML = '📖 Read-only mode — <a href="https://github.com/cfcoyle2/osv-demand-scheduler" style="color: #90cdf4;">View source on GitHub</a>';
     document.body.style.paddingTop = '32px';
     document.body.insertBefore(banner, document.body.firstChild);
   }

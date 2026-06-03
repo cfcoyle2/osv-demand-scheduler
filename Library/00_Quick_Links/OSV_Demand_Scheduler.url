@@ -1,7 +1,5 @@
 [InternetShortcut]
-URL=http://127.0.0.1:8000/?v=20260602
+URL=https://cfcoyle2.github.io/osv-demand-scheduler/
 IconIndex=0
 HotKey=0
 ShowCommand=1
-; TODO: After Azure deployment, update URL to:
-; URL=https://YOUR-APP-NAME.azurestaticapps.net/
