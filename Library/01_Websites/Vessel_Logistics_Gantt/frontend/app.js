@@ -19,8 +19,8 @@ const state = {
 };
 
 const COORDINATOR_ASSETS = {
-  'Chris Coyle': ['Pontus', 'Poseidon', 'Stena Evolution', 'Noble Voyager', 'Sparta'],
-  'Jennifer Palmisano': ['Auger', 'ESA', 'Stones', 'Whale', 'Perdido'],
+  'Chris Coyle': ['Pontus', 'Poseidon', 'Stena Evolution', 'Noble Voyager'],
+  'Jennifer Palmisano': ['Auger', 'ESA', 'Stones', 'Whale', 'Perdido', 'Sparta'],
   'Bryan Barron': ['Mars', 'Olympus', 'Ursa'],
   'Daphne Barrera': ['Appomattox', 'Vito', 'Q5000']
 };
