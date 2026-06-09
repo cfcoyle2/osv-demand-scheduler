@@ -3,7 +3,7 @@
   "sheet_name": "2026 Spot Hire Update",
   "records": [
     {
-      "id": "f7898e5b2bb7",
+      "id": "b6c6ef61a9cc",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "area": "Central Assets",
@@ -18,7 +18,7 @@
       "sheet_row": 11
     },
     {
-      "id": "9637a8ac9e2d",
+      "id": "670df7251007",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "area": "East Asset",
@@ -33,7 +33,7 @@
       "sheet_row": 12
     },
     {
-      "id": "a1f416a43b51",
+      "id": "176bf8569479",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "area": "West Assets",
@@ -48,7 +48,7 @@
       "sheet_row": 13
     },
     {
-      "id": "ba4977d75f52",
+      "id": "9bdbd1c28899",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "area": "Whale",
@@ -63,7 +63,7 @@
       "sheet_row": 14
     },
     {
-      "id": "3e70ba3c515f",
+      "id": "d31a5ffa7db8",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "area": "Perdido",
@@ -78,7 +78,7 @@
       "sheet_row": 15
     },
     {
-      "id": "17be31b93b28",
+      "id": "f1b140e9bb54",
       "asset": "Sparta",
       "display_asset": "Sparta",
       "area": "Sparta",
@@ -93,7 +93,7 @@
       "sheet_row": 16
     },
     {
-      "id": "4c11cb8a494c",
+      "id": "2a46aa9e96fb",
       "asset": "Llano",
       "display_asset": "Llano",
       "area": "Llano",
@@ -108,7 +108,7 @@
       "sheet_row": 17
     },
     {
-      "id": "eeb19b1a9dfc",
+      "id": "e608727ab213",
       "asset": "Stones",
       "display_asset": "Stones",
       "area": "Stones",
@@ -123,37 +123,37 @@
       "sheet_row": 18
     },
     {
-      "id": "ce34496a5734",
+      "id": "b1b08a8be701",
       "asset": "Dover",
       "display_asset": "Dover",
       "area": "Dover",
       "activity": "DOVER DV002 Drill Sidetrack",
       "phase": "Sidetrack",
       "color": "#42a5f5",
-      "start_date": "2026-03-31",
-      "end_date": "2026-06-15",
+      "start_date": "2026-03-31 00:00:00",
+      "end_date": "2026-05-04 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 19
     },
     {
-      "id": "5c151c5088eb",
+      "id": "6d4ccfdcc942",
       "asset": "Dover",
       "display_asset": "Dover",
       "area": "Dover",
       "activity": "Dover 002 Completion",
       "phase": "Completion",
       "color": "#ffb74d",
-      "start_date": "2026-03-31",
-      "end_date": "2026-06-15",
+      "start_date": "2026-05-27 00:00:00",
+      "end_date": "2026-06-27 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 20
     },
     {
-      "id": "19d71a0f3dd1",
+      "id": "2147b822cc14",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "area": "Whale",
@@ -168,7 +168,7 @@
       "sheet_row": 21
     },
     {
-      "id": "1f756c693591",
+      "id": "80e3e2b27593",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
@@ -183,7 +183,7 @@
       "sheet_row": 22
     },
     {
-      "id": "93659fa7f042",
+      "id": "0c704f321187",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
@@ -198,7 +198,7 @@
       "sheet_row": 23
     },
     {
-      "id": "488925b2bd33",
+      "id": "09518f10144b",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
@@ -213,22 +213,22 @@
       "sheet_row": 24
     },
     {
-      "id": "326622c827c2",
+      "id": "725f23650707",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
       "activity": "LWX 10 Completion",
       "phase": "Completion",
       "color": "#ffb74d",
-      "start_date": "2026-06-10",
-      "end_date": "2026-07-09",
+      "start_date": "2026-06-10 00:00:00",
+      "end_date": "2026-07-09 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 25
     },
     {
-      "id": "49daad98eb5a",
+      "id": "f7672562305d",
       "asset": "Proteus",
       "display_asset": "Proteus",
       "area": "Vicksburg",
@@ -243,7 +243,7 @@
       "sheet_row": 26
     },
     {
-      "id": "b7cb551d07e4",
+      "id": "89d875f7eced",
       "asset": "Vicksburg",
       "display_asset": "Vicksburg",
       "area": "Vicksburg",
@@ -258,7 +258,7 @@
       "sheet_row": 27
     },
     {
-      "id": "782735e00506",
+      "id": "8dbbf5c43378",
       "asset": "Vicksburg",
       "display_asset": "Vicksburg",
       "area": "Vicksburg",
@@ -273,7 +273,7 @@
       "sheet_row": 28
     },
     {
-      "id": "bb0e6b1bd4a1",
+      "id": "06678c4b9b52",
       "asset": "Vicksburg",
       "display_asset": "Vicksburg",
       "area": "Vicksburg",
@@ -288,7 +288,7 @@
       "sheet_row": 29
     },
     {
-      "id": "e65279e9149b",
+      "id": "65d7ead03f8e",
       "asset": "Stena",
       "display_asset": "Stena",
       "area": "Sparta",
@@ -303,7 +303,7 @@
       "sheet_row": 30
     },
     {
-      "id": "9a0936426fca",
+      "id": "f74a1f47ae79",
       "asset": "Kaikias",
       "display_asset": "Kaikias",
       "area": "Kaikias",
@@ -318,7 +318,7 @@
       "sheet_row": 31
     },
     {
-      "id": "91c57f21b27b",
+      "id": "fa6b01e5dc62",
       "asset": "Kaikias",
       "display_asset": "Kaikias",
       "area": "Kaikias",
@@ -333,7 +333,7 @@
       "sheet_row": 32
     },
     {
-      "id": "4b4e37eef5d1",
+      "id": "9617b41a77f6",
       "asset": "Kaikias",
       "display_asset": "Kaikias",
       "area": "Kaikias",
@@ -348,7 +348,7 @@
       "sheet_row": 33
     },
     {
-      "id": "1894cf933e77",
+      "id": "610c33878b40",
       "asset": "Thalassa",
       "display_asset": "Thalassa",
       "area": "Whale",
@@ -363,7 +363,7 @@
       "sheet_row": 34
     },
     {
-      "id": "d4036fe63d30",
+      "id": "2ec88c1ff388",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
@@ -378,7 +378,7 @@
       "sheet_row": 35
     },
     {
-      "id": "5a71a857eaa1",
+      "id": "06ac29151ea1",
       "asset": "Vito",
       "display_asset": "Vito",
       "area": "Mars Corridor",
@@ -393,7 +393,7 @@
       "sheet_row": 36
     },
     {
-      "id": "29f045eac150",
+      "id": "9b302f9c1ab8",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "area": "Perdido",
@@ -408,7 +408,7 @@
       "sheet_row": 37
     },
     {
-      "id": "e43f8b954b26",
+      "id": "1fd0aee0da92",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "area": "Perdido",
@@ -423,7 +423,7 @@
       "sheet_row": 38
     },
     {
-      "id": "22a7e63b0aa9",
+      "id": "c3ca6f26e151",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "area": "Mars Corridor",
@@ -438,7 +438,7 @@
       "sheet_row": 39
     },
     {
-      "id": "4661421e8e30",
+      "id": "bdf368dd38cb",
       "asset": "Mars Corridor",
       "display_asset": "Mars Corridor",
       "area": "Mars Corridor",
@@ -453,7 +453,7 @@
       "sheet_row": 40
     },
     {
-      "id": "b35c9bd0b84a",
+      "id": "4977befb1b0d",
       "asset": "Mars Corridor",
       "display_asset": "Mars Corridor",
       "area": "Mars Corridor",
@@ -468,7 +468,7 @@
       "sheet_row": 41
     },
     {
-      "id": "41dbf2754d19",
+      "id": "7aaf6cf7b3b1",
       "asset": "Mars",
       "display_asset": "Mars",
       "area": "Mars Corridor",
@@ -483,7 +483,7 @@
       "sheet_row": 42
     },
     {
-      "id": "c565c47de454",
+      "id": "547b760bc879",
       "asset": "Mars Corridor",
       "display_asset": "Mars Corridor",
       "area": "Mars Corridor",
@@ -498,7 +498,7 @@
       "sheet_row": 43
     },
     {
-      "id": "f79a1583efcf",
+      "id": "90fbfcdfb0e6",
       "asset": "Mars Corridor",
       "display_asset": "Mars Corridor",
       "area": "Mars Corridor",
@@ -513,7 +513,7 @@
       "sheet_row": 44
     },
     {
-      "id": "392adc4351ba",
+      "id": "35eae360dded",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "area": "Whale",
@@ -528,7 +528,7 @@
       "sheet_row": 45
     },
     {
-      "id": "2c89ada410a2",
+      "id": "5a40c9840fbb",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",

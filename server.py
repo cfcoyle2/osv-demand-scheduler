@@ -183,6 +183,39 @@ def get_spot_hire():
 @app.route('/api/spot-hire', methods=['POST'])
 def save_spot_hire():
     data = request.get_json()
+    
+    # Check if this is a single new record (has 'asset' and 'activity' but no 'records')
+    if 'asset' in data and 'activity' in data and 'records' not in data:
+        # This is a new record to add - load existing data and append
+        try:
+            with open(DATA_DIR / 'spot-hire.json', 'r') as f:
+                spot_data = json.load(f)
+        except FileNotFoundError:
+            spot_data = {'records': [], 'source': '', 'phase_colors': {}}
+        
+        # Generate ID for new record
+        new_record = {
+            'id': generate_id(),
+            'asset': data.get('asset', ''),
+            'display_asset': data.get('display_asset') or data.get('asset', ''),
+            'vessel_count': data.get('vessel_count', 1),
+            'area': data.get('area', ''),
+            'activity': data.get('activity', ''),
+            'phase': data.get('phase', ''),
+            'color': data.get('color', '#78909c'),
+            'start_date': data.get('start_date', ''),
+            'end_date': data.get('end_date', ''),
+            'status': data.get('status', 'Planned'),
+            'notes': data.get('notes', ''),
+            'source': 'app'
+        }
+        spot_data.setdefault('records', []).append(new_record)
+        
+        with open(DATA_DIR / 'spot-hire.json', 'w') as f:
+            json.dump(spot_data, f, indent=2)
+        return jsonify({'success': True, 'id': new_record['id']})
+    
+    # Otherwise, save the full data structure
     with open(DATA_DIR / 'spot-hire.json', 'w') as f:
         json.dump(data, f, indent=2)
     return jsonify({'success': True})
