@@ -688,6 +688,7 @@ def export_schedule():
 # ---------------------------------------------------------------------------
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+    app.mount("/data", StaticFiles(directory=FRONTEND_DIR / "data"), name="data")
 
     @app.get("/")
     def root() -> FileResponse:
@@ -696,6 +697,22 @@ if FRONTEND_DIR.exists():
     @app.get("/spot-hire")
     def spot_hire_page() -> FileResponse:
         return FileResponse(FRONTEND_DIR / "spot_hire.html")
+
+    @app.get("/spot_hire.html")
+    def spot_hire_html() -> FileResponse:
+        return FileResponse(FRONTEND_DIR / "spot_hire.html")
+
+    @app.get("/styles.css")
+    def styles_css() -> FileResponse:
+        return FileResponse(FRONTEND_DIR / "styles.css", media_type="text/css")
+
+    @app.get("/app.js")
+    def app_js() -> FileResponse:
+        return FileResponse(FRONTEND_DIR / "app.js", media_type="application/javascript")
+
+    @app.get("/spot_hire.js")
+    def spot_hire_js() -> FileResponse:
+        return FileResponse(FRONTEND_DIR / "spot_hire.js", media_type="application/javascript")
 
 
 if __name__ == "__main__":

@@ -130,17 +130,17 @@ function showToast(message) {
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
 
-// Map API endpoints to static JSON files
+// Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
-  '/api/tasks': '/data/tasks.json',
-  '/api/conflicts': '/data/conflicts.json',
-  '/api/asset-capacity': '/data/asset-capacity.json',
-  '/api/spot-hire': '/data/spot-hire.json'
+  '/api/tasks': 'data/tasks.json',
+  '/api/conflicts': 'data/conflicts.json',
+  '/api/asset-capacity': 'data/asset-capacity.json',
+  '/api/spot-hire': 'data/spot-hire.json'
 };
 
 async function checkApiHealth() {
   try {
-    const response = await fetch('/api/health', { method: 'GET' });
+    const response = await fetch('api/health', { method: 'GET', signal: AbortSignal.timeout(2000) });
     return response.ok;
   } catch (_) {
     return false;

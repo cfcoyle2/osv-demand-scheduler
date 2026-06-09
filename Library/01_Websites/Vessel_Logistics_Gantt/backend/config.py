@@ -6,9 +6,10 @@ BACKEND_DIR = Path(__file__).resolve().parent
 DATA_DIR = BACKEND_DIR / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
-# Drop the OSV workbook here. The app can also replace this file through upload.
+# OneDrive-synced SharePoint file (live data source)
+SHAREPOINT_SYNC_DIR = Path(r"C:\Users\Chris.Coyle\OneDrive - Shell\DW GOM Supply Chain - SC Delivery\Logistics New Ways of Working")
 WORKBOOK_FILENAME = "Asset Activity Tracker_MASTER.xlsx"
-WORKBOOK_PATH = DATA_DIR / WORKBOOK_FILENAME
+WORKBOOK_PATH = SHAREPOINT_SYNC_DIR / WORKBOOK_FILENAME
 
 # Sheet name in the workbook - ONLY this sheet is used.
 OSV_SHEET_NAME = "OSV Demand Tracker"

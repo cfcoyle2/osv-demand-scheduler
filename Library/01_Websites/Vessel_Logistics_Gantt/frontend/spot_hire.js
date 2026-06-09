@@ -91,7 +91,44 @@ function showToast(message) {
   window.setTimeout(() => { els.toast.hidden = true; }, 3200);
 }
 
+// Static mode: when true, loads data from /data/ folder instead of API
+let staticMode = false;
+
+// Map API endpoints to static JSON files (relative paths for GitHub Pages)
+const STATIC_DATA_MAP = {
+  '/api/spot-hire': 'data/spot-hire.json'
+};
+
+async function checkApiHealth() {
+  try {
+    const response = await fetch('api/health', { method: 'GET', signal: AbortSignal.timeout(2000) });
+    return response.ok;
+  } catch (_) {
+    return false;
+  }
+}
+
 async function api(path, options = {}) {
+  // In static mode, redirect read operations to static JSON files
+  if (staticMode && (!options.method || options.method === 'GET')) {
+    const staticPath = STATIC_DATA_MAP[path];
+    if (staticPath) {
+      const response = await fetch(staticPath);
+      if (!response.ok) throw new Error(`Failed to load static data: ${staticPath}`);
+      return response.json();
+    }
+    // For endpoints without static data, return empty response
+    if (path.includes('/api/spot-hire/impacts')) {
+      return { text: '', base_fleet: '', frac_spot_hires: '', operational_spot_hires: '' };
+    }
+  }
+  
+  // In static mode, block write operations with a friendly message
+  if (staticMode && options.method && options.method !== 'GET') {
+    showToast('Read-only mode: Changes cannot be saved in the hosted version');
+    throw new Error('Write operations disabled in static mode');
+  }
+  
   const response = await fetch(path, options);
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
@@ -903,4 +940,20 @@ bindFilters();
 enableTimelinePan();
 enableBarShift();
 enableDialogDrag();
-loadData().catch(err => showToast(err.message));
+
+// Initialize: check if API is available, otherwise use static mode
+(async function init() {
+  const apiAvailable = await checkApiHealth();
+  if (!apiAvailable) {
+    staticMode = true;
+    console.log('API not available - running in static read-only mode');
+    // Add visual indicator for static mode
+    const banner = document.createElement('div');
+    banner.id = 'staticModeBanner';
+    banner.style.cssText = 'background: #2d3748; color: #f7fafc; text-align: center; padding: 6px 12px; font-size: 13px; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;';
+    banner.innerHTML = '📖 Read-only mode — <a href="https://github.com/cfcoyle2/osv-demand-scheduler" style="color: #90cdf4;">View source on GitHub</a>';
+    document.body.style.paddingTop = '32px';
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+  loadData().catch(err => showToast(err.message));
+})();
