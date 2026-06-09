@@ -347,7 +347,7 @@ function filteredTasks() {
     const routeEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || routeStart;
     const overlapsRange = (!rangeStart || (routeEnd && routeEnd >= rangeStart)) &&
       (!rangeEnd || (routeStart && routeStart <= rangeEnd));
-    return (state.filters.coordinator === 'all' || (task.coordinator || 'Unassigned') === state.filters.coordinator) &&
+    return (state.filters.coordinator === 'all' || (task.coordinator || coordinatorForAsset(task.asset)) === state.filters.coordinator) &&
       (state.filters.asset === 'all' || task.asset === state.filters.asset) &&
       (state.filters.status === 'all' || task.status === state.filters.status) &&
       overlapsRange;
