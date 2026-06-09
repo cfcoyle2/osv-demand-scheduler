@@ -258,16 +258,12 @@ def apply_spot_hire_changes():
         record_id = change.get('id')
         if record_id and record_id in records_by_id:
             record = records_by_id[record_id]
-            if 'start_date' in change:
-                record['start_date'] = change['start_date']
-            if 'end_date' in change:
-                record['end_date'] = change['end_date']
-            if 'status' in change:
-                record['status'] = change['status']
-            if 'phase' in change:
-                record['phase'] = change['phase']
-            if 'notes' in change:
-                record['notes'] = change['notes']
+            # Update all editable fields
+            for field in ['start_date', 'end_date', 'status', 'phase', 'notes', 
+                          'vessel_count', 'asset', 'display_asset', 'area', 
+                          'activity', 'color']:
+                if field in change:
+                    record[field] = change[field]
     
     # Save
     spot_data['records'] = list(records_by_id.values())
