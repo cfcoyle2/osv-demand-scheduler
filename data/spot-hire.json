@@ -327,12 +327,13 @@
       "activity": "KI-2 Completion",
       "phase": "Completion",
       "color": "#ffb74d",
-      "start_date": "2026-05-18 00:00:00",
-      "end_date": "2026-06-06 00:00:00",
+      "start_date": "2026-05-18",
+      "end_date": "2026-06-19",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 32
+      "sheet_row": 32,
+      "vessel_count": 2
     },
     {
       "id": "9617b41a77f6",
@@ -467,15 +468,16 @@
       "asset": "Mars Corridor",
       "display_asset": "Mars Corridor",
       "area": "Mars Corridor",
-      "activity": "MB 09 Side Track",
+      "activity": "A23 Side Track",
       "phase": "Side Track",
       "color": "#42a5f5",
-      "start_date": "2026-05-15 00:00:00",
-      "end_date": "2026-07-10 00:00:00",
+      "start_date": "2026-05-15",
+      "end_date": "2026-07-10",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 41
+      "sheet_row": 41,
+      "vessel_count": 1
     },
     {
       "id": "7aaf6cf7b3b1",
@@ -511,18 +513,19 @@
     },
     {
       "id": "90fbfcdfb0e6",
-      "asset": "Mars Corridor",
-      "display_asset": "Mars Corridor",
+      "asset": "Mars",
+      "display_asset": "Mars",
       "area": "Mars Corridor",
       "activity": "A23 Riser Swap",
       "phase": "Riser",
       "color": "#26a69a",
-      "start_date": "2026-05-30 00:00:00",
-      "end_date": "2026-06-05 00:00:00",
+      "start_date": "2026-05-30",
+      "end_date": "2026-06-05",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 44
+      "sheet_row": 44,
+      "vessel_count": 1
     },
     {
       "id": "35eae360dded",
@@ -582,6 +585,21 @@
       "color": "#4fc3f7",
       "start_date": "2026-07-26",
       "end_date": "2026-08-02",
+      "status": "Planned",
+      "notes": "",
+      "source": "app"
+    },
+    {
+      "id": "005824ad222e",
+      "asset": "Olympus",
+      "display_asset": "Olympus",
+      "vessel_count": 1,
+      "area": "Mars Corridor",
+      "activity": "MB 09 Riser Swap",
+      "phase": "Dedicated OSV",
+      "color": "#9575cd",
+      "start_date": "2026-06-24",
+      "end_date": "2026-06-28",
       "status": "Planned",
       "notes": "",
       "source": "app"
