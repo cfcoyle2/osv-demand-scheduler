@@ -3,7 +3,7 @@
   "sheet_name": "2026 Spot Hire Update",
   "records": [
     {
-      "id": "ccb9236adebc",
+      "id": "ba402f2411ca",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "area": "Central Assets",
@@ -18,7 +18,7 @@
       "sheet_row": 11
     },
     {
-      "id": "bba308aae78f",
+      "id": "7aeae98f75ed",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "area": "East Asset",
@@ -33,7 +33,7 @@
       "sheet_row": 12
     },
     {
-      "id": "855ad657f1c1",
+      "id": "28c3423f1d53",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "area": "West Assets",
@@ -48,7 +48,7 @@
       "sheet_row": 13
     },
     {
-      "id": "79162d378b4a",
+      "id": "46edf1e4911a",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "area": "Whale",
@@ -63,7 +63,7 @@
       "sheet_row": 14
     },
     {
-      "id": "16f23fb46db2",
+      "id": "102c0385ec9c",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "area": "Perdido",
@@ -78,7 +78,7 @@
       "sheet_row": 15
     },
     {
-      "id": "99ce1a0919f2",
+      "id": "afeea43ac28b",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "area": "Whale",
@@ -93,7 +93,7 @@
       "sheet_row": 21
     },
     {
-      "id": "d75314b00189",
+      "id": "8c6845f52b92",
       "asset": "Proteus",
       "display_asset": "Proteus",
       "area": "Vicksburg",
@@ -108,7 +108,7 @@
       "sheet_row": 26
     },
     {
-      "id": "2ebb509c2eba",
+      "id": "3d09874bfaed",
       "asset": "Stena",
       "display_asset": "Stena",
       "area": "Sparta",
@@ -123,7 +123,7 @@
       "sheet_row": 30
     },
     {
-      "id": "bba72aa3e0f2",
+      "id": "40a99413bcf3",
       "asset": "Thalassa",
       "display_asset": "Thalassa",
       "area": "Whale",
@@ -138,7 +138,7 @@
       "sheet_row": 34
     },
     {
-      "id": "d3c2810b3231",
+      "id": "c2a940dbd059",
       "asset": "Vito",
       "display_asset": "Vito",
       "area": "Mars Corridor",
@@ -153,7 +153,7 @@
       "sheet_row": 36
     },
     {
-      "id": "d2fe4e36b9df",
+      "id": "910c8a934a01",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "area": "Perdido",
@@ -168,7 +168,7 @@
       "sheet_row": 37
     },
     {
-      "id": "985e5fd674bb",
+      "id": "0efb59adfc85",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "area": "Mars Corridor",
@@ -183,7 +183,7 @@
       "sheet_row": 39
     },
     {
-      "id": "e77efdebb562",
+      "id": "d4d357c3ff9c",
       "asset": "Mars",
       "display_asset": "Mars",
       "area": "Mars Corridor",
@@ -198,7 +198,7 @@
       "sheet_row": 42
     },
     {
-      "id": "f3562b352ca6",
+      "id": "33ca689e791f",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "area": "Whale",
@@ -213,7 +213,7 @@
       "sheet_row": 45
     },
     {
-      "id": "5110551dc042",
+      "id": "38e9e388f0c4",
       "asset": "Whale",
       "display_asset": "Whale",
       "area": "Whale",
@@ -228,7 +228,7 @@
       "sheet_row": 46
     },
     {
-      "id": "42ea7d240efd",
+      "id": "dea4ae60225a",
       "asset": "Enchilada",
       "display_asset": "Enchilada",
       "area": "Central Assets",
@@ -243,7 +243,7 @@
       "sheet_row": 47
     },
     {
-      "id": "f8c12f65f31f",
+      "id": "edd89ce0dc9a",
       "asset": "Salsa",
       "display_asset": "Salsa",
       "area": "Central Assets",
@@ -270,5 +270,5 @@
     "Frac Spot Hire": "#e76f51",
     "Other": "#f72585"
   },
-  "imported_at": "2026-06-09T09:48:52.379252"
+  "imported_at": "2026-06-09T11:23:00.965547"
 }

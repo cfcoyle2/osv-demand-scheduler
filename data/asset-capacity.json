@@ -1,44 +1,37 @@
 {
-  "entries": [
-    {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "Whale 10 Campaign",
-      "date_from": "2026-05-10",
-      "date_to": "2026-07-23"
-    },
+  "asset_capacities": [
     {
       "asset": "Pontus",
       "vessel_count": 2,
-      "notes": "Sisco Drill New Well",
+      "notes": "Sisco 001 Drill New Well",
       "date_from": "2026-06-15",
       "date_to": "2026-07-27"
     },
     {
+      "asset": "Poseidon",
+      "vessel_count": 2,
+      "notes": "Whale 10 Deepening",
+      "date_from": "2026-05-10",
+      "date_to": "2026-06-27"
+    },
+    {
+      "asset": "Poseidon",
+      "vessel_count": 2,
+      "notes": "Whale 10 Completion",
+      "date_from": "2026-06-27",
+      "date_to": "2026-07-26"
+    },
+    {
       "asset": "Stena Evolution",
       "vessel_count": 2,
-      "notes": "Kaikias Campaign ",
-      "date_from": "2026-05-01",
+      "notes": "Kaikias KI-2 Completion",
+      "date_from": "2026-05-18",
       "date_to": "2026-06-19"
     },
     {
-      "asset": "Olympus",
-      "vessel_count": 2,
-      "notes": "Riser Swap",
-      "date_from": "2026-06-12",
-      "date_to": "2026-06-30"
-    },
-    {
-      "asset": "Mars",
-      "vessel_count": 2,
-      "notes": "Riser Swap",
-      "date_from": "2026-05-25",
-      "date_to": "2026-06-05"
-    },
-    {
       "asset": "Stena Evolution",
       "vessel_count": 2,
-      "notes": "Sparta SP203 Drill Bypass",
+      "notes": "Sparta SP 203 Drill Bypass",
       "date_from": "2026-06-19",
       "date_to": "2026-07-23"
     }

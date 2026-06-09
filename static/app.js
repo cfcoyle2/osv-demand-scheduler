@@ -187,7 +187,7 @@ async function loadData() {
   state.bufferHours = tasksPayload.buffer_hours || 24;
   state.conflicts = conflictsPayload.conflicts || [];
   state.fleet = conflictsPayload.fleet || null;
-  state.assetCapacity = normalizeAssetCapacityEntries(capacityPayload.asset_capacities || []);
+  state.assetCapacity = normalizeAssetCapacityEntries(capacityPayload.asset_capacities || capacityPayload.entries || []);
   state.monthlyCapacityEntries = normalizeMonthlyCapacityEntries(capacityPayload.monthly_capacity_entries || []);
   render();
 }
@@ -740,12 +740,12 @@ function renderFleetSummary(demandTasks = state.tasks) {
 }
 
 async function saveAssetCapacity() {
-  const entries = collectCapacityEntriesFromDom().filter(entry => entry.asset);
+  const asset_capacities = collectCapacityEntriesFromDom().filter(entry => entry.asset);
   const monthly_capacity_entries = collectMonthlyCapacityEntriesFromDom().filter(entry => entry.capacity_text || entry.date_from || entry.date_to);
   await api('/api/asset-capacity', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ entries, monthly_capacity_entries })
+    body: JSON.stringify({ asset_capacities, monthly_capacity_entries })
   });
   showToast('Asset capacity saved');
   await loadData();
