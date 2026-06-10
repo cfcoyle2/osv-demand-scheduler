@@ -564,7 +564,7 @@ function renderTimeline(records) {
       const { vesselCount } = parseAssetInfo(record);
       const vesselBadge = vesselCountBadge(record);
       return `<button class="task-bar spot-bar" data-edit="${record.id}" data-shift="${record.id}" style="position:absolute;left:${leftPx}px;width:${widthPx}px;background:${escapeHtml(color)};" title="${escapeHtml(record.activity)} (${escapeHtml(record.phase || 'Other')}) - ${vesselCount} vessel${vesselCount === 1 ? '' : 's'}. Click to edit.">
-        <span class="task-title">${vesselBadge}${escapeHtml(record.phase || 'Activity')}</span>
+        <span class="task-title">${vesselBadge}${escapeHtml(record.activity || record.phase || 'Activity')}</span>
       </button>`;
     }).filter(Boolean).join('');
     
