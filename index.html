@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=38">
+  <link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -162,6 +162,25 @@
           <h2>Schedule Watch</h2>
           <div class="watch-scroll">
             <div id="fleetSummary" class="fleet-summary"></div>
+            
+            <div id="weeklyDemandForecast" class="weekly-demand-section">
+              <h3>Weekly Demand Forecast</h3>
+              <p class="section-desc">Week-by-week OSV demand based on entered activities. Compares against fleet capacity of <strong>9 OSVs</strong>.</p>
+              <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
+            </div>
+            
+            <div id="assetForecastSection" class="asset-forecast-section">
+              <h3>Asset Activity Forecast</h3>
+              <p class="section-desc">Highlight a specific asset's activities to forecast vessel needs.</p>
+              <div class="asset-forecast-controls">
+                <label>Asset<select id="forecastAssetSelect"><option value="all">All assets</option></select></label>
+                <label>From<input id="forecastDateFrom" type="date"></label>
+                <label>To<input id="forecastDateTo" type="date"></label>
+                <button id="runForecastBtn" type="button" class="primary-button">Run Forecast</button>
+              </div>
+              <div id="assetForecastResult" class="asset-forecast-result"></div>
+            </div>
+            
             <div id="conflicts" class="conflicts"></div>
           </div>
         </section>

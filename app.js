@@ -42,6 +42,12 @@ const els = {
   table: document.getElementById('taskTable'),
   fleetSummary: document.getElementById('fleetSummary'),
   conflicts: document.getElementById('conflicts'),
+  weeklyDemandGrid: document.getElementById('weeklyDemandGrid'),
+  forecastAssetSelect: document.getElementById('forecastAssetSelect'),
+  forecastDateFrom: document.getElementById('forecastDateFrom'),
+  forecastDateTo: document.getElementById('forecastDateTo'),
+  runForecastBtn: document.getElementById('runForecastBtn'),
+  assetForecastResult: document.getElementById('assetForecastResult'),
   coordinatorInput: document.getElementById('coordinatorInput'),
   assetInput: document.getElementById('assetInput'),
   coordinatorFilter: document.getElementById('coordinatorFilter'),
@@ -751,6 +757,249 @@ async function saveAssetCapacity() {
   await loadData();
 }
 
+const OSV_FLEET_CAPACITY = 9;
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatWeekLabel(weekStart) {
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const startStr = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endStr = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${startStr} - ${endStr}`;
+}
+
+function calculateWeeklyDemand(tasks) {
+  const weeks = new Map();
+  
+  tasks.forEach(task => {
+    const start = parseDate(task.start_date);
+    const end = parseDate(task.return_end) || parseDate(task.offshore_end) || start;
+    if (!start || !end) return;
+    
+    // Iterate through each day of the task
+    const current = new Date(start);
+    while (current <= end) {
+      const weekStart = getWeekStart(current);
+      const weekKey = weekStart.toISOString().split('T')[0];
+      
+      if (!weeks.has(weekKey)) {
+        weeks.set(weekKey, { weekStart, tasks: new Set(), peakDemand: 0 });
+      }
+      weeks.get(weekKey).tasks.add(task.id);
+      
+      current.setDate(current.getDate() + 1);
+    }
+  });
+  
+  // Calculate peak concurrent demand per week
+  weeks.forEach((weekData, weekKey) => {
+    const weekStart = weekData.weekStart;
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+    
+    // Find tasks that overlap with this week
+    const overlappingTasks = tasks.filter(task => {
+      const taskStart = parseDate(task.start_date);
+      const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
+      if (!taskStart || !taskEnd) return false;
+      return taskStart <= weekEnd && taskEnd >= weekStart;
+    });
+    
+    // Calculate peak concurrent for each day in the week
+    let peakDemand = 0;
+    const dayCheck = new Date(weekStart);
+    while (dayCheck <= weekEnd) {
+      let concurrent = 0;
+      overlappingTasks.forEach(task => {
+        const taskStart = parseDate(task.start_date);
+        const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
+        if (taskStart <= dayCheck && taskEnd >= dayCheck) {
+          concurrent++;
+        }
+      });
+      peakDemand = Math.max(peakDemand, concurrent);
+      dayCheck.setDate(dayCheck.getDate() + 1);
+    }
+    
+    weekData.peakDemand = peakDemand;
+  });
+  
+  return Array.from(weeks.values()).sort((a, b) => a.weekStart - b.weekStart);
+}
+
+function renderWeeklyDemandForecast(tasks = state.tasks) {
+  if (!els.weeklyDemandGrid) return;
+  
+  const weeklyData = calculateWeeklyDemand(tasks);
+  
+  if (!weeklyData.length) {
+    els.weeklyDemandGrid.innerHTML = '<div class="empty-state">No demand data to forecast. Add route activities to see weekly demand.</div>';
+    return;
+  }
+  
+  // Show only next 8 weeks from today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const eightWeeksOut = new Date(today);
+  eightWeeksOut.setDate(eightWeeksOut.getDate() + 56);
+  
+  const relevantWeeks = weeklyData.filter(w => w.weekStart >= getWeekStart(today) && w.weekStart <= eightWeeksOut);
+  
+  if (!relevantWeeks.length) {
+    els.weeklyDemandGrid.innerHTML = '<div class="empty-state">No demand in the next 8 weeks.</div>';
+    return;
+  }
+  
+  els.weeklyDemandGrid.innerHTML = relevantWeeks.map(week => {
+    const demand = week.peakDemand;
+    const capacity = OSV_FLEET_CAPACITY;
+    let statusClass = 'under-capacity';
+    let statusText = `${capacity - demand} available`;
+    
+    if (demand > capacity) {
+      statusClass = 'over-capacity';
+      statusText = `${demand - capacity} over capacity!`;
+    } else if (demand === capacity) {
+      statusClass = 'at-capacity';
+      statusText = 'At capacity';
+    }
+    
+    return `<div class="week-card ${statusClass}">
+      <span class="week-label">${formatWeekLabel(week.weekStart)}</span>
+      <span class="week-demand">${demand}</span>
+      <span class="week-capacity">of ${capacity} OSVs</span>
+      <span class="week-status">${statusText}</span>
+    </div>`;
+  }).join('');
+}
+
+function populateForecastAssetSelect(tasks = state.tasks) {
+  if (!els.forecastAssetSelect) return;
+  const assets = unique(tasks.map(t => t.asset)).filter(Boolean).sort();
+  els.forecastAssetSelect.innerHTML = '<option value="all">All assets</option>' + assets.map(asset => `<option value="${escapeHtml(asset)}">${escapeHtml(asset)}</option>`).join('');
+}
+
+function runAssetForecast() {
+  if (!els.assetForecastResult) return;
+  
+  const selectedAsset = els.forecastAssetSelect?.value || 'all';
+  const dateFrom = els.forecastDateFrom?.value ? parseDate(els.forecastDateFrom.value) : null;
+  const dateTo = els.forecastDateTo?.value ? parseDate(els.forecastDateTo.value) : null;
+  
+  // Filter tasks
+  let filteredTasks = state.tasks;
+  
+  if (selectedAsset !== 'all') {
+    filteredTasks = filteredTasks.filter(t => t.asset === selectedAsset);
+  }
+  
+  if (dateFrom) {
+    filteredTasks = filteredTasks.filter(t => {
+      const taskEnd = parseDate(t.return_end) || parseDate(t.offshore_end) || parseDate(t.start_date);
+      return taskEnd && taskEnd >= dateFrom;
+    });
+  }
+  
+  if (dateTo) {
+    filteredTasks = filteredTasks.filter(t => {
+      const taskStart = parseDate(t.start_date);
+      return taskStart && taskStart <= dateTo;
+    });
+  }
+  
+  if (!filteredTasks.length) {
+    els.assetForecastResult.innerHTML = '<div class="empty-state">No activities match the selected filters.</div>';
+    return;
+  }
+  
+  // Calculate peak concurrent demand
+  let peakDemand = 0;
+  let peakDate = null;
+  
+  const allDates = [];
+  filteredTasks.forEach(task => {
+    const start = parseDate(task.start_date);
+    const end = parseDate(task.return_end) || parseDate(task.offshore_end) || start;
+    if (!start || !end) return;
+    
+    const current = new Date(start);
+    while (current <= end) {
+      allDates.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+  });
+  
+  const uniqueDates = [...new Set(allDates.map(d => d.toISOString().split('T')[0]))].map(d => new Date(d));
+  
+  uniqueDates.forEach(checkDate => {
+    let concurrent = 0;
+    filteredTasks.forEach(task => {
+      const taskStart = parseDate(task.start_date);
+      const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
+      if (taskStart && taskEnd && taskStart <= checkDate && taskEnd >= checkDate) {
+        concurrent++;
+      }
+    });
+    if (concurrent > peakDemand) {
+      peakDemand = concurrent;
+      peakDate = checkDate;
+    }
+  });
+  
+  const overCapacity = peakDemand > OSV_FLEET_CAPACITY;
+  const spotHireNeeded = Math.max(0, peakDemand - OSV_FLEET_CAPACITY);
+  
+  const summaryHtml = `<div class="forecast-summary">
+    <div class="forecast-stat">
+      <span class="stat-value">${filteredTasks.length}</span>
+      <span class="stat-label">Activities</span>
+    </div>
+    <div class="forecast-stat ${overCapacity ? 'over-capacity' : ''}">
+      <span class="stat-value">${peakDemand}</span>
+      <span class="stat-label">Peak Concurrent</span>
+    </div>
+    <div class="forecast-stat">
+      <span class="stat-value">${OSV_FLEET_CAPACITY}</span>
+      <span class="stat-label">OSV Capacity</span>
+    </div>
+    <div class="forecast-stat ${overCapacity ? 'over-capacity' : ''}">
+      <span class="stat-value">${spotHireNeeded}</span>
+      <span class="stat-label">Spot Hire Needed</span>
+    </div>
+  </div>`;
+  
+  const peakDateStr = peakDate ? peakDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'N/A';
+  const peakInfo = peakDemand > 0 ? `<p style="font-size:12px;color:var(--muted);margin:0 0 12px 0;">Peak demand of <strong>${peakDemand} vessels</strong> occurs on <strong>${peakDateStr}</strong>.</p>` : '';
+  
+  const activitiesHtml = `<div class="forecast-activities">
+    <h4>Activities in Range (${filteredTasks.length})</h4>
+    <div class="forecast-activity-list">
+      ${filteredTasks.slice(0, 20).map(task => {
+        const startStr = task.start_date ? new Date(task.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        const endStr = task.return_end ? new Date(task.return_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : startStr;
+        return `<div class="forecast-activity-item">
+          <div>
+            <span class="activity-name">${escapeHtml(task.asset)} - ${escapeHtml(task.activity || 'Route')}</span>
+            <span class="activity-dates">${startStr} → ${endStr}</span>
+          </div>
+        </div>`;
+      }).join('')}
+      ${filteredTasks.length > 20 ? `<div class="empty-state">...and ${filteredTasks.length - 20} more activities</div>` : ''}
+    </div>
+  </div>`;
+  
+  els.assetForecastResult.innerHTML = summaryHtml + peakInfo + activitiesHtml;
+}
+
 function scrollToConflictTasks(taskIds, conflictStart) {
   if (!taskIds || !taskIds.length) return;
   // Switch to route view if needed
@@ -791,6 +1040,8 @@ function render() {
   renderTimeline(tasks);
   renderTable(tasks);
   renderConflicts(tasks);
+  renderWeeklyDemandForecast(tasks);
+  populateForecastAssetSelect(tasks);
 }
 
 function rangeText() {
@@ -1234,6 +1485,11 @@ els.clearDateFilter.addEventListener('click', () => {
   state.filters.dateTo = '';
   render();
 });
+
+// Asset Forecast button
+if (els.runForecastBtn) {
+  els.runForecastBtn.addEventListener('click', runAssetForecast);
+}
 
 [els.spotAssetFilter, els.spotPhaseFilter, els.spotStatusFilter].forEach(select => {
   select.addEventListener('change', () => {
