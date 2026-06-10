@@ -870,47 +870,48 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
   if (!els.weeklyDemandGrid) return;
   
   const weeklyData = calculateWeeklyDemand(tasks);
+  const weekDemandMap = new Map();
+  weeklyData.forEach(w => {
+    const key = w.weekStart.toISOString().split('T')[0];
+    weekDemandMap.set(key, w.peakDemand);
+  });
   
-  if (!weeklyData.length) {
-    els.weeklyDemandGrid.innerHTML = '<div class="empty-state">No demand data to forecast. Add route activities to see weekly demand.</div>';
-    return;
-  }
-  
-  // Show only next 8 weeks from today
+  // Always generate 8 weeks from current week
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const eightWeeksOut = new Date(today);
-  eightWeeksOut.setDate(eightWeeksOut.getDate() + 56);
+  const currentWeekStart = getWeekStart(today);
   
-  const relevantWeeks = weeklyData.filter(w => w.weekStart >= getWeekStart(today) && w.weekStart <= eightWeeksOut);
-  
-  if (!relevantWeeks.length) {
-    els.weeklyDemandGrid.innerHTML = '<div class="empty-state">No demand in the next 8 weeks.</div>';
-    return;
+  const weeks = [];
+  for (let i = 0; i < 8; i++) {
+    const weekStart = new Date(currentWeekStart);
+    weekStart.setDate(weekStart.getDate() + (i * 7));
+    const weekKey = weekStart.toISOString().split('T')[0];
+    const demand = weekDemandMap.get(weekKey) || 0;
+    weeks.push({ weekStart, weekKey, demand });
   }
   
-  els.weeklyDemandGrid.innerHTML = relevantWeeks.map(week => {
-    const weekKey = week.weekStart.toISOString().split('T')[0];
-    const demand = week.peakDemand;
-    const capacity = getCapacityForWeek(weekKey);
+  els.weeklyDemandGrid.innerHTML = weeks.map(week => {
+    const capacity = getCapacityForWeek(week.weekKey);
     let statusClass = 'under-capacity';
-    let statusText = `${capacity - demand} available`;
+    let statusText = `${capacity - week.demand} available`;
     
-    if (demand > capacity) {
+    if (week.demand > capacity) {
       statusClass = 'over-capacity';
-      statusText = `${demand - capacity} over!`;
-    } else if (demand === capacity) {
+      statusText = `${week.demand - capacity} over!`;
+    } else if (week.demand === capacity) {
       statusClass = 'at-capacity';
       statusText = 'At capacity';
+    } else if (week.demand === 0) {
+      statusText = 'No demand';
     }
     
     return `<div class="week-card ${statusClass}">
       <span class="week-label">${formatWeekLabel(week.weekStart)}</span>
       <div class="week-stats">
-        <span class="week-demand">${demand}</span>
+        <span class="week-demand">${week.demand}</span>
         <span class="week-divider">/</span>
         <span class="week-capacity-wrap">
-          <input type="number" class="week-capacity-input" data-week-key="${weekKey}" value="${capacity}" min="1" max="20" title="Edit capacity for this week">
+          <input type="number" class="week-capacity-input" data-week-key="${week.weekKey}" value="${capacity}" min="1" max="20" title="Edit capacity for this week">
         </span>
       </div>
       <span class="week-status">${statusText}</span>

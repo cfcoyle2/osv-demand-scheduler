@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=41">
+  <link rel="stylesheet" href="styles.css?v=42">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -136,38 +136,35 @@
         <div id="timeline" class="timeline"></div>
       </div>
 
-      <div class="split-grid">
-        <section class="panel lower-panel forecast-panel">
-          <h2>Capacity Forecast</h2>
-          <div class="forecast-scroll">
-            <div id="weeklyDemandForecast" class="weekly-demand-section">
-              <h3>Weekly Demand Forecast</h3>
-              <p class="section-desc">Week-by-week OSV demand. Click capacity to edit per week.</p>
-              <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
-            </div>
-            
-            <div id="assetForecastSection" class="asset-forecast-section">
-              <h3>Asset Activity Forecast</h3>
-              <p class="section-desc">Highlight a specific asset's activities to forecast vessel needs.</p>
-              <div class="asset-forecast-controls">
-                <label>Asset<select id="forecastAssetSelect"><option value="all">All assets</option></select></label>
-                <label>From<input id="forecastDateFrom" type="date"></label>
-                <label>To<input id="forecastDateTo" type="date"></label>
-                <button id="runForecastBtn" type="button" class="primary-button">Run Forecast</button>
-              </div>
-              <div id="assetForecastResult" class="asset-forecast-result"></div>
-            </div>
+      <section class="panel schedule-watch-panel">
+        <h2>Schedule Watch</h2>
+        <div class="schedule-watch-grid">
+          <div class="watch-column">
+            <h3>Weekly Demand Forecast</h3>
+            <p class="section-desc">8-week lookahead. Click capacity to edit per week.</p>
+            <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
           </div>
-        </section>
-
-        <section class="panel lower-panel watch-panel">
-          <h2>Schedule Watch</h2>
-          <div class="watch-scroll">
+          <div class="watch-column">
+            <h3>Monthly Capacity</h3>
+            <p class="section-desc">Fleet capacity planning and demand watch alerts.</p>
             <div id="fleetSummary" class="fleet-summary"></div>
             <div id="conflicts" class="conflicts"></div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      <section class="panel lower-panel forecast-panel full-width-panel">
+        <h2>Asset Activity Forecast</h2>
+        <div class="forecast-scroll">
+          <div class="asset-forecast-controls">
+            <label>Asset<select id="forecastAssetSelect"><option value="all">All assets</option></select></label>
+            <label>From<input id="forecastDateFrom" type="date"></label>
+            <label>To<input id="forecastDateTo" type="date"></label>
+            <button id="runForecastBtn" type="button" class="primary-button">Run Forecast</button>
+          </div>
+          <div id="assetForecastResult" class="asset-forecast-result"></div>
+        </div>
+      </section>
 
       <section class="panel lower-panel demand-panel full-width-panel">
         <h2>Demand Table</h2>
