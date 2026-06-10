@@ -1,52 +1,55 @@
 # SharePoint Upload Instructions
 
 ## Destination
-**SharePoint URL:** https://eu001-sp.shell.com/sites/UGPTDWGOMSupplyChain/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FUGPTDWGOMSupplyChain%2FShared%20Documents%2FSC%20Delivery%2FLogistics%20New%20Ways%20of%20Working
+**SharePoint Folder:** [SC Delivery > Logistics New Ways of Working](https://eu001-sp.shell.com/:f:/r/sites/UGPTDWGOMSupplyChain/Shared%20Documents/SC%20Delivery/Logistics%20New%20Ways%20of%20Working?csf=1&web=1&e=PknXMd)
 
-## Files to Upload
+---
 
-The following files are in this folder and ready to upload to SharePoint:
+## Files to Upload to SharePoint
 
-1. **OSV_Demand_Scheduler.url** - Windows shortcut to the OSV Demand Scheduler
-   - Link: `http://127.0.0.1:8000/`
-   
-2. **Spot_Hire_Planner.url** - Windows shortcut to the Spot Hire Planner
-   - Link: `http://127.0.0.1:8000/spot-hire`
+Upload these shortcuts for **team-wide access** (GitHub Pages - works for everyone):
 
-3. **index.html** (Optional) - Visual portal page with both links
-   - Can be used as a landing page in SharePoint
+| File | Description | URL |
+|------|-------------|-----|
+| **OSV_Demand_Scheduler.url** | Main scheduler app | https://cfcoyle2.github.io/osv-demand-scheduler/ |
+| **Spot_Hire_Planner.url** | Spot hire planning | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html |
 
-## How to Upload to SharePoint
+> **Note:** GitHub Pages version is **read-only** - data changes won't persist.
 
-### Option 1: Upload Individual Files
-1. Navigate to the SharePoint folder link above
-2. Click **"+ New"** → **"Upload"** or drag and drop files
-3. Select the `.url` files (and optionally `index.html`)
-4. Click **"Open"** or drop them into the folder
-5. Files will upload and be accessible via SharePoint
+---
 
-### Option 2: Drag and Drop (Easiest)
-1. Open this folder (`00_Quick_Links`) in Windows Explorer
-2. Keep SharePoint folder open in your browser
-3. Drag the `.url` files into the SharePoint window
-4. Confirm the upload
+## Local-Only Shortcuts (Do NOT upload)
 
-### Option 3: Upload via Browser
-1. Go to SharePoint location in browser
-2. Click **"Upload"**
-3. Select multiple files (hold Ctrl and click to select both `.url` files)
-4. Click **"Open"**
+These only work when running the server locally:
 
-## Verification
-After upload, you should see:
-- ✓ OSV_Demand_Scheduler.url
-- ✓ Spot_Hire_Planner.url
-- ✓ (Optional) index.html
+| File | Description | URL |
+|------|-------------|-----|
+| OSV_Demand_Scheduler_Local.url | Local server | http://127.0.0.1:8000/ |
+| SP Native shortcuts | SharePoint native | Various |
 
-## Notes
-- The `.url` files are Windows Internet Shortcuts - they can be clicked directly
-- These links work on `http://127.0.0.1:8000/` which requires the local development server to be running
-- If sharing with others, they'll need to have access to the same local server or you can update the URLs to point to a deployed version
+---
+
+## How to Upload
+
+1. Open SharePoint: [Logistics New Ways of Working](https://eu001-sp.shell.com/:f:/r/sites/UGPTDWGOMSupplyChain/Shared%20Documents/SC%20Delivery/Logistics%20New%20Ways%20of%20Working?csf=1&web=1&e=PknXMd)
+2. Click **Upload** → **Files**
+3. Navigate to this folder: `Library\00_Quick_Links\`
+4. Select:
+   - `OSV_Demand_Scheduler.url`
+   - `Spot_Hire_Planner.url`
+5. Click **Open**
+
+---
+
+## After Upload
+
+Team members can click the shortcuts in SharePoint to open:
+- **OSV Demand Scheduler** - View vessel activity timeline
+- **Spot Hire Planner** - View/filter spot hire activities
+
+---
+
+*Last updated: June 9, 2026*
 
 ---
 

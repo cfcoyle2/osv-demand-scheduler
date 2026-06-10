@@ -498,7 +498,6 @@ function renderTimeline(records) {
   const timelineStart = monthsInView[0]?.start || MONTHS_2026[0].start;
   const lastVisibleMonth = monthsInView[monthsInView.length - 1] || MONTHS_2026[MONTHS_2026.length - 1];
   const timelineEnd = new Date(lastVisibleMonth.start.getFullYear(), lastVisibleMonth.start.getMonth() + 1, 1);
-  const totalMs = timelineEnd - timelineStart;
   const laneWidth = monthsInView.length * monthWidth;
   const timelineWidth = labelWidth + (monthsInView.length * monthWidth);
   const demandCounts = monthlyDemandCounts(records);
@@ -506,6 +505,25 @@ function renderTimeline(records) {
   els.timeline.dataset.dayWidth = String(monthWidth / 30);
   els.timeline.dataset.monthWidth = String(monthWidth);
   els.timeline.dataset.monthCount = String(monthsInView.length);
+
+  // Helper: convert date to pixel position within the lane (accounting for variable month lengths)
+  function dateToPixel(date) {
+    for (let i = 0; i < monthsInView.length; i++) {
+      const month = monthsInView[i];
+      const monthStart = month.start;
+      const nextMonthStart = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
+      if (date >= monthStart && date < nextMonthStart) {
+        const daysInMonth = (nextMonthStart - monthStart) / (1000 * 60 * 60 * 24);
+        const dayOfMonth = (date - monthStart) / (1000 * 60 * 60 * 24);
+        return (i + dayOfMonth / daysInMonth) * monthWidth;
+      }
+    }
+    // Date before visible range
+    if (date < monthsInView[0].start) return 0;
+    // Date after visible range
+    return laneWidth;
+  }
+
   const currentIndex = currentMonthIndex();
   const head = `<div class="time-head month-head" style="min-width:${timelineWidth}px;grid-template-columns:${labelWidth}px ${laneWidth}px;"><div class="time-label">Vessel demand by month</div><div class="date-grid month-grid" style="grid-template-columns: repeat(${monthsInView.length}, ${monthWidth}px);">${monthsInView.map((month, index) => {
     const absoluteIndex = MONTHS_2026.findIndex(item => item.key === month.key);
@@ -528,17 +546,20 @@ function renderTimeline(records) {
     const visibleStart = new Date(Math.max(start.getTime(), timelineStart.getTime()));
     const visibleEnd = new Date(Math.min(inclusiveEnd.getTime(), timelineEnd.getTime()));
     if (visibleEnd <= timelineStart || visibleStart >= timelineEnd) return '';
-    const left = Math.max(0, ((visibleStart - timelineStart) / totalMs) * 100);
-    const naturalWidth = Math.max(0, ((visibleEnd - visibleStart) / totalMs) * 100);
-    const width = Math.min(100 - left, Math.max(1.2, naturalWidth));
+    
+    // Use pixel-based positioning for accurate alignment with month grid
+    const leftPx = dateToPixel(visibleStart);
+    const rightPx = dateToPixel(visibleEnd);
+    const widthPx = Math.max(20, rightPx - leftPx); // minimum 20px width
+    
     const color = record.color || phaseColor(record.phase);
     const icon = isIndividualRun(record) ? '▸' : '⛴';
     const { displayAsset, vesselCount } = parseAssetInfo(record);
     const vesselBadge = vesselCountBadge(record);
     return `<div class="route-row" style="min-width:${timelineWidth}px;grid-template-columns:${labelWidth}px ${laneWidth}px;">
       <div class="route-label"><strong>${escapeHtml(displayAsset)} / ${escapeHtml(record.phase || 'Phase')}</strong><span>${escapeHtml(record.activity)}${record.area ? ` / ${escapeHtml(record.area)}` : ''}</span></div>
-      <div class="bar-lane month-lane" style="background-size:${monthWidth}px 100%;">
-        <button class="task-bar spot-bar" data-edit="${record.id}" data-shift="${record.id}" style="left:${left}%;width:${width}%;max-width:calc(${100 - left}%);background:${escapeHtml(color)};" title="${vesselCount} forecasted ${vesselCount === 1 ? 'vessel' : 'vessels'}. Drag to shift dates. Click to edit ${escapeHtml(record.activity)}.">
+      <div class="bar-lane month-lane" style="background-size:${monthWidth}px 100%;position:relative;">
+        <button class="task-bar spot-bar" data-edit="${record.id}" data-shift="${record.id}" style="position:absolute;left:${leftPx}px;width:${widthPx}px;background:${escapeHtml(color)};" title="${vesselCount} forecasted ${vesselCount === 1 ? 'vessel' : 'vessels'}. Drag to shift dates. Click to edit ${escapeHtml(record.activity)}.">
           <span class="task-title">${isIndividualRun(record) ? `<span class="vessel-icon" aria-hidden="true">${icon}</span>` : vesselBadge}${escapeHtml(displayAsset)} / ${escapeHtml(record.activity)}</span>
         </button>
       </div>
