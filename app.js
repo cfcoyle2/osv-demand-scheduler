@@ -43,6 +43,7 @@ const els = {
   fleetSummary: document.getElementById('fleetSummary'),
   conflicts: document.getElementById('conflicts'),
   weeklyDemandGrid: document.getElementById('weeklyDemandGrid'),
+  osvCapacityInput: document.getElementById('osvCapacityInput'),
   forecastAssetSelect: document.getElementById('forecastAssetSelect'),
   forecastDateFrom: document.getElementById('forecastDateFrom'),
   forecastDateTo: document.getElementById('forecastDateTo'),
@@ -757,7 +758,37 @@ async function saveAssetCapacity() {
   await loadData();
 }
 
-const OSV_FLEET_CAPACITY = 9;
+const DEFAULT_OSV_CAPACITY = 9;
+
+function getOsvCapacity() {
+  if (els.osvCapacityInput) {
+    const value = parseInt(els.osvCapacityInput.value, 10);
+    return Number.isFinite(value) && value > 0 ? value : DEFAULT_OSV_CAPACITY;
+  }
+  const stored = localStorage.getItem('osvFleetCapacity');
+  return stored ? parseInt(stored, 10) : DEFAULT_OSV_CAPACITY;
+}
+
+function setOsvCapacity(value) {
+  const capacity = Math.max(1, Math.min(20, parseInt(value, 10) || DEFAULT_OSV_CAPACITY));
+  if (els.osvCapacityInput) {
+    els.osvCapacityInput.value = capacity;
+  }
+  localStorage.setItem('osvFleetCapacity', String(capacity));
+  return capacity;
+}
+
+function initOsvCapacity() {
+  const stored = localStorage.getItem('osvFleetCapacity');
+  const capacity = stored ? parseInt(stored, 10) : DEFAULT_OSV_CAPACITY;
+  if (els.osvCapacityInput) {
+    els.osvCapacityInput.value = capacity;
+    els.osvCapacityInput.addEventListener('change', () => {
+      setOsvCapacity(els.osvCapacityInput.value);
+      render();
+    });
+  }
+}
 
 function getWeekStart(date) {
   const d = new Date(date);
@@ -861,7 +892,7 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
   
   els.weeklyDemandGrid.innerHTML = relevantWeeks.map(week => {
     const demand = week.peakDemand;
-    const capacity = OSV_FLEET_CAPACITY;
+    const capacity = getOsvCapacity();
     let statusClass = 'under-capacity';
     let statusText = `${capacity - demand} available`;
     
@@ -955,8 +986,9 @@ function runAssetForecast() {
     }
   });
   
-  const overCapacity = peakDemand > OSV_FLEET_CAPACITY;
-  const spotHireNeeded = Math.max(0, peakDemand - OSV_FLEET_CAPACITY);
+  const capacity = getOsvCapacity();
+  const overCapacity = peakDemand > capacity;
+  const spotHireNeeded = Math.max(0, peakDemand - capacity);
   
   const summaryHtml = `<div class="forecast-summary">
     <div class="forecast-stat">
@@ -968,7 +1000,7 @@ function runAssetForecast() {
       <span class="stat-label">Peak Concurrent</span>
     </div>
     <div class="forecast-stat">
-      <span class="stat-value">${OSV_FLEET_CAPACITY}</span>
+      <span class="stat-value">${capacity}</span>
       <span class="stat-label">OSV Capacity</span>
     </div>
     <div class="forecast-stat ${overCapacity ? 'over-capacity' : ''}">
@@ -1742,6 +1774,7 @@ enableSpotShiftDrag();
 
 // Initialize: check if API is available, otherwise use static mode
 (async function init() {
+  initOsvCapacity();
   const apiAvailable = await checkApiHealth();
   if (!apiAvailable) {
     staticMode = true;

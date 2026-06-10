@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=39">
+  <link rel="stylesheet" href="styles.css?v=40">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -165,7 +165,13 @@
             
             <div id="weeklyDemandForecast" class="weekly-demand-section">
               <h3>Weekly Demand Forecast</h3>
-              <p class="section-desc">Week-by-week OSV demand based on entered activities. Compares against fleet capacity of <strong>9 OSVs</strong>.</p>
+              <div class="capacity-edit-row">
+                <span class="section-desc">Week-by-week OSV demand based on entered activities.</span>
+                <label class="capacity-inline-label">Fleet Capacity
+                  <input id="osvCapacityInput" type="number" min="1" max="20" value="9" class="capacity-inline-input">
+                  <span>OSVs</span>
+                </label>
+              </div>
               <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
             </div>
             

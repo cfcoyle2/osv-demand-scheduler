@@ -753,7 +753,36 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
   border-radius: 6px;
 }
 .weekly-demand-section h3 { margin: 0 0 4px 0; font-size: 14px; color: var(--navy); }
-.weekly-demand-section .section-desc { margin: 0 0 12px 0; font-size: 12px; color: var(--muted); }
+.weekly-demand-section .section-desc { margin: 0; font-size: 12px; color: var(--muted); }
+.capacity-edit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.capacity-inline-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.capacity-inline-input {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.capacity-inline-input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
 .weekly-demand-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
