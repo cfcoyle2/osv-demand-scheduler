@@ -280,6 +280,25 @@ function phaseColor(phase) {
   return state.phaseColors[phase] || '#16858c';
 }
 
+// Consolidate similar phase names for cleaner legend display
+const PHASE_DISPLAY_MAP = {
+  'Frac': 'Frac Spot Hire',
+  'Demobilization': 'Demob',
+  'LWX 10 Deepen Hole': 'Deepening',
+  'VX004 Deepen Hole': 'Deepening',
+  'Side Track': 'Sidetrack'
+};
+
+function normalizePhaseForDisplay(phase) {
+  return PHASE_DISPLAY_MAP[phase] || phase;
+}
+
+function legendPhaseNames() {
+  const allPhases = phaseNames();
+  const normalized = allPhases.map(normalizePhaseForDisplay);
+  return unique(normalized);
+}
+
 function hydrateControls() {
   const phases = phaseNames();
   fillSelect(els.assetInput, ASSET_NAMES, els.assetInput.value || 'Pontus');
@@ -446,7 +465,7 @@ function renderMetricDetails(records) {
 }
 
 function renderLegend() {
-  els.phaseLegend.innerHTML = '<strong>Color codes</strong>' + phaseNames().map(phase => `<span><i style="background:${escapeHtml(phaseColor(phase))}"></i>${escapeHtml(phase)}</span>`).join('');
+  els.phaseLegend.innerHTML = '<strong>Color codes</strong>' + legendPhaseNames().map(phase => `<span><i style="background:${escapeHtml(phaseColor(phase))}"></i>${escapeHtml(phase)}</span>`).join('');
 }
 
 function updateForecastDemand(records) {
