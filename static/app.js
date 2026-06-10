@@ -1030,7 +1030,7 @@ function runAssetForecast() {
   const activitiesHtml = `<div class="forecast-activities">
     <h4>Activities in Range (${filteredTasks.length})</h4>
     <div class="forecast-activity-list">
-      ${filteredTasks.slice(0, 20).map(task => {
+      ${filteredTasks.map(task => {
         const startStr = task.start_date ? new Date(task.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
         const endStr = task.return_end ? new Date(task.return_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : startStr;
         return `<div class="forecast-activity-item">
@@ -1040,7 +1040,6 @@ function runAssetForecast() {
           </div>
         </div>`;
       }).join('')}
-      ${filteredTasks.length > 20 ? `<div class="empty-state">...and ${filteredTasks.length - 20} more activities</div>` : ''}
     </div>
   </div>`;
   
