@@ -43,7 +43,6 @@ const els = {
   fleetSummary: document.getElementById('fleetSummary'),
   conflicts: document.getElementById('conflicts'),
   weeklyDemandGrid: document.getElementById('weeklyDemandGrid'),
-  osvCapacityInput: document.getElementById('osvCapacityInput'),
   forecastAssetSelect: document.getElementById('forecastAssetSelect'),
   forecastDateFrom: document.getElementById('forecastDateFrom'),
   forecastDateTo: document.getElementById('forecastDateTo'),
@@ -760,34 +759,34 @@ async function saveAssetCapacity() {
 
 const DEFAULT_OSV_CAPACITY = 9;
 
+// Per-week capacity storage
+function getWeeklyCapacities() {
+  try {
+    const stored = localStorage.getItem('weeklyOsvCapacities');
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setWeeklyCapacity(weekKey, capacity) {
+  const capacities = getWeeklyCapacities();
+  capacities[weekKey] = Math.max(1, Math.min(20, parseInt(capacity, 10) || DEFAULT_OSV_CAPACITY));
+  localStorage.setItem('weeklyOsvCapacities', JSON.stringify(capacities));
+  return capacities[weekKey];
+}
+
+function getCapacityForWeek(weekKey) {
+  const capacities = getWeeklyCapacities();
+  return capacities[weekKey] !== undefined ? capacities[weekKey] : DEFAULT_OSV_CAPACITY;
+}
+
+// For asset forecast, use average of visible weeks or default
 function getOsvCapacity() {
-  if (els.osvCapacityInput) {
-    const value = parseInt(els.osvCapacityInput.value, 10);
-    return Number.isFinite(value) && value > 0 ? value : DEFAULT_OSV_CAPACITY;
-  }
-  const stored = localStorage.getItem('osvFleetCapacity');
-  return stored ? parseInt(stored, 10) : DEFAULT_OSV_CAPACITY;
-}
-
-function setOsvCapacity(value) {
-  const capacity = Math.max(1, Math.min(20, parseInt(value, 10) || DEFAULT_OSV_CAPACITY));
-  if (els.osvCapacityInput) {
-    els.osvCapacityInput.value = capacity;
-  }
-  localStorage.setItem('osvFleetCapacity', String(capacity));
-  return capacity;
-}
-
-function initOsvCapacity() {
-  const stored = localStorage.getItem('osvFleetCapacity');
-  const capacity = stored ? parseInt(stored, 10) : DEFAULT_OSV_CAPACITY;
-  if (els.osvCapacityInput) {
-    els.osvCapacityInput.value = capacity;
-    els.osvCapacityInput.addEventListener('change', () => {
-      setOsvCapacity(els.osvCapacityInput.value);
-      render();
-    });
-  }
+  const capacities = getWeeklyCapacities();
+  const values = Object.values(capacities);
+  if (values.length === 0) return DEFAULT_OSV_CAPACITY;
+  return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
 }
 
 function getWeekStart(date) {
@@ -891,14 +890,15 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
   }
   
   els.weeklyDemandGrid.innerHTML = relevantWeeks.map(week => {
+    const weekKey = week.weekStart.toISOString().split('T')[0];
     const demand = week.peakDemand;
-    const capacity = getOsvCapacity();
+    const capacity = getCapacityForWeek(weekKey);
     let statusClass = 'under-capacity';
     let statusText = `${capacity - demand} available`;
     
     if (demand > capacity) {
       statusClass = 'over-capacity';
-      statusText = `${demand - capacity} over capacity!`;
+      statusText = `${demand - capacity} over!`;
     } else if (demand === capacity) {
       statusClass = 'at-capacity';
       statusText = 'At capacity';
@@ -906,11 +906,25 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
     
     return `<div class="week-card ${statusClass}">
       <span class="week-label">${formatWeekLabel(week.weekStart)}</span>
-      <span class="week-demand">${demand}</span>
-      <span class="week-capacity">of ${capacity} OSVs</span>
+      <div class="week-stats">
+        <span class="week-demand">${demand}</span>
+        <span class="week-divider">/</span>
+        <span class="week-capacity-wrap">
+          <input type="number" class="week-capacity-input" data-week-key="${weekKey}" value="${capacity}" min="1" max="20" title="Edit capacity for this week">
+        </span>
+      </div>
       <span class="week-status">${statusText}</span>
     </div>`;
   }).join('');
+  
+  // Add event listeners for per-week capacity inputs
+  els.weeklyDemandGrid.querySelectorAll('.week-capacity-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const weekKey = e.target.dataset.weekKey;
+      setWeeklyCapacity(weekKey, e.target.value);
+      renderWeeklyDemandForecast(tasks);
+    });
+  });
 }
 
 function populateForecastAssetSelect(tasks = state.tasks) {
@@ -1774,7 +1788,6 @@ enableSpotShiftDrag();
 
 // Initialize: check if API is available, otherwise use static mode
 (async function init() {
-  initOsvCapacity();
   const apiAvailable = await checkApiHealth();
   if (!apiAvailable) {
     staticMode = true;

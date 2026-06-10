@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=40">
+  <link rel="stylesheet" href="styles.css?v=41">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -137,41 +137,12 @@
       </div>
 
       <div class="split-grid">
-        <section class="panel lower-panel demand-panel">
-          <h2>Demand Table</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Route</th>
-                  <th>Coordinator</th>
-                  <th>BDD</th>
-                  <th>Offshore Req.</th>
-                  <th>Offload Complete</th>
-                  <th>Back to Port</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="taskTable"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="panel lower-panel watch-panel">
-          <h2>Schedule Watch</h2>
-          <div class="watch-scroll">
-            <div id="fleetSummary" class="fleet-summary"></div>
-            
+        <section class="panel lower-panel forecast-panel">
+          <h2>Capacity Forecast</h2>
+          <div class="forecast-scroll">
             <div id="weeklyDemandForecast" class="weekly-demand-section">
               <h3>Weekly Demand Forecast</h3>
-              <div class="capacity-edit-row">
-                <span class="section-desc">Week-by-week OSV demand based on entered activities.</span>
-                <label class="capacity-inline-label">Fleet Capacity
-                  <input id="osvCapacityInput" type="number" min="1" max="20" value="9" class="capacity-inline-input">
-                  <span>OSVs</span>
-                </label>
-              </div>
+              <p class="section-desc">Week-by-week OSV demand. Click capacity to edit per week.</p>
               <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
             </div>
             
@@ -186,11 +157,38 @@
               </div>
               <div id="assetForecastResult" class="asset-forecast-result"></div>
             </div>
-            
+          </div>
+        </section>
+
+        <section class="panel lower-panel watch-panel">
+          <h2>Schedule Watch</h2>
+          <div class="watch-scroll">
+            <div id="fleetSummary" class="fleet-summary"></div>
             <div id="conflicts" class="conflicts"></div>
           </div>
         </section>
       </div>
+
+      <section class="panel lower-panel demand-panel full-width-panel">
+        <h2>Demand Table</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Route</th>
+                <th>Coordinator</th>
+                <th>BDD</th>
+                <th>Offshore Req.</th>
+                <th>Offload Complete</th>
+                <th>Back to Port</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="taskTable"></tbody>
+          </table>
+        </div>
+      </section>
     </section>
 
     <section id="spotWorkspace" class="workspace" hidden>

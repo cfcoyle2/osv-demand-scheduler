@@ -490,7 +490,15 @@ button.metric.active {
 
 .split-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
 .split-grid .panel { padding: 14px; min-width: 0; }
-.full-width-panel { padding: 14px; min-width: 0; }
+.full-width-panel { padding: 14px; min-width: 0; margin-top: 18px; }
+.forecast-panel { }
+.forecast-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin-top: 10px;
+  scrollbar-gutter: stable;
+}
 .lower-panel {
   height: 420px;
   display: flex;
@@ -785,7 +793,7 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
 }
 .weekly-demand-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 8px;
 }
 .week-card {
@@ -807,8 +815,25 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
   border-left: 3px solid var(--green);
   background: #f0fff4;
 }
-.week-card .week-label { font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; }
-.week-card .week-demand { font-size: 18px; font-weight: 700; }
+.week-card .week-label { font-weight: 700; color: var(--navy); display: block; margin-bottom: 6px; }
+.week-card .week-stats { display: flex; align-items: baseline; gap: 6px; }
+.week-card .week-demand { font-size: 20px; font-weight: 700; }
+.week-card .week-divider { color: var(--muted); }
+.week-card .week-capacity-wrap { display: flex; align-items: center; gap: 2px; }
+.week-card .week-capacity-input {
+  width: 36px;
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(255,255,255,0.8);
+}
+.week-card .week-capacity-input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
 .week-card .week-capacity { font-size: 11px; color: var(--muted); }
 .week-card .week-status { font-size: 11px; font-weight: 600; margin-top: 4px; display: block; }
 .week-card.over-capacity .week-status { color: var(--red); }
