@@ -147,14 +147,18 @@ function activeMonthFilters() {
 
 function visibleMonths() {
   const selectedMonths = activeMonthFilters();
-  if (selectedMonths.length < 2) return MONTHS_2026;
-  const indexes = selectedMonths
-    .map(month => MONTHS_2026.findIndex(item => item.key === month.key))
-    .filter(index => index >= 0);
-  if (!indexes.length) return MONTHS_2026;
-  const startIndex = Math.min(...indexes);
-  const endIndex = Math.max(...indexes);
-  return MONTHS_2026.slice(startIndex, endIndex + 1);
+  // If any months are selected, show only those months
+  if (selectedMonths.length >= 1) {
+    const indexes = selectedMonths
+      .map(month => MONTHS_2026.findIndex(item => item.key === month.key))
+      .filter(index => index >= 0);
+    if (!indexes.length) return MONTHS_2026;
+    const startIndex = Math.min(...indexes);
+    const endIndex = Math.max(...indexes);
+    return MONTHS_2026.slice(startIndex, endIndex + 1);
+  }
+  // No selection = show all months
+  return MONTHS_2026;
 }
 
 function recordOverlapsPeriod(record, periodStart, periodEndExclusive) {
@@ -488,7 +492,7 @@ function renderTimeline(records) {
   }
 
   const currentIndex = currentMonthIndex();
-  const head = `<div class="time-head month-head" style="min-width:${timelineWidth}px;grid-template-columns:${labelWidth}px ${laneWidth}px;"><div class="time-label">Vessel demand by month</div><div class="date-grid month-grid" style="grid-template-columns: repeat(${monthsInView.length}, ${monthWidth}px);">${monthsInView.map((month, index) => {
+  const head = `<div class="time-head month-head" style="min-width:${timelineWidth}px;grid-template-columns:${labelWidth}px ${laneWidth}px;"><div class="time-label">Vessel demand by asset</div><div class="date-grid month-grid" style="grid-template-columns: repeat(${monthsInView.length}, ${monthWidth}px);">${monthsInView.map((month, index) => {
     const absoluteIndex = MONTHS_2026.findIndex(item => item.key === month.key);
     const monthClass = currentIndex === null
       ? ''
@@ -498,36 +502,62 @@ function renderTimeline(records) {
           ? 'current-month'
           : 'future-month';
     const selected = Array.isArray(state.monthFilter) && state.monthFilter.includes(month.key);
-    return `<button type="button" class="date-cell month-cell month-filter-button ${selected ? 'active' : ''} ${monthClass}" data-month-filter="${month.key}" data-month-index="${index}" title="Toggle ${month.label} in visible month range."><strong>${month.label}</strong><span class="vessel-month-count"><span class="vessel-icon" aria-hidden="true">⛴</span>${demandCounts.get(month.key) || 0}</span><span class="additional-month-count">+${additionalCounts.get(month.key) || 0} runs</span></button>`;
+    return `<button type="button" class="date-cell month-cell month-filter-button ${selected ? 'active' : ''} ${monthClass}" data-month-filter="${month.key}" data-month-index="${index}" title="Click to filter to ${month.label} only."><strong>${month.label}</strong><span class="vessel-month-count"><span class="vessel-icon" aria-hidden="true">⛴</span>${demandCounts.get(month.key) || 0}</span><span class="additional-month-count">+${additionalCounts.get(month.key) || 0} runs</span></button>`;
   }).join('')}</div></div>`;
-  const rows = records.map(record => {
-    const start = parseDate(record.start_date);
-    const end = parseDate(record.end_date) || start;
-    if (!start || !end) return '';
-    const inclusiveEnd = new Date(end);
-    inclusiveEnd.setDate(inclusiveEnd.getDate() + 1);
-    const visibleStart = new Date(Math.max(start.getTime(), timelineStart.getTime()));
-    const visibleEnd = new Date(Math.min(inclusiveEnd.getTime(), timelineEnd.getTime()));
-    if (visibleEnd <= timelineStart || visibleStart >= timelineEnd) return '';
+
+  // Group records by asset for dedicated asset rows
+  const assetGroups = new Map();
+  records.forEach(record => {
+    const { displayAsset } = parseAssetInfo(record);
+    if (!assetGroups.has(displayAsset)) {
+      assetGroups.set(displayAsset, []);
+    }
+    assetGroups.get(displayAsset).push(record);
+  });
+
+  // Sort assets by ASSET_NAMES order, then alphabetically for others
+  const sortedAssets = [...assetGroups.keys()].sort((a, b) => {
+    const aIndex = ASSET_NAMES.indexOf(a);
+    const bIndex = ASSET_NAMES.indexOf(b);
+    if (aIndex >= 0 && bIndex >= 0) return aIndex - bIndex;
+    if (aIndex >= 0) return -1;
+    if (bIndex >= 0) return 1;
+    return a.localeCompare(b);
+  });
+
+  const rows = sortedAssets.map(assetName => {
+    const assetRecords = assetGroups.get(assetName);
+    const bars = assetRecords.map(record => {
+      const start = parseDate(record.start_date);
+      const end = parseDate(record.end_date) || start;
+      if (!start || !end) return '';
+      const inclusiveEnd = new Date(end);
+      inclusiveEnd.setDate(inclusiveEnd.getDate() + 1);
+      const visibleStart = new Date(Math.max(start.getTime(), timelineStart.getTime()));
+      const visibleEnd = new Date(Math.min(inclusiveEnd.getTime(), timelineEnd.getTime()));
+      if (visibleEnd <= timelineStart || visibleStart >= timelineEnd) return '';
+      
+      const leftPx = dateToPixel(visibleStart);
+      const rightPx = dateToPixel(visibleEnd);
+      const widthPx = Math.max(20, rightPx - leftPx);
+      
+      const color = phaseColor(record.phase);
+      const { vesselCount } = parseAssetInfo(record);
+      const vesselBadge = vesselCountBadge(record);
+      return `<button class="task-bar spot-bar" data-edit="${record.id}" data-shift="${record.id}" style="position:absolute;left:${leftPx}px;width:${widthPx}px;background:${escapeHtml(color)};" title="${escapeHtml(record.activity)} (${escapeHtml(record.phase || 'Other')}) - ${vesselCount} vessel${vesselCount === 1 ? '' : 's'}. Click to edit.">
+        <span class="task-title">${vesselBadge}${escapeHtml(record.phase || 'Activity')}</span>
+      </button>`;
+    }).filter(Boolean).join('');
     
-    // Use pixel-based positioning for accurate alignment with month grid
-    const leftPx = dateToPixel(visibleStart);
-    const rightPx = dateToPixel(visibleEnd);
-    const widthPx = Math.max(20, rightPx - leftPx); // minimum 20px width
+    if (!bars) return ''; // Skip asset row if no visible activities
     
-    const color = record.color || phaseColor(record.phase);
-    const icon = isIndividualRun(record) ? '▸' : '⛴';
-    const { displayAsset, vesselCount } = parseAssetInfo(record);
-    const vesselBadge = vesselCountBadge(record);
     return `<div class="route-row" style="min-width:${timelineWidth}px;grid-template-columns:${labelWidth}px ${laneWidth}px;">
-      <div class="route-label"><strong>${escapeHtml(displayAsset)} / ${escapeHtml(record.phase || 'Phase')}</strong><span>${escapeHtml(record.activity)}${record.area ? ` / ${escapeHtml(record.area)}` : ''}</span></div>
+      <div class="route-label"><strong>${escapeHtml(assetName)}</strong><span>${assetRecords.length} activit${assetRecords.length === 1 ? 'y' : 'ies'}</span></div>
       <div class="bar-lane month-lane" style="background-size:${monthWidth}px 100%;position:relative;">
-        <button class="task-bar spot-bar" data-edit="${record.id}" data-shift="${record.id}" style="position:absolute;left:${leftPx}px;width:${widthPx}px;background:${escapeHtml(color)};" title="${vesselCount} forecasted ${vesselCount === 1 ? 'vessel' : 'vessels'}. Drag to shift dates. Click to edit ${escapeHtml(record.activity)}.">
-          <span class="task-title">${isIndividualRun(record) ? `<span class="vessel-icon" aria-hidden="true">${icon}</span>` : vesselBadge}${escapeHtml(displayAsset)} / ${escapeHtml(record.activity)}</span>
-        </button>
+        ${bars}
       </div>
     </div>`;
-  }).join('');
+  }).filter(Boolean).join('');
   els.timeline.innerHTML = head + rows;
 
   if (els.monthViewSlider) {
