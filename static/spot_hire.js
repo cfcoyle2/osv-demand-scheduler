@@ -554,8 +554,16 @@ function renderTimeline(records) {
     assetGroups.get(displayAsset).push(record);
   });
 
-  // Sort assets by ASSET_NAMES order, then alphabetically for others
+  // Sort assets: EV Run activities first, then by ASSET_NAMES order, then alphabetically
   const sortedAssets = [...assetGroups.keys()].sort((a, b) => {
+    // Check if asset group contains EV Run activities
+    const aHasEVRun = assetGroups.get(a).some(r => r.phase === 'EV Run' || r.activity === 'EV Run');
+    const bHasEVRun = assetGroups.get(b).some(r => r.phase === 'EV Run' || r.activity === 'EV Run');
+    
+    // EV Runs always go first
+    if (aHasEVRun && !bHasEVRun) return -1;
+    if (bHasEVRun && !aHasEVRun) return 1;
+    
     const aIndex = ASSET_NAMES.indexOf(a);
     const bIndex = ASSET_NAMES.indexOf(b);
     if (aIndex >= 0 && bIndex >= 0) return aIndex - bIndex;
