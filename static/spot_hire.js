@@ -147,6 +147,25 @@ function activeMonthFilters() {
 
 function visibleMonths() {
   const selectedMonths = activeMonthFilters();
+  const rangeStart = parseDate(state.filters.dateFrom);
+  const rangeEnd = parseDate(state.filters.dateTo);
+  
+  // If date range is set, show only months that overlap with that range
+  if (rangeStart || rangeEnd) {
+    return MONTHS_2026.filter(month => {
+      const monthStart = month.start;
+      const monthEnd = month.end;
+      if (rangeStart && rangeEnd) {
+        return monthEnd >= rangeStart && monthStart <= rangeEnd;
+      } else if (rangeStart) {
+        return monthEnd >= rangeStart;
+      } else if (rangeEnd) {
+        return monthStart <= rangeEnd;
+      }
+      return true;
+    });
+  }
+  
   // If any months are selected, show only those months
   if (selectedMonths.length >= 1) {
     const indexes = selectedMonths
