@@ -10,22 +10,23 @@ const MONTHS_2026 = Array.from({ length: 12 }, (_, index) => {
 });
 
 const ASSET_NAMES = [
+  'EV Runs',
+  'Auger',
+  'Enchilada',
+  'Salsa',
+  'Turitella',
   'Pontus',
   'Poseidon',
-  'Stena Evolution',
   'Noble Voyager',
-  'Sparta',
-  'Auger',
-  'ESA',
-  'Stones',
-  'Whale',
-  'Perdido',
+  'Q5000',
+  'Stena Evolution',
+  'Appomattox',
   'Mars',
   'Olympus',
   'Ursa',
-  'Appomattox',
   'Vito',
-  'Q5000',
+  'Perdido',
+  'Whale',
 ];
 
 const state = {
