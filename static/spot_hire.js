@@ -63,6 +63,7 @@ const els = {
   monthViewSlider: document.getElementById('monthViewSlider'),
   jumpCurrentMonthBtn: document.getElementById('jumpCurrentMonthBtn'),
   refreshButton: document.getElementById('refreshButton'),
+  workbookInput: document.getElementById('workbookInput'),
   impactMonth: document.getElementById('impactMonth'),
   forecastDemand: document.getElementById('forecastDemand'),
   additionalRunsDemand: document.getElementById('additionalRunsDemand'),
@@ -918,6 +919,23 @@ els.deleteActivity.addEventListener('click', () => deleteRecord(els.editForm.ele
 els.editDialog.addEventListener('click', event => { if (event.target === els.editDialog) closeEdit(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeEdit(); });
 els.refreshButton.addEventListener('click', () => loadData().catch(err => showToast(err.message)));
+els.workbookInput?.addEventListener('change', async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    showToast('Uploading workbook...');
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Upload failed');
+    const result = await res.json();
+    showToast(result.message || 'Workbook uploaded successfully');
+    await loadData();
+  } catch (err) {
+    showToast(err.message || 'Upload failed');
+  }
+  event.target.value = '';
+});
 els.saveImpactsButton.addEventListener('click', () => saveImpacts().catch(err => showToast(err.message)));
 els.impactMonth.addEventListener('change', () => {
   state.impactMonth = els.impactMonth.value;

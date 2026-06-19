@@ -514,7 +514,7 @@ def parse_tasks_sheet(sheet, filename, sheet_name):
         'coordinator': find_column(headers, ['coordinator', 'planner', 'owner']),
         'vessel': find_column(headers, ['vessel', 'boat', 'osv']),
         'project': find_column(headers, ['project', 'well', 'campaign']),
-        'activity': find_column(headers, ['activity', 'description', 'task', 'scope']),
+        'activity': find_column(headers, ['activity', 'activity_name', 'description', 'task', 'scope', 'cargo', 'load', 'run', 'shipment']),
         'status': find_column(headers, ['status', 'state']),
         'start_date': find_column(headers, ['start_date', 'start', 'sail_date', 'base_delivery_date', 'delivery_date', 'sail']),
         'offshore_start': find_column(headers, ['offshore_start', 'arrive', 'arrival', 'offshore_req_date', 'offshore_req', 'req_date']),
@@ -575,8 +575,9 @@ def parse_spot_hire_sheet(sheet, filename, sheet_name):
     
     column_map = {
         'asset': find_column(headers, ['asset', 'platform', 'rig']),
+        'vessel_count': find_column(headers, ['vessel_count', 'vessels', 'osv_count']),
         'area': find_column(headers, ['area', 'region', 'location']),
-        'activity': find_column(headers, ['activity', 'description', 'scope', 'vessel']),
+        'activity': find_column(headers, ['activity', 'description', 'scope', 'campaign', 'well_scope']),
         'phase': find_column(headers, ['phase', 'type', 'category']),
         'start_date': find_column(headers, ['start_date', 'start', 'from']),
         'end_date': find_column(headers, ['end_date', 'end', 'to']),
@@ -601,10 +602,18 @@ def parse_spot_hire_sheet(sheet, filename, sheet_name):
         phase = explicit_phase if explicit_phase else infer_phase_from_activity(activity)
         color = PHASE_COLORS.get(phase, PHASE_COLORS['Other'])
             
+        # Parse vessel count (default to 1 if not specified)
+        vessel_count_val = get_cell_value(row, column_map['vessel_count'], '1')
+        try:
+            vessel_count = max(1, min(10, int(float(vessel_count_val))))
+        except (ValueError, TypeError):
+            vessel_count = 1
+        
         record = {
             'id': generate_id(),
             'asset': asset_val.strip(),
             'display_asset': asset_val.strip(),
+            'vessel_count': vessel_count,
             'area': get_cell_value(row, column_map['area']),
             'activity': activity,
             'phase': phase,
@@ -624,10 +633,16 @@ def parse_spot_hire_sheet(sheet, filename, sheet_name):
 
 
 def find_column(headers, variations):
-    """Find column index matching any of the variations."""
+    """Find column index matching any of the variations. Uses exact match priority."""
+    # First try exact match
     for i, header in enumerate(headers):
         for var in variations:
-            if var in header:
+            if header == var:
+                return i
+    # Then try substring match
+    for i, header in enumerate(headers):
+        for var in variations:
+            if var in header and var != 'count':  # Avoid matching 'count' in 'vessel_count'
                 return i
     return None
 

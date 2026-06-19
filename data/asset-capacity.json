@@ -4,36 +4,43 @@
       "asset": "Pontus",
       "vessel_count": 2,
       "notes": "Sisco 001 Drill New Well",
-      "date_from": "2026-06-15",
-      "date_to": "2026-07-27"
+      "date_from": "2026-06-18",
+      "date_to": "2026-07-29"
     },
     {
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "Whale 10 Deepening",
       "date_from": "2026-05-10",
-      "date_to": "2026-06-27"
+      "date_to": "2026-07-10"
     },
     {
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "Whale 10 Completion",
-      "date_from": "2026-06-27",
-      "date_to": "2026-07-26"
+      "date_from": "2026-07-10",
+      "date_to": "2026-08-08"
     },
     {
       "asset": "Stena Evolution",
       "vessel_count": 2,
       "notes": "Kaikias KI-2 Completion",
       "date_from": "2026-05-18",
-      "date_to": "2026-06-19"
+      "date_to": "2026-06-20"
     },
     {
       "asset": "Stena Evolution",
       "vessel_count": 2,
       "notes": "Sparta SP 203 Drill Bypass",
-      "date_from": "2026-06-19",
-      "date_to": "2026-07-23"
+      "date_from": "2026-06-20",
+      "date_to": "2026-07-24"
+    },
+    {
+      "asset": "Noble Voyager",
+      "vessel_count": 2,
+      "notes": "Arrival in GoA",
+      "date_from": "2026-07-05",
+      "date_to": "2026-08-09"
     }
   ],
   "monthly_capacity_entries": [

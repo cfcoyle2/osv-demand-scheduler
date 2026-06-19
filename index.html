@@ -69,6 +69,7 @@
           <label>View To<input id="dateToFilter" type="date"></label>
         </div>
         <button id="clearDateFilter" type="button">Clear Dates</button>
+        <button id="next2WeeksBtn" type="button" title="Focus on the next 2 weeks">Next 2 Weeks</button>
       </section>
 
       <section class="recommendation">
@@ -137,12 +138,16 @@
       </div>
 
       <section class="panel schedule-watch-panel">
-        <h2>Schedule Watch</h2>
+        <h2>Schedule Watch <span id="capacityAlertBadge" class="capacity-alert-badge" style="display:none;"></span></h2>
         <div class="schedule-watch-grid">
           <div class="watch-column">
-            <h3>Weekly Demand Forecast</h3>
-            <p class="section-desc">8-week lookahead. Click capacity to edit per week.</p>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h3 id="weeklyDemandHeader" style="margin:0;">Weekly Demand Forecast</h3>
+              <button id="exportConflictSummaryBtn" type="button" class="small-btn" title="Copy conflict summary to clipboard">📋 Copy Summary</button>
+            </div>
+            <p id="weeklyDemandDesc" class="section-desc">8-week lookahead. Click capacity to edit per week.</p>
             <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
+            <div id="weekConflictDetails" class="week-conflict-details" style="display:none;"></div>
           </div>
           <div class="watch-column">
             <h3>Monthly Capacity</h3>

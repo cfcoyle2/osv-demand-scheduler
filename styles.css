@@ -51,6 +51,70 @@ button:hover, .upload-button:hover { border-color: var(--teal); }
   background: #fff7f7;
 }
 
+/* Small buttons */
+.small-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.small-btn:hover { background: #1a4a6e; }
+
+/* Capacity Alert Badge */
+.capacity-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--red);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.capacity-alert-badge:hover { background: #a33; }
+
+/* Next 2 Weeks button */
+#next2WeeksBtn {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+#next2WeeksBtn:hover { background: #127378; }
+
+/* Coordinator clickable */
+.metric[data-insight="coordinators"] .insight-item,
+.insight-grid .insight-item[data-coordinator-drill] {
+  cursor: pointer;
+}
+.insight-grid .insight-item[data-coordinator-drill]:hover {
+  background: #e6f7ff;
+  border-color: var(--teal);
+}
+
+/* Route shift preview tooltip */
+.shift-preview-tooltip {
+  position: fixed;
+  background: rgba(20, 50, 74, 0.95);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  z-index: 10000;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.shift-preview-tooltip .preview-increase { color: #fca5a5; }
+.shift-preview-tooltip .preview-decrease { color: #86efac; }
+.shift-preview-tooltip .preview-neutral { color: #94a3b8; }
+
 .topbar {
   min-height: 48px;
   padding: 8px 24px;
@@ -902,6 +966,59 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
 .week-card.over-capacity .week-status { color: #c64545; }
 .week-card.at-capacity .week-status { color: #92400e; }
 .week-card.under-capacity .week-status { color: #166534; }
+.week-card.clickable { cursor: pointer; }
+.week-card.clickable:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.week-card .week-capacity-value { font-size: 14px; font-weight: 600; color: #1f2933; padding: 2px 6px; background: #e2e8f0; border-radius: 4px; }
+
+/* Week Conflict Details Panel */
+.week-conflict-details {
+  margin-top: 12px;
+  padding: 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+}
+.conflict-routes-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #334155;
+}
+.conflict-routes-header strong { color: #f87171; flex: 1; }
+.conflict-routes-header span { color: #fca5a5; font-size: 12px; }
+.close-conflict-panel {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #f87171;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.close-conflict-panel:hover { color: #fecaca; }
+.conflict-routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.conflict-route-item {
+  display: block;
+  text-align: left;
+  width: 100%;
+  padding: 8px 10px;
+  background: #1e3a5f;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.conflict-route-item:hover { background: #2563eb; border-color: #60a5fa; }
+.conflict-route-item strong { display: block; color: #ffffff; font-size: 13px; }
+.conflict-route-item span { display: block; color: #93c5fd; font-size: 11px; margin-top: 2px; }
 
 /* Asset Activity Forecast Section */
 .asset-forecast-section {

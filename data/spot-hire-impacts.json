@@ -3,42 +3,49 @@
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Stena - Well control issues adding additional unplanned OSV demand  and SP203 side track, added ~ 9 days of drilling and additional unplanned OSV demand.\n\n\u2022Harvey Freedom (Spot Hire OSV) Planned to begin cleaning for relaease on 28 January\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
-    "updated_at": "2026-06-09T14:19:43.201665"
+    "text": "\u2022Stena - Well control issues adding additional unplanned OSV demand  and SP203 side track, added ~ 9 days of drilling and additional unplanned OSV demand.\n\n\u2022Harvey Freedom (Spot Hire OSV) Planned to begin cleaning for relaease on 28 January\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+    "updated_at": "2026-06-16T10:02:46.560274"
   },
   "2026-02": {
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Western GOA assets (Whale, Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast carry high risk of not being supported.\n\n\u2022Timeplanner schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus forecast assumes adding 3x additional Pilot Holes and Llano PA\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t",
-    "updated_at": "2026-06-09T14:19:54.720213"
+    "text": "\u2022Western GOA assets (Whale, Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast carry high risk of not being supported.\n\n\u2022Timeplanner schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus forecast assumes adding 3x additional Pilot Holes and Llano PA\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t",
+    "updated_at": "2026-06-16T10:03:03.876594"
   },
   "2026-03": {
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus unknown schedule direction with Dover 002 Deepen, only accounting for 1 OSV run.\n\n\u2022Mud Demand adding extra tension in the system, as well as supplier return constraints\n\n\u2022Cedar Ridge moves into cleaning last week of March \n\n\n\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
-    "updated_at": "2026-06-09T14:20:05.644515"
+    "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Pontus unknown schedule direction with Dover 002 Deepen, only accounting for 1 OSV run.\n\n\u2022Mud Demand adding extra tension in the system, as well as supplier return constraints\n\n\u2022Cedar Ridge moves into cleaning last week of March \n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+    "updated_at": "2026-06-16T10:03:34.381218"
   },
   "2026-04": {
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\n\u2022Cedar Ridge off hire starting April 1\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
-    "updated_at": "2026-06-09T14:20:13.982765"
+    "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Cedar Ridge off hire starting April 1\"\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+    "updated_at": "2026-06-16T10:03:57.436056"
   },
   "2026-05": {
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022HOS Carolina maintained to support Dover's swap from drilling to completions\n\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
-    "updated_at": "2026-06-09T14:20:29.544826"
+    "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022HOS Carolina maintained to support Dover's swap from drilling to completions\n\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+    "updated_at": "2026-06-16T10:04:15.963047"
   },
   "2026-06": {
     "base_fleet": "",
     "frac_spot_hires": "",
     "operational_spot_hires": "",
-    "text": "\"\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Uncertainty at Pontus, had to PA the well. Will transition to Sisco with elevated mud demand of 55k bbls WBM\n\n\u2022Pontus, Poseidon, and Stena each swapping from drilling to completions maintaining elevated demand\n\n\u2022Uncertainty on competing riser swaps at Mars and Olympus with low confidence on maintaining current schedule\n\n\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
-    "updated_at": "2026-06-09T14:22:11.120903"
+    "text": "\u2022Western GOA assets (Perdido) most exposed due to 36+ hour transit times, potentially limiting one OSV run per week.\n\n\u2022Any timeplanner changes, additional voyage needs, or increases in OSV intensity beyond what is shown in the current forecast, carry high risk of not being supported.\n\n\u2022Schedule and run cadence must remain static to avoid capacity gaps; deviations will likely require Well & Logistics Leadership prioritization.\n\n\u2022Uncertainty at Pontus, had to PA the well. Will transition to Sisco with elevated mud demand of 55k bbls WBM\n\n\u2022Pontus, Poseidon, and Stena each swapping from drilling to completions maintaining elevated demand\n\n\u2022Uncertainty on competing riser swaps at Mars and Olympus with low confidence on maintaining current schedule\n\n\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+    "updated_at": "2026-06-16T10:05:01.742341"
+  },
+  "2026-07": {
+    "base_fleet": "",
+    "frac_spot_hires": "",
+    "operational_spot_hires": "",
+    "text": "Continue monitoring Western GOA assets capacity constraints.\n\nPontus completing Sisco 001 drill and transitioning activities.\n\nPoseidon Whale 10 completion phase wrapping up.\n\nStena Evolution moving from Kaikias completion to Sparta operations.",
+    "updated_at": "2026-06-11T11:00:00.000000"
   }
 }

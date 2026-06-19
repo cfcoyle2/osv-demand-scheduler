@@ -244,6 +244,107 @@ function parseMonthlyCapacityText(value) {
   return Number.isFinite(parsed) ? Math.max(0, parsed) : null;
 }
 
+function getCapacityForAssetAtDate(asset, dateObj) {
+  // Find the best matching capacity entry for this asset at this date
+  if (!state.assetCapacity || !state.assetCapacity.length) return 1;
+  
+  // Normalize to date string for comparison (avoids timezone issues)
+  const checkDate = dateObj.toISOString().split('T')[0];
+  
+  for (const entry of state.assetCapacity) {
+    if (entry.asset !== asset) continue;
+    
+    const dateFrom = entry.date_from || '';
+    const dateTo = entry.date_to || '';
+    
+    // Check if date falls within range (string comparison works for YYYY-MM-DD)
+    if (dateFrom && checkDate < dateFrom) continue;
+    if (dateTo && checkDate > dateTo) continue;
+    
+    return Math.max(0, Number(entry.vessel_count) || 1);
+  }
+  return 1; // Default capacity
+}
+
+function generateWeeklyCapacityForecast(asset, tasks) {
+  // Generate week-by-week capacity vs demand for a specific asset
+  const assetTasks = tasks.filter(t => t.asset === asset);
+  if (!assetTasks.length) return [];
+  
+  // Get date range from tasks
+  const dates = assetTasks.flatMap(t => [
+    parseDate(t.offshore_start) || parseDate(t.start_date),
+    parseDate(t.offshore_end) || parseDate(t.return_end)
+  ]).filter(Boolean);
+  
+  if (!dates.length) return [];
+  
+  const minDate = new Date(Math.min(...dates));
+  const maxDate = new Date(Math.max(...dates));
+  
+  // Start from the Monday of minDate's week
+  const startWeek = new Date(minDate);
+  startWeek.setDate(startWeek.getDate() - startWeek.getDay() + 1);
+  startWeek.setHours(0, 0, 0, 0);
+  
+  const weeks = [];
+  let weekStart = new Date(startWeek);
+  
+  while (weekStart <= maxDate) {
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+    
+    // Count concurrent routes for this week (offshore_start to offshore_end overlap)
+    let peakConcurrent = 0;
+    const dayChecks = [];
+    for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
+      const dayStart = new Date(d);
+      const dayEnd = new Date(d);
+      dayEnd.setHours(23, 59, 59, 999);
+      
+      const concurrent = assetTasks.filter(t => {
+        const olStart = parseDate(t.offshore_start) || parseDate(t.start_date);
+        const olEnd = parseDate(t.offshore_end) || parseDate(t.return_end);
+        if (!olStart || !olEnd) return false;
+        return olStart <= dayEnd && olEnd >= dayStart;
+      }).length;
+      
+      if (concurrent > peakConcurrent) {
+        peakConcurrent = concurrent;
+      }
+    }
+    
+    // Get capacity for this week (use mid-week date for lookup)
+    const midWeek = new Date(weekStart);
+    midWeek.setDate(midWeek.getDate() + 3);
+    const capacity = getCapacityForAssetAtDate(asset, midWeek);
+    
+    // Find the capacity entry that applies (for notes)
+    const capacityEntry = state.assetCapacity.find(entry => {
+      if (entry.asset !== asset) return false;
+      const dateFrom = entry.date_from ? new Date(entry.date_from) : null;
+      const dateTo = entry.date_to ? new Date(entry.date_to) : null;
+      if (dateFrom && midWeek < dateFrom) return false;
+      if (dateTo && midWeek > dateTo) return false;
+      return true;
+    });
+    
+    weeks.push({
+      weekStart: new Date(weekStart),
+      weekEnd: new Date(weekEnd),
+      peakConcurrent,
+      capacity,
+      notes: capacityEntry?.notes || '',
+      exceedsCapacity: peakConcurrent > capacity
+    });
+    
+    weekStart.setDate(weekStart.getDate() + 7);
+  }
+  
+  return weeks;
+}
+
 function normalizeMonthlyCapacityEntries(raw) {
   if (!Array.isArray(raw)) return [];
   return raw.map(entry => ({
@@ -449,15 +550,55 @@ function renderInsightPanel(tasks) {
       text: 'Routes grouped by logistics coordinator for the current view.',
       body: `<div class="insight-scroll"><div class="insight-grid">${groupCounts(tasks, t => t.coordinator || coordinatorForAsset(t.asset)).map(([coordinator, count]) => `<div class="insight-item"><strong>${escapeHtml(coordinator)}</strong><span>${count} route${count === 1 ? '' : 's'}</span></div>`).join('') || '<div class="empty-state">No coordinator demand in the current view.</div>'}</div></div>`
     },
-    watch: {
-      title: 'Demand Watch',
-      text: `${state.conflicts.length} demand watch item${state.conflicts.length === 1 ? '' : 's'} detected across all assets. Click any item to jump to the Gantt chart.`,
-      body: `<div class="insight-scroll"><div class="insight-list">${state.conflicts.map(item => {
-      const label = item.type === 'fleet_monthly_capacity' ? 'Monthly OSV Capacity' : (item.asset || item.resource || '');
-      const severityLabel = item.severity === 'warning' ? 'Demand warning' : 'Demand conflict';
-      return `<button type="button" class="insight-item insight-item-action" data-conflict-tasks="${escapeHtml(JSON.stringify(item.task_ids || []))}" data-conflict-start="${escapeHtml(item.overlap_start || '')}"><strong>${escapeHtml(severityLabel)} - ${escapeHtml(label)}</strong><span>${escapeHtml(item.message)}</span></button>`;
-      }).join('') || '<div class="empty-state">No demand watch items at the moment.</div>'}</div></div>`
-    }
+    watch: (() => {
+      const filteredAsset = state.filters.asset !== 'all' ? state.filters.asset : null;
+      const relevantConflicts = filteredAsset
+        ? state.conflicts.filter(c => c.asset === filteredAsset)
+        : state.conflicts;
+      
+      let forecastHtml = '';
+      if (filteredAsset) {
+        const forecast = generateWeeklyCapacityForecast(filteredAsset, state.tasks);
+        const exceedingWeeks = forecast.filter(w => w.exceedsCapacity);
+        
+        if (forecast.length) {
+          const fmtWeek = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          forecastHtml = `<div class="capacity-forecast" style="margin-bottom:12px;">
+            <div style="font-weight:600;margin-bottom:8px;color:#e2e8f0;">Weekly Capacity Forecast for ${escapeHtml(filteredAsset)}</div>
+            <div style="display:grid;gap:4px;">
+              ${forecast.map(w => {
+                const weekLabel = `${fmtWeek(w.weekStart)} - ${fmtWeek(w.weekEnd)}`;
+                const statusClass = w.exceedsCapacity ? 'style="background:#dc2626;color:white;padding:2px 6px;border-radius:3px;"' : 'style="background:#22c55e;color:white;padding:2px 6px;border-radius:3px;"';
+                const statusText = w.exceedsCapacity ? 'EXCEEDS' : 'OK';
+                const notesHtml = w.notes ? `<span style="color:#94a3b8;font-size:11px;margin-left:8px;">(${escapeHtml(w.notes)})</span>` : '';
+                return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #334155;">
+                  <span style="min-width:130px;color:#cbd5e1;">${weekLabel}</span>
+                  <span style="min-width:80px;">Demand: ${w.peakConcurrent}</span>
+                  <span style="min-width:80px;">Capacity: ${w.capacity}</span>
+                  <span ${statusClass}>${statusText}</span>
+                  ${notesHtml}
+                </div>`;
+              }).join('')}
+            </div>
+            ${exceedingWeeks.length ? `<div style="margin-top:8px;padding:8px;background:#7f1d1d;border-radius:4px;color:#fecaca;">${exceedingWeeks.length} week${exceedingWeeks.length === 1 ? '' : 's'} exceed${exceedingWeeks.length === 1 ? 's' : ''} assigned capacity</div>` : '<div style="margin-top:8px;padding:8px;background:#14532d;border-radius:4px;color:#bbf7d0;">All weeks within assigned capacity</div>'}
+          </div>`;
+        }
+      }
+      
+      const conflictText = filteredAsset
+        ? `${relevantConflicts.length} demand watch item${relevantConflicts.length === 1 ? '' : 's'} for ${filteredAsset}.`
+        : `${relevantConflicts.length} demand watch item${relevantConflicts.length === 1 ? '' : 's'} detected across all assets.`;
+      
+      return {
+        title: filteredAsset ? `Demand Watch - ${filteredAsset}` : 'Demand Watch',
+        text: `${conflictText} Click any item to jump to the Gantt chart.`,
+        body: `<div class="insight-scroll">${forecastHtml}<div class="insight-list">${relevantConflicts.map(item => {
+          const label = item.type === 'fleet_monthly_capacity' ? 'Monthly OSV Capacity' : (item.asset || item.resource || '');
+          const severityLabel = item.severity === 'warning' ? 'Demand warning' : 'Demand conflict';
+          return `<button type="button" class="insight-item insight-item-action" data-conflict-tasks="${escapeHtml(JSON.stringify(item.task_ids || []))}" data-conflict-start="${escapeHtml(item.overlap_start || '')}"><strong>${escapeHtml(severityLabel)} - ${escapeHtml(label)}</strong><span>${escapeHtml(item.message)}</span></button>`;
+        }).join('') || '<div class="empty-state">No demand watch items' + (filteredAsset ? ` for ${filteredAsset}` : '') + '.</div>'}</div></div>`
+      };
+    })()
   };
   const panel = panels[state.activeInsight] || panels.active;
   els.insightPanel.innerHTML = `<div class="insight-heading"><div><h2>${panel.title}</h2><p>${panel.text}</p></div></div>${panel.body}`;
@@ -640,7 +781,13 @@ function renderFleetSummary(demandTasks = state.tasks) {
     const notes = entry.notes || '';
     const dateFrom = entry.date_from || '';
     const dateTo = entry.date_to || '';
-    const hasConflict = asset && state.conflicts.some(c => c.asset === asset);
+    
+    // Check for conflicts (offshore overlaps) OR weekly demand exceeding capacity
+    const hasOffshoreConflict = asset && state.conflicts.some(c => c.asset === asset);
+    const weeklyForecast = asset ? generateWeeklyCapacityForecast(asset, state.tasks) : [];
+    const hasCapacityExceeded = weeklyForecast.some(w => w.exceedsCapacity);
+    const hasConflict = hasOffshoreConflict || hasCapacityExceeded;
+    
     return `<div class="capacity-row${hasConflict ? ' capacity-row-conflict' : ''}" data-capacity-index="${index}">
       <select class="capacity-asset-select" data-index="${index}" title="Select asset"><option value="">Select asset</option>${assetOptions}</select>
       <select class="capacity-count-input" data-index="${index}" title="Vessel count available (0-10)">${countOptions}</select>
@@ -847,12 +994,21 @@ function calculateWeeklyDemand(tasks) {
     // Calculate peak concurrent for each day in the week
     let peakDemand = 0;
     const dayCheck = new Date(weekStart);
+    dayCheck.setHours(12, 0, 0, 0); // Use noon to avoid timezone issues
+    
     while (dayCheck <= weekEnd) {
       let concurrent = 0;
       overlappingTasks.forEach(task => {
         const taskStart = parseDate(task.start_date);
         const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
-        if (taskStart <= dayCheck && taskEnd >= dayCheck) {
+        if (!taskStart || !taskEnd) return;
+        
+        // Normalize to date-only comparison
+        const checkDateOnly = new Date(dayCheck.getFullYear(), dayCheck.getMonth(), dayCheck.getDate());
+        const startDateOnly = new Date(taskStart.getFullYear(), taskStart.getMonth(), taskStart.getDate());
+        const endDateOnly = new Date(taskEnd.getFullYear(), taskEnd.getMonth(), taskEnd.getDate());
+        
+        if (startDateOnly <= checkDateOnly && endDateOnly >= checkDateOnly) {
           concurrent++;
         }
       });
@@ -869,7 +1025,27 @@ function calculateWeeklyDemand(tasks) {
 function renderWeeklyDemandForecast(tasks = state.tasks) {
   if (!els.weeklyDemandGrid) return;
   
-  const weeklyData = calculateWeeklyDemand(tasks);
+  // Check if filtering to a specific asset
+  const filteredAsset = state.filters.asset !== 'all' ? state.filters.asset : null;
+  const relevantTasks = filteredAsset ? tasks.filter(t => t.asset === filteredAsset) : tasks;
+  
+  // Update header based on filter
+  const headerEl = document.getElementById('weeklyDemandHeader');
+  const descEl = document.getElementById('weeklyDemandDesc');
+  if (headerEl) {
+    headerEl.textContent = filteredAsset ? `Weekly Demand Forecast - ${filteredAsset}` : 'Weekly Demand Forecast';
+  }
+  if (descEl) {
+    if (filteredAsset) {
+      const capacityEntry = state.assetCapacity.find(e => e.asset === filteredAsset);
+      const capacityNote = capacityEntry?.notes ? ` (${capacityEntry.notes})` : '';
+      descEl.textContent = `Showing ${filteredAsset} demand vs assigned vessel capacity${capacityNote}. Click over-capacity weeks to see routes.`;
+    } else {
+      descEl.textContent = '8-week lookahead. Click capacity to edit per week.';
+    }
+  }
+  
+  const weeklyData = calculateWeeklyDemand(relevantTasks);
   const weekDemandMap = new Map();
   weeklyData.forEach(w => {
     const key = w.weekStart.toISOString().split('T')[0];
@@ -891,11 +1067,15 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
   }
   
   els.weeklyDemandGrid.innerHTML = weeks.map(week => {
-    const capacity = getCapacityForWeek(week.weekKey);
+    // Use asset-specific capacity when filtered, otherwise fleet capacity
+    const capacity = filteredAsset 
+      ? getCapacityForAssetAtDate(filteredAsset, week.weekStart)
+      : getCapacityForWeek(week.weekKey);
     let statusClass = 'under-capacity';
     let statusText = `${capacity - week.demand} available`;
+    const isOverCapacity = week.demand > capacity;
     
-    if (week.demand > capacity) {
+    if (isOverCapacity) {
       statusClass = 'over-capacity';
       statusText = `${week.demand - capacity} over!`;
     } else if (week.demand === capacity) {
@@ -905,20 +1085,28 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
       statusText = 'No demand';
     }
     
-    return `<div class="week-card ${statusClass}">
+    // Make over-capacity cards clickable to show conflicting routes
+    const clickable = isOverCapacity ? 'clickable' : '';
+    const clickAttr = isOverCapacity ? `data-show-conflicts="${week.weekKey}"` : '';
+    const clickTitle = isOverCapacity ? 'title="Click to see conflicting routes"' : '';
+    
+    // For asset-filtered view, show capacity as text (not editable)
+    const capacityDisplay = filteredAsset
+      ? `<span class="week-capacity-value">${capacity}</span>`
+      : `<input type="number" class="week-capacity-input" data-week-key="${week.weekKey}" value="${capacity}" min="1" max="20" title="Edit capacity for this week">`;
+    
+    return `<div class="week-card ${statusClass} ${clickable}" ${clickAttr} ${clickTitle}>
       <span class="week-label">${formatWeekLabel(week.weekStart)}</span>
       <div class="week-stats">
         <span class="week-demand">${week.demand}</span>
         <span class="week-divider">/</span>
-        <span class="week-capacity-wrap">
-          <input type="number" class="week-capacity-input" data-week-key="${week.weekKey}" value="${capacity}" min="1" max="20" title="Edit capacity for this week">
-        </span>
+        <span class="week-capacity-wrap">${capacityDisplay}</span>
       </div>
       <span class="week-status">${statusText}</span>
     </div>`;
   }).join('');
   
-  // Add event listeners for per-week capacity inputs
+  // Add event listeners for per-week capacity inputs (fleet view only)
   els.weeklyDemandGrid.querySelectorAll('.week-capacity-input').forEach(input => {
     input.addEventListener('change', (e) => {
       const weekKey = e.target.dataset.weekKey;
@@ -926,11 +1114,80 @@ function renderWeeklyDemandForecast(tasks = state.tasks) {
       renderWeeklyDemandForecast(tasks);
     });
   });
+  
+  // Add click handlers for over-capacity weeks to show conflicting routes
+  els.weeklyDemandGrid.querySelectorAll('[data-show-conflicts]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('week-capacity-input')) return; // Don't trigger on input click
+      const weekKey = card.dataset.showConflicts;
+      showWeekConflictRoutes(weekKey, filteredAsset, relevantTasks);
+    });
+  });
+  
+  // Hide conflict details panel when not needed
+  const conflictPanel = document.getElementById('weekConflictDetails');
+  if (conflictPanel) conflictPanel.style.display = 'none';
+}
+
+function showWeekConflictRoutes(weekKey, asset, tasks) {
+  const conflictPanel = document.getElementById('weekConflictDetails');
+  if (!conflictPanel) return;
+  
+  const weekStart = new Date(weekKey);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+  
+  // Find tasks active during this week
+  const activeTasks = tasks.filter(task => {
+    const taskStart = parseDate(task.start_date);
+    const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
+    if (!taskStart || !taskEnd) return false;
+    return taskStart <= weekEnd && taskEnd >= weekStart;
+  });
+  
+  const capacity = asset 
+    ? getCapacityForAssetAtDate(asset, weekStart)
+    : getCapacityForWeek(weekKey);
+  
+  const weekLabel = formatWeekLabel(weekStart);
+  
+  conflictPanel.innerHTML = `
+    <div class="conflict-routes-header">
+      <strong>Demand Conflict: ${weekLabel}</strong>
+      <span>${activeTasks.length} routes vs ${capacity} vessel${capacity !== 1 ? 's' : ''} capacity</span>
+      <button type="button" class="close-conflict-panel" title="Close">×</button>
+    </div>
+    <div class="conflict-routes-list">
+      ${activeTasks.map(task => `
+        <button type="button" class="conflict-route-item" data-scroll-to-task="${task.id}">
+          <strong>${escapeHtml(task.activity || 'Route')}</strong>
+          <span>${escapeHtml(task.project || '')} | ${fmt(task.start_date)} - ${fmt(task.return_end)}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  
+  conflictPanel.style.display = 'block';
+  
+  // Close button handler
+  conflictPanel.querySelector('.close-conflict-panel')?.addEventListener('click', () => {
+    conflictPanel.style.display = 'none';
+  });
+  
+  // Click to scroll to task handlers
+  conflictPanel.querySelectorAll('[data-scroll-to-task]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const taskId = btn.dataset.scrollToTask;
+      scrollToConflictTasks([taskId], null);
+      conflictPanel.style.display = 'none';
+    });
+  });
 }
 
 function populateForecastAssetSelect(tasks = state.tasks) {
   if (!els.forecastAssetSelect) return;
-  const assets = unique(tasks.map(t => t.asset)).filter(Boolean).sort();
+  const assets = unique([...ALL_ASSETS, ...tasks.map(t => t.asset)]).filter(Boolean).sort();
   els.forecastAssetSelect.innerHTML = '<option value="all">All assets</option>' + assets.map(asset => `<option value="${escapeHtml(asset)}">${escapeHtml(asset)}</option>`).join('');
 }
 
@@ -971,35 +1228,48 @@ function runAssetForecast() {
   let peakDemand = 0;
   let peakDate = null;
   
-  const allDates = [];
+  // Get date range from tasks
+  let minDate = null, maxDate = null;
   filteredTasks.forEach(task => {
     const start = parseDate(task.start_date);
     const end = parseDate(task.return_end) || parseDate(task.offshore_end) || start;
-    if (!start || !end) return;
-    
-    const current = new Date(start);
-    while (current <= end) {
-      allDates.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
+    if (start && (!minDate || start < minDate)) minDate = start;
+    if (end && (!maxDate || end > maxDate)) maxDate = end;
   });
   
-  const uniqueDates = [...new Set(allDates.map(d => d.toISOString().split('T')[0]))].map(d => new Date(d));
+  if (!minDate || !maxDate) {
+    els.assetForecastResult.innerHTML = '<div class="empty-state">No valid date range found.</div>';
+    return;
+  }
   
-  uniqueDates.forEach(checkDate => {
+  // Check each day in the range for concurrent routes
+  const checkDate = new Date(minDate);
+  checkDate.setHours(12, 0, 0, 0); // Use noon to avoid timezone issues
+  
+  while (checkDate <= maxDate) {
     let concurrent = 0;
     filteredTasks.forEach(task => {
       const taskStart = parseDate(task.start_date);
       const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
-      if (taskStart && taskEnd && taskStart <= checkDate && taskEnd >= checkDate) {
+      if (!taskStart || !taskEnd) return;
+      
+      // Normalize to date-only comparison
+      const checkDateOnly = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
+      const startDateOnly = new Date(taskStart.getFullYear(), taskStart.getMonth(), taskStart.getDate());
+      const endDateOnly = new Date(taskEnd.getFullYear(), taskEnd.getMonth(), taskEnd.getDate());
+      
+      if (startDateOnly <= checkDateOnly && endDateOnly >= checkDateOnly) {
         concurrent++;
       }
     });
+    
     if (concurrent > peakDemand) {
       peakDemand = concurrent;
-      peakDate = checkDate;
+      peakDate = new Date(checkDate);
     }
-  });
+    
+    checkDate.setDate(checkDate.getDate() + 1);
+  }
   
   const capacity = getOsvCapacity();
   const overCapacity = peakDemand > capacity;
@@ -1047,33 +1317,74 @@ function runAssetForecast() {
 }
 
 function scrollToConflictTasks(taskIds, conflictStart) {
-  if (!taskIds || !taskIds.length) return;
+  console.log('scrollToConflictTasks called:', { taskIds, conflictStart });
+  if (!taskIds || !taskIds.length) {
+    console.log('No task IDs provided');
+    return;
+  }
+  
+  // Find the task to get its asset
+  const targetTask = state.tasks.find(t => t.id === taskIds[0]);
+  const targetAsset = targetTask?.asset;
+  
   // Switch to route view if needed
   if (state.view !== 'route') switchView('route');
-  // Clear any asset filter so the conflicting rows are visible
-  state.filters.asset = 'all';
-  els.assetFilter.value = 'all';
+  
+  // Only clear filters that would hide the target task
+  // Keep asset filter if it matches the target task's asset
+  if (state.filters.asset !== 'all' && state.filters.asset !== targetAsset) {
+    state.filters.asset = 'all';
+    els.assetFilter.value = 'all';
+  }
+  state.filters.status = 'all';
+  state.filters.coordinator = 'all';
+  state.filters.dateFrom = '';
+  state.filters.dateTo = '';
+  els.statusFilter.value = 'all';
+  els.coordinatorFilter.value = 'all';
+  els.dateFromFilter.value = '';
+  els.dateToFilter.value = '';
   render();
-  // Scroll both horizontally (to the conflict date) and vertically (to the row)
-  requestAnimationFrame(() => {
-    // Horizontal: scroll the timeline to the conflict date
-    if (conflictStart && state.timelineBoundsStart) {
-      const conflictDate = new Date(conflictStart);
-      const dayWidth = Number(els.timeline.dataset.dayWidth || 112);
-      const routeLabelWidth = 220;
-      const daysSinceStart = Math.floor((conflictDate - state.timelineBoundsStart) / 86400000);
-      const targetScrollLeft = routeLabelWidth + (daysSinceStart * dayWidth) - Math.floor(els.timeline.clientWidth / 2);
-      els.timeline.scrollLeft = Math.max(0, targetScrollLeft);
-    }
-    // Vertical: scroll the page to the matching row
+  
+  // Use longer delay to ensure DOM is fully updated after render
+  setTimeout(() => {
+    console.log('Looking for row with task ID:', taskIds[0]);
     const row = els.timeline.querySelector(`[data-task-id="${taskIds[0]}"]`);
-    if (row) {
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Flash highlight
-      row.classList.add('conflict-flash');
-      setTimeout(() => row.classList.remove('conflict-flash'), 2000);
+    console.log('Row found:', row);
+    if (!row) {
+      console.log('Row not found for task:', taskIds[0]);
+      showToast('Route not found in current view');
+      return;
     }
-  });
+    
+    // Get the task bar inside the row
+    const taskBar = row.querySelector('.task-bar');
+    
+    // Step 1: Scroll the page to bring the row into view vertically
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Step 2: After vertical scroll, scroll timeline horizontally to show the task bar
+    setTimeout(() => {
+      if (taskBar) {
+        const rowRect = row.getBoundingClientRect();
+        const barRect = taskBar.getBoundingClientRect();
+        const timelineRect = els.timeline.getBoundingClientRect();
+        
+        // Calculate where the bar is relative to the timeline viewport
+        const barCenterX = barRect.left + barRect.width / 2;
+        const timelineCenterX = timelineRect.left + timelineRect.width / 2;
+        
+        // Scroll timeline horizontally to center the task bar
+        const scrollOffset = barCenterX - timelineCenterX;
+        els.timeline.scrollLeft += scrollOffset;
+      }
+      
+      // Flash highlight to draw attention
+      row.classList.add('conflict-flash');
+      setTimeout(() => row.classList.remove('conflict-flash'), 3000);
+      showToast(`Scrolled to ${targetTask?.activity || 'route'}`);
+    }, 500);
+  }, 400);
 }
 
 function render() {
