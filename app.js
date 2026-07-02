@@ -2349,4 +2349,4 @@ enableSpotShiftDrag();
   }
   loadData().catch(err => showToast(err.message));
   loadSpotData().catch(err => showToast(err.message));
-})();
+})();/* Cache bust: 2026-07-02 11:28:08 */
