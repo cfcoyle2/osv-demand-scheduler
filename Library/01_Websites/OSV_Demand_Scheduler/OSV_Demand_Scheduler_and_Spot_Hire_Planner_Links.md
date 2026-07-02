@@ -1,32 +1,56 @@
 # OSV Demand Scheduler and Spot Hire Planner Links
 
 Saved: May 25, 2026
-Updated: May 25, 2026
+Updated: July 2, 2026
 
-These local prototype links work when the Vessel Logistics Gantt backend is running on port 8000.
+---
 
-- OSV Demand Scheduler: http://127.0.0.1:8000/
-- Spot Hire Planner: http://127.0.0.1:8000/spot-hire
+## GitHub Pages (Public - Recommended for Sharing)
 
-Access note:
+| App | URL |
+|-----|-----|
+| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/ |
+| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html |
 
-These are local prototype links. `127.0.0.1` means "this computer," so the links only work on a machine where the backend is running. If the page does not load, start the backend with the command below and refresh the browser.
+---
 
-Current visual update:
+## Local Server (Development)
 
-The OSV Demand Scheduler now uses the same dark navy, red, yellow, and blue visual scheme as the Spot Hire Planner.
+| App | URL |
+|-----|-----|
+| **OSV Demand Scheduler** | http://localhost:8000/ |
+| **Spot Hire Planner** | http://localhost:8000/spot_hire.html |
 
-Backend location:
+**Start command:**
+```powershell
+cd "C:\Users\Chris.Coyle\OneDrive - Shell\VS Code"
+python -m http.server 8000
+```
 
-`Library/01_Websites/Vessel_Logistics_Gantt/backend`
+---
+
+## Team Distribution ZIP
+
+**File:** `OSV_Demand_Scheduler_July2.zip`  
+**Location:** `C:\Users\Chris.Coyle\OneDrive - Shell\VS Code\`
+
+Contents: index.html, app.js, styles.css, data/, START_SCHEDULER.bat, README_TEAM.txt
+
+**Instructions:**
+1. Extract ZIP to any folder
+2. Double-click `START_SCHEDULER.bat`
+3. Browser opens automatically
+
+---
+
+## Legacy Backend (Vessel Logistics Gantt)
+
+Backend location: `Library/01_Websites/Vessel_Logistics_Gantt/backend`
 
 Start command:
-
 ```powershell
 Set-Location "Library/01_Websites/Vessel_Logistics_Gantt/backend"
 ..\..\..\..\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-Health check:
-
-http://127.0.0.1:8000/api/health
+Health check: http://127.0.0.1:8000/api/health
