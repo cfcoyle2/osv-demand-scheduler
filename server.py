@@ -34,11 +34,13 @@ CORS(app)
 
 # Configuration
 DATA_DIR = Path(__file__).parent / 'data'
+SNAPSHOTS_DIR = DATA_DIR / 'snapshots'
 UPLOAD_FOLDER = Path(__file__).parent / 'uploads'
 ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'json'}
 
 # Ensure directories exist
 DATA_DIR.mkdir(exist_ok=True)
+SNAPSHOTS_DIR.mkdir(exist_ok=True)
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 
 
@@ -326,6 +328,225 @@ def delete_spot_hire_record(record_id):
         json.dump(spot_data, f, indent=2)
     
     return jsonify({'success': True})
+
+
+# ============== Snapshot History API ==============
+
+@app.route('/api/snapshots', methods=['GET'])
+def list_snapshots():
+    """List all available task snapshots for planned vs actual tracking."""
+    snapshots = []
+    for snapshot_file in sorted(SNAPSHOTS_DIR.glob('tasks_*.json'), reverse=True):
+        try:
+            with open(snapshot_file, 'r') as f:
+                data = json.load(f)
+            snapshots.append({
+                'id': snapshot_file.name,
+                'date': data.get('snapshot_date', ''),
+                'time': data.get('snapshot_time', ''),
+                'imported_at': data.get('imported_at', ''),
+                'source': data.get('source', ''),
+                'task_count': len(data.get('tasks', []))
+            })
+        except (json.JSONDecodeError, IOError):
+            continue
+    return jsonify({'snapshots': snapshots})
+
+
+@app.route('/api/snapshots/<snapshot_id>', methods=['GET'])
+def get_snapshot(snapshot_id):
+    """Get a specific snapshot by ID."""
+    snapshot_path = SNAPSHOTS_DIR / snapshot_id
+    if not snapshot_path.exists():
+        return jsonify({'error': 'Snapshot not found'}), 404
+    try:
+        with open(snapshot_path, 'r') as f:
+            return jsonify(json.load(f))
+    except (json.JSONDecodeError, IOError) as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/snapshots/compare', methods=['GET'])
+def compare_snapshots():
+    """Compare two snapshots to identify new, removed, and changed tasks.
+    
+    Query params:
+    - baseline: snapshot_id of the baseline (older) snapshot
+    - current: snapshot_id of the current (newer) snapshot, or 'current' for live data
+    - asset: optional asset filter
+    
+    Returns tasks grouped by: new (late additions), removed, changed, unchanged
+    """
+    baseline_id = request.args.get('baseline')
+    current_id = request.args.get('current', 'current')
+    asset_filter = request.args.get('asset')
+    
+    if not baseline_id:
+        return jsonify({'error': 'baseline parameter required'}), 400
+    
+    # Load baseline snapshot
+    baseline_path = SNAPSHOTS_DIR / baseline_id
+    if not baseline_path.exists():
+        return jsonify({'error': f'Baseline snapshot {baseline_id} not found'}), 404
+    
+    try:
+        with open(baseline_path, 'r') as f:
+            baseline_data = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        return jsonify({'error': f'Error reading baseline: {e}'}), 500
+    
+    # Load current data (either from snapshot or live)
+    if current_id == 'current':
+        try:
+            with open(DATA_DIR / 'tasks.json', 'r') as f:
+                current_data = json.load(f)
+        except FileNotFoundError:
+            current_data = {'tasks': []}
+    else:
+        current_path = SNAPSHOTS_DIR / current_id
+        if not current_path.exists():
+            return jsonify({'error': f'Current snapshot {current_id} not found'}), 404
+        try:
+            with open(current_path, 'r') as f:
+                current_data = json.load(f)
+        except (json.JSONDecodeError, IOError) as e:
+            return jsonify({'error': f'Error reading current: {e}'}), 500
+    
+    baseline_tasks = baseline_data.get('tasks', [])
+    current_tasks = current_data.get('tasks', [])
+    
+    # Apply asset filter if specified
+    if asset_filter:
+        baseline_tasks = [t for t in baseline_tasks if t.get('asset') == asset_filter]
+        current_tasks = [t for t in current_tasks if t.get('asset') == asset_filter]
+    
+    # Create lookup by task ID
+    baseline_by_id = {t['id']: t for t in baseline_tasks}
+    current_by_id = {t['id']: t for t in current_tasks}
+    
+    # Categorize tasks
+    new_tasks = []  # In current but not baseline (late additions)
+    removed_tasks = []  # In baseline but not current
+    changed_tasks = []  # In both but with differences
+    unchanged_tasks = []  # In both, identical
+    
+    # Fields to compare for changes
+    compare_fields = ['asset', 'vessel', 'project', 'activity', 'status', 
+                      'start_date', 'offshore_start', 'offshore_end', 'return_end',
+                      'duration_hours', 'transit_hours']
+    
+    for task_id, task in current_by_id.items():
+        if task_id not in baseline_by_id:
+            # New task (late addition)
+            new_tasks.append({
+                **task,
+                'change_type': 'new',
+                'first_seen': current_data.get('imported_at', '')
+            })
+        else:
+            # Check for changes
+            baseline_task = baseline_by_id[task_id]
+            changes = {}
+            for field in compare_fields:
+                old_val = baseline_task.get(field)
+                new_val = task.get(field)
+                if old_val != new_val:
+                    changes[field] = {'old': old_val, 'new': new_val}
+            
+            if changes:
+                changed_tasks.append({
+                    **task,
+                    'change_type': 'changed',
+                    'changes': changes
+                })
+            else:
+                unchanged_tasks.append({
+                    **task,
+                    'change_type': 'unchanged'
+                })
+    
+    for task_id, task in baseline_by_id.items():
+        if task_id not in current_by_id:
+            removed_tasks.append({
+                **task,
+                'change_type': 'removed'
+            })
+    
+    # Get unique assets for summary
+    assets = sorted(set(t.get('asset', '') for t in current_tasks + baseline_tasks))
+    
+    return jsonify({
+        'baseline': {
+            'id': baseline_id,
+            'date': baseline_data.get('snapshot_date', ''),
+            'task_count': len(baseline_tasks)
+        },
+        'current': {
+            'id': current_id,
+            'date': current_data.get('snapshot_date', current_data.get('imported_at', '')[:10] if current_data.get('imported_at') else ''),
+            'task_count': len(current_tasks)
+        },
+        'summary': {
+            'new_count': len(new_tasks),
+            'removed_count': len(removed_tasks),
+            'changed_count': len(changed_tasks),
+            'unchanged_count': len(unchanged_tasks),
+            'assets': assets
+        },
+        'new_tasks': new_tasks,
+        'removed_tasks': removed_tasks,
+        'changed_tasks': changed_tasks,
+        'unchanged_tasks': unchanged_tasks
+    })
+
+
+@app.route('/api/snapshots', methods=['POST'])
+def create_snapshot():
+    """Manually create a snapshot from the current task data.
+    
+    Use this to establish a baseline for planned vs actual tracking.
+    """
+    try:
+        with open(DATA_DIR / 'tasks.json', 'r') as f:
+            current_data = json.load(f)
+    except FileNotFoundError:
+        return jsonify({'error': 'No task data to snapshot'}), 400
+    
+    timestamp = datetime.now()
+    snapshot_filename = f"tasks_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
+    
+    snapshot_data = {
+        **current_data,
+        'snapshot_id': snapshot_filename,
+        'snapshot_date': timestamp.strftime('%Y-%m-%d'),
+        'snapshot_time': timestamp.strftime('%H:%M:%S'),
+        'imported_at': timestamp.isoformat(),
+        'snapshot_type': 'manual'
+    }
+    
+    with open(SNAPSHOTS_DIR / snapshot_filename, 'w') as f:
+        json.dump(snapshot_data, f, indent=2)
+    
+    return jsonify({
+        'success': True,
+        'snapshot_id': snapshot_filename,
+        'date': timestamp.strftime('%Y-%m-%d'),
+        'time': timestamp.strftime('%H:%M:%S'),
+        'task_count': len(current_data.get('tasks', []))
+    })
+
+
+@app.route('/api/snapshots/<snapshot_id>', methods=['DELETE'])
+def delete_snapshot(snapshot_id):
+    """Delete a specific snapshot."""
+    snapshot_path = SNAPSHOTS_DIR / snapshot_id
+    if not snapshot_path.exists():
+        return jsonify({'error': 'Snapshot not found'}), 404
+    try:
+        snapshot_path.unlink()
+        return jsonify({'success': True})
+    except IOError as e:
+        return jsonify({'error': str(e)}), 500
 
 
 # ============== File Upload ==============
@@ -656,15 +877,29 @@ def get_cell_value(row, col_idx, default=''):
 
 
 def save_tasks_data(tasks, filename, sheet_name):
-    """Save parsed tasks to JSON file."""
+    """Save parsed tasks to JSON file and create a snapshot for history tracking."""
+    timestamp = datetime.now()
     data = {
         'tasks': tasks,
         'source': f'workbook:{filename}:{sheet_name}',
         'buffer_hours': 24,
-        'imported_at': datetime.now().isoformat()
+        'imported_at': timestamp.isoformat()
     }
+    
+    # Save current tasks
     with open(DATA_DIR / 'tasks.json', 'w') as f:
         json.dump(data, f, indent=2)
+    
+    # Save snapshot for planned vs actual tracking
+    snapshot_filename = f"tasks_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
+    snapshot_data = {
+        **data,
+        'snapshot_id': snapshot_filename,
+        'snapshot_date': timestamp.strftime('%Y-%m-%d'),
+        'snapshot_time': timestamp.strftime('%H:%M:%S')
+    }
+    with open(SNAPSHOTS_DIR / snapshot_filename, 'w') as f:
+        json.dump(snapshot_data, f, indent=2)
 
 
 # Standard phases that should always appear in the legend

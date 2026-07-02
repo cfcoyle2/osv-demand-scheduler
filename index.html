@@ -148,6 +148,18 @@
             <p id="weeklyDemandDesc" class="section-desc">8-week lookahead. Click capacity to edit per week.</p>
             <div id="weeklyDemandGrid" class="weekly-demand-grid"></div>
             <div id="weekConflictDetails" class="week-conflict-details" style="display:none;"></div>
+            
+            <div class="asset-forecast-inline" style="margin-top:24px;">
+              <h3>Asset Activity Forecast</h3>
+              <div class="asset-forecast-controls" style="margin-bottom:12px;">
+                <label>Asset<select id="forecastAssetSelect"><option value="all">All assets</option></select></label>
+                <label>From<input id="forecastDateFrom" type="date"></label>
+                <label>To<input id="forecastDateTo" type="date"></label>
+                <button id="runForecastBtn" type="button" class="primary-button">Run Forecast</button>
+                <button id="clearForecastBtn" type="button" class="secondary-button" style="display:none;">Clear</button>
+              </div>
+              <div id="assetForecastResult" class="asset-forecast-result"></div>
+            </div>
           </div>
           <div class="watch-column">
             <h3>Monthly Capacity</h3>
@@ -155,19 +167,6 @@
             <div id="fleetSummary" class="fleet-summary"></div>
             <div id="conflicts" class="conflicts"></div>
           </div>
-        </div>
-      </section>
-
-      <section class="panel lower-panel forecast-panel full-width-panel">
-        <h2>Asset Activity Forecast</h2>
-        <div class="forecast-scroll">
-          <div class="asset-forecast-controls">
-            <label>Asset<select id="forecastAssetSelect"><option value="all">All assets</option></select></label>
-            <label>From<input id="forecastDateFrom" type="date"></label>
-            <label>To<input id="forecastDateTo" type="date"></label>
-            <button id="runForecastBtn" type="button" class="primary-button">Run Forecast</button>
-          </div>
-          <div id="assetForecastResult" class="asset-forecast-result"></div>
         </div>
       </section>
 

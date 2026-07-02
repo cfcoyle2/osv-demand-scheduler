@@ -41,6 +41,21 @@ button:hover, .upload-button:hover { border-color: var(--teal); }
   color: white;
 }
 
+.secondary-button {
+  background: transparent;
+  border: 1px solid var(--navy);
+  color: var(--navy);
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.secondary-button:hover {
+  background: var(--navy);
+  color: white;
+}
+
 .danger-button {
   border-color: #f1c7c7;
   color: var(--red);

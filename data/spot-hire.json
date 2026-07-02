@@ -3,7 +3,7 @@
   "sheet_name": "Spot Hire Update",
   "records": [
     {
-      "id": "b06b00a7710c",
+      "id": "016de8d2fb23",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -19,7 +19,7 @@
       "sheet_row": 2
     },
     {
-      "id": "09e7f245804e",
+      "id": "f245265c2428",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -35,7 +35,7 @@
       "sheet_row": 3
     },
     {
-      "id": "0ff965ec7407",
+      "id": "31cf97a436b9",
       "asset": "Thalassa",
       "display_asset": "Thalassa",
       "vessel_count": 2,
@@ -51,7 +51,7 @@
       "sheet_row": 4
     },
     {
-      "id": "34d69190786e",
+      "id": "676e392c8543",
       "asset": "Proteus",
       "display_asset": "Proteus",
       "vessel_count": 2,
@@ -67,7 +67,7 @@
       "sheet_row": 5
     },
     {
-      "id": "11dfd0bfb743",
+      "id": "5871539557c2",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 1,
@@ -83,7 +83,7 @@
       "sheet_row": 6
     },
     {
-      "id": "90b44993d094",
+      "id": "c05919607d8d",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -99,7 +99,7 @@
       "sheet_row": 7
     },
     {
-      "id": "418f2ec99243",
+      "id": "de2b359ddf35",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 1,
@@ -115,7 +115,7 @@
       "sheet_row": 8
     },
     {
-      "id": "d00198c5ad11",
+      "id": "a47fcc96ea6d",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -131,7 +131,7 @@
       "sheet_row": 9
     },
     {
-      "id": "4610d973d564",
+      "id": "d3e94cc1cf47",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -147,7 +147,7 @@
       "sheet_row": 10
     },
     {
-      "id": "5b26e314b7fa",
+      "id": "3697a992e172",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -163,7 +163,7 @@
       "sheet_row": 11
     },
     {
-      "id": "178943983c3e",
+      "id": "72f60e83da1d",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "vessel_count": 1,
@@ -179,7 +179,7 @@
       "sheet_row": 12
     },
     {
-      "id": "43e8b0029b40",
+      "id": "1dabfe16afdb",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -195,7 +195,7 @@
       "sheet_row": 13
     },
     {
-      "id": "cd76ec6e577a",
+      "id": "9bdc16807aff",
       "asset": "Vito",
       "display_asset": "Vito",
       "vessel_count": 1,
@@ -211,7 +211,7 @@
       "sheet_row": 14
     },
     {
-      "id": "aecb59592fde",
+      "id": "e38b7a16eda6",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -227,7 +227,7 @@
       "sheet_row": 15
     },
     {
-      "id": "f4a80c54b886",
+      "id": "41f5067e7840",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -243,7 +243,7 @@
       "sheet_row": 16
     },
     {
-      "id": "e7ba037261e7",
+      "id": "f2b8ab6320d3",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -259,7 +259,7 @@
       "sheet_row": 17
     },
     {
-      "id": "0c022fe42ace",
+      "id": "a5a0ed9b5949",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "vessel_count": 1,
@@ -275,7 +275,7 @@
       "sheet_row": 18
     },
     {
-      "id": "64430d6982ee",
+      "id": "314373b67c55",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 1,
@@ -291,7 +291,7 @@
       "sheet_row": 19
     },
     {
-      "id": "986be52dfa7d",
+      "id": "615b058b2449",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -307,7 +307,7 @@
       "sheet_row": 20
     },
     {
-      "id": "5bddf5eaf1ea",
+      "id": "bc9c6d0a5701",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -323,7 +323,7 @@
       "sheet_row": 21
     },
     {
-      "id": "c23b642e65b2",
+      "id": "055fac4827f1",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -339,7 +339,7 @@
       "sheet_row": 22
     },
     {
-      "id": "354584e18975",
+      "id": "ea457ac22b5e",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -355,7 +355,7 @@
       "sheet_row": 23
     },
     {
-      "id": "ebf11c89de42",
+      "id": "a44ef8dde2c9",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -371,7 +371,7 @@
       "sheet_row": 24
     },
     {
-      "id": "2e6e279c248a",
+      "id": "eafebf4e1e32",
       "asset": "Whale",
       "display_asset": "Whale",
       "vessel_count": 1,
@@ -387,7 +387,7 @@
       "sheet_row": 25
     },
     {
-      "id": "caaa22bcc6fe",
+      "id": "6c9698ca84b0",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -403,7 +403,7 @@
       "sheet_row": 26
     },
     {
-      "id": "620ae9212761",
+      "id": "324cb926fd3a",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -419,7 +419,7 @@
       "sheet_row": 27
     },
     {
-      "id": "e18157b63099",
+      "id": "fc58ab540bce",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -435,7 +435,7 @@
       "sheet_row": 28
     },
     {
-      "id": "7e09a393d2be",
+      "id": "ef9abbe55740",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -445,13 +445,13 @@
       "color": "#7cb518",
       "start_date": "2026-05-18 00:00:00",
       "end_date": "2026-06-20 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 29
     },
     {
-      "id": "66bdda39fb20",
+      "id": "34af67d3af51",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -467,7 +467,7 @@
       "sheet_row": 30
     },
     {
-      "id": "6f06dbea48dd",
+      "id": "acee1051bd60",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -477,13 +477,13 @@
       "color": "#b79ac7",
       "start_date": "2026-06-01 00:00:00",
       "end_date": "2026-06-30 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 31
     },
     {
-      "id": "37ff67996977",
+      "id": "95c59c4831d1",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -493,13 +493,13 @@
       "color": "#b79ac7",
       "start_date": "2026-06-01 00:00:00",
       "end_date": "2026-06-30 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 32
     },
     {
-      "id": "18a5a0a000e1",
+      "id": "fa03ae6f9207",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -509,13 +509,13 @@
       "color": "#b79ac7",
       "start_date": "2026-06-01 00:00:00",
       "end_date": "2026-06-30 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 33
     },
     {
-      "id": "5cb267b0cad4",
+      "id": "e4140cdfbba2",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -531,7 +531,23 @@
       "sheet_row": 34
     },
     {
-      "id": "d18a2fdddddd",
+      "id": "e70edc921e2e",
+      "asset": "Poseidon",
+      "display_asset": "Poseidon",
+      "vessel_count": 2,
+      "area": "Whale",
+      "activity": "LWX 10 Deepening",
+      "phase": "Deepening",
+      "color": "#ff6b35",
+      "start_date": "2026-05-10 00:00:00",
+      "end_date": "2026-07-12 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 35
+    },
+    {
+      "id": "90759bb74491",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -544,10 +560,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 35
+      "sheet_row": 36
     },
     {
-      "id": "740eb5acb2d5",
+      "id": "25b59c0ed314",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -555,31 +571,15 @@
       "activity": "Sparta SP 203 Drill Bypass",
       "phase": "Deepening",
       "color": "#ff6b35",
-      "start_date": "2026-06-20 00:00:00",
-      "end_date": "2026-07-24 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 36
-    },
-    {
-      "id": "d420d7780034",
-      "asset": "Poseidon",
-      "display_asset": "Poseidon",
-      "vessel_count": 2,
-      "area": "Whale",
-      "activity": "LWX 10 Deepening",
-      "phase": "Deepening",
-      "color": "#ff6b35",
-      "start_date": "2026-05-10 00:00:00",
-      "end_date": "2026-07-10 00:00:00",
+      "start_date": "2026-06-21 00:00:00",
+      "end_date": "2026-07-31 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 37
     },
     {
-      "id": "af40b66f0bc2",
+      "id": "71eab9dd629e",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 2,
@@ -588,30 +588,14 @@
       "phase": "Deepening",
       "color": "#ff6b35",
       "start_date": "2026-06-18 00:00:00",
-      "end_date": "2026-07-29 00:00:00",
+      "end_date": "2026-08-04 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 38
     },
     {
-      "id": "ef2503c889ad",
-      "asset": "Pontus",
-      "display_asset": "Pontus",
-      "vessel_count": 2,
-      "area": "Dover",
-      "activity": "Dover 2 Drill New Well",
-      "phase": "Deepening",
-      "color": "#ff6b35",
-      "start_date": "2026-06-17 00:00:00",
-      "end_date": "2026-07-29 00:00:00",
-      "status": "Complete",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 39
-    },
-    {
-      "id": "c96475493526",
+      "id": "72d94ca29c9d",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -624,10 +608,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 40
+      "sheet_row": 39
     },
     {
-      "id": "8c165f1079ec",
+      "id": "df702e8115c4",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -640,10 +624,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 41
+      "sheet_row": 40
     },
     {
-      "id": "120a095122b0",
+      "id": "33d6522be54f",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -656,26 +640,26 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
+      "sheet_row": 41
+    },
+    {
+      "id": "3825b6d2c55c",
+      "asset": "Pontus",
+      "display_asset": "Pontus",
+      "vessel_count": 2,
+      "area": "Dover",
+      "activity": "Dover 2 Drill New Well",
+      "phase": "Deepening",
+      "color": "#ff6b35",
+      "start_date": "2026-06-18 00:00:00",
+      "end_date": "2026-08-03 00:00:00",
+      "status": "Complete",
+      "notes": "",
+      "source": "workbook",
       "sheet_row": 42
     },
     {
-      "id": "037aa772798d",
-      "asset": "Noble Voyager",
-      "display_asset": "Noble Voyager",
-      "vessel_count": 2,
-      "area": "Princess",
-      "activity": "P13 Top Hole",
-      "phase": "Top Hole",
-      "color": "#00b4d8",
-      "start_date": "2026-07-22 00:00:00",
-      "end_date": "2026-08-06 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 43
-    },
-    {
-      "id": "e39f4dbf1a8e",
+      "id": "73b972b8e277",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -683,31 +667,15 @@
       "activity": "LWX 10 Completion",
       "phase": "Completion",
       "color": "#7cb518",
-      "start_date": "2026-07-10 00:00:00",
-      "end_date": "2026-08-09 00:00:00",
+      "start_date": "2026-07-12 00:00:00",
+      "end_date": "2026-08-11 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 44
+      "sheet_row": 43
     },
     {
-      "id": "980a7086128a",
-      "asset": "Poseidon",
-      "display_asset": "Poseidon",
-      "vessel_count": 2,
-      "area": "Whale",
-      "activity": "UWX1 Top Hole",
-      "phase": "Top Hole",
-      "color": "#00b4d8",
-      "start_date": "2026-08-08 00:00:00",
-      "end_date": "2026-08-15 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 45
-    },
-    {
-      "id": "e0cc227cad4c",
+      "id": "7df2a92a1780",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -720,26 +688,58 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
+      "sheet_row": 44
+    },
+    {
+      "id": "60c3767b982e",
+      "asset": "Noble Voyager",
+      "display_asset": "Noble Voyager",
+      "vessel_count": 3,
+      "area": "Princess",
+      "activity": "Ursa North P013 Top Hole",
+      "phase": "Top Hole",
+      "color": "#00b4d8",
+      "start_date": "2026-07-22 00:00:00",
+      "end_date": "2026-08-18 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 45
+    },
+    {
+      "id": "eb8903f78793",
+      "asset": "Poseidon",
+      "display_asset": "Poseidon",
+      "vessel_count": 3,
+      "area": "Whale",
+      "activity": "UWX1 Top Hole",
+      "phase": "Top Hole",
+      "color": "#00b4d8",
+      "start_date": "2026-08-11 00:00:00",
+      "end_date": "2026-08-18 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
       "sheet_row": 46
     },
     {
-      "id": "0195022d0a0f",
-      "asset": "Noble Voyager",
-      "display_asset": "Noble Voyager",
+      "id": "cc083907a844",
+      "asset": "Stena Evolution",
+      "display_asset": "Stena Evolution",
       "vessel_count": 2,
-      "area": "Princess",
-      "activity": "Princess P8 Sidetrack",
+      "area": "Sparta",
+      "activity": "Sparta SP106 Deepen Hole",
       "phase": "Deepening",
       "color": "#ff6b35",
-      "start_date": "2026-08-06 00:00:00",
-      "end_date": "2026-08-31 00:00:00",
+      "start_date": "2026-07-31 00:00:00",
+      "end_date": "2026-09-03 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 47
     },
     {
-      "id": "261ee92344e1",
+      "id": "65d32a5ce83b",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -755,7 +755,7 @@
       "sheet_row": 48
     },
     {
-      "id": "a60dbf345a34",
+      "id": "113a257ffbf2",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -771,7 +771,7 @@
       "sheet_row": 49
     },
     {
-      "id": "5ddc3c4460c2",
+      "id": "69a0b96a9d29",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -787,43 +787,43 @@
       "sheet_row": 50
     },
     {
-      "id": "9c9e5606c4ee",
-      "asset": "ESA, Ursa",
-      "display_asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "area": "Central Assets",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-09-01 00:00:00",
-      "end_date": "2026-09-30 00:00:00",
+      "id": "be51fa05d242",
+      "asset": "Noble Voyager",
+      "display_asset": "Noble Voyager",
+      "vessel_count": 2,
+      "area": "Princess",
+      "activity": "Princess P8 Sidetrack",
+      "phase": "Deepening",
+      "color": "#ff6b35",
+      "start_date": "2026-08-18 00:00:00",
+      "end_date": "2026-09-13 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 51
     },
     {
-      "id": "58623710dbb7",
-      "asset": "Appomatox, Vito, Olympus",
-      "display_asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "area": "East Asset",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-09-01 00:00:00",
-      "end_date": "2026-09-30 00:00:00",
+      "id": "9dc2fb7d1655",
+      "asset": "Poseidon",
+      "display_asset": "Poseidon",
+      "vessel_count": 2,
+      "area": "Whale",
+      "activity": "UWX1 Deepen Hole",
+      "phase": "Deepening",
+      "color": "#ff6b35",
+      "start_date": "2026-08-18 00:00:00",
+      "end_date": "2026-09-14 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 52
     },
     {
-      "id": "73b95f5271a1",
-      "asset": "Perdido/Whale",
-      "display_asset": "Perdido/Whale",
+      "id": "792dfb4d6901",
+      "asset": "ESA, Ursa",
+      "display_asset": "ESA, Ursa",
       "vessel_count": 1,
-      "area": "West Assets",
+      "area": "Central Assets",
       "activity": "EV Run",
       "phase": "EV Run",
       "color": "#b79ac7",
@@ -835,39 +835,103 @@
       "sheet_row": 53
     },
     {
-      "id": "61f5714b266c",
-      "asset": "ESA, Ursa",
-      "display_asset": "ESA, Ursa",
+      "id": "edd5de9ce8a7",
+      "asset": "Appomatox, Vito, Olympus",
+      "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
-      "area": "Central Assets",
+      "area": "East Asset",
       "activity": "EV Run",
       "phase": "EV Run",
       "color": "#b79ac7",
-      "start_date": "2026-10-01 00:00:00",
-      "end_date": "2026-10-31 00:00:00",
+      "start_date": "2026-09-01 00:00:00",
+      "end_date": "2026-09-30 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 54
     },
     {
-      "id": "f18c6a5483c2",
-      "asset": "Appomatox, Vito, Olympus",
-      "display_asset": "Appomatox, Vito, Olympus",
+      "id": "416f2e7b26dc",
+      "asset": "Perdido/Whale",
+      "display_asset": "Perdido/Whale",
       "vessel_count": 1,
-      "area": "East Asset",
+      "area": "West Assets",
       "activity": "EV Run",
       "phase": "EV Run",
       "color": "#b79ac7",
-      "start_date": "2026-10-01 00:00:00",
-      "end_date": "2026-10-31 00:00:00",
+      "start_date": "2026-09-01 00:00:00",
+      "end_date": "2026-09-30 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 55
     },
     {
-      "id": "f3faae68498b",
+      "id": "22ecb1a65563",
+      "asset": "Noble Voyager",
+      "display_asset": "Noble Voyager",
+      "vessel_count": 2,
+      "area": "Princess",
+      "activity": "Princess P8 Completion",
+      "phase": "Completion",
+      "color": "#7cb518",
+      "start_date": "2026-09-13 00:00:00",
+      "end_date": "2026-10-03 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 56
+    },
+    {
+      "id": "823dba1ad040",
+      "asset": "Noble Voyager",
+      "display_asset": "Noble Voyager",
+      "vessel_count": 2,
+      "area": "Ursa",
+      "activity": "Ursa North P013 Deepening",
+      "phase": "Deepening",
+      "color": "#ff6b35",
+      "start_date": "2026-10-03 00:00:00",
+      "end_date": "2026-10-23 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 57
+    },
+    {
+      "id": "fe7051d67046",
+      "asset": "ESA, Ursa",
+      "display_asset": "ESA, Ursa",
+      "vessel_count": 1,
+      "area": "Central Assets",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-10-01 00:00:00",
+      "end_date": "2026-10-31 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 58
+    },
+    {
+      "id": "01a84315600f",
+      "asset": "Appomatox, Vito, Olympus",
+      "display_asset": "Appomatox, Vito, Olympus",
+      "vessel_count": 1,
+      "area": "East Asset",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-10-01 00:00:00",
+      "end_date": "2026-10-31 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 59
+    },
+    {
+      "id": "3ad79c7608e7",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -880,10 +944,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 56
+      "sheet_row": 60
     },
     {
-      "id": "f6607422797e",
+      "id": "9dddcb123569",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -893,77 +957,77 @@
       "color": "#b79ac7",
       "start_date": "2026-11-01 00:00:00",
       "end_date": "2026-11-30 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 57
-    },
-    {
-      "id": "009d8007d511",
-      "asset": "Appomatox, Vito, Olympus",
-      "display_asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "area": "East Asset",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-11-01 00:00:00",
-      "end_date": "2026-11-30 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 58
-    },
-    {
-      "id": "5895d6c16635",
-      "asset": "Perdido/Whale",
-      "display_asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "area": "West Assets",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-11-01 00:00:00",
-      "end_date": "2026-11-30 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 59
-    },
-    {
-      "id": "77d748d00914",
-      "asset": "Appomatox, Vito, Olympus",
-      "display_asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "area": "East Asset",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-01-01 00:00:00",
-      "end_date": "2026-12-30 00:00:00",
-      "status": "Planned",
-      "notes": "",
-      "source": "workbook",
-      "sheet_row": 60
-    },
-    {
-      "id": "9638af971463",
-      "asset": "Appomatox, Vito, Olympus",
-      "display_asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "area": "East Asset",
-      "activity": "EV Run",
-      "phase": "EV Run",
-      "color": "#b79ac7",
-      "start_date": "2026-01-01 00:00:00",
-      "end_date": "2026-12-30 00:00:00",
       "status": "Planned",
       "notes": "",
       "source": "workbook",
       "sheet_row": 61
     },
     {
-      "id": "2a82493c633e",
+      "id": "25f6fbaafae1",
+      "asset": "Appomatox, Vito, Olympus",
+      "display_asset": "Appomatox, Vito, Olympus",
+      "vessel_count": 1,
+      "area": "East Asset",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-11-01 00:00:00",
+      "end_date": "2026-11-30 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 62
+    },
+    {
+      "id": "cb67470815fe",
+      "asset": "Perdido/Whale",
+      "display_asset": "Perdido/Whale",
+      "vessel_count": 1,
+      "area": "West Assets",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-11-01 00:00:00",
+      "end_date": "2026-11-30 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 63
+    },
+    {
+      "id": "db52ccb350a4",
+      "asset": "Appomatox, Vito, Olympus",
+      "display_asset": "Appomatox, Vito, Olympus",
+      "vessel_count": 1,
+      "area": "East Asset",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-01-01 00:00:00",
+      "end_date": "2026-12-30 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 64
+    },
+    {
+      "id": "d9133aa9d004",
+      "asset": "Appomatox, Vito, Olympus",
+      "display_asset": "Appomatox, Vito, Olympus",
+      "vessel_count": 1,
+      "area": "East Asset",
+      "activity": "EV Run",
+      "phase": "EV Run",
+      "color": "#b79ac7",
+      "start_date": "2026-01-01 00:00:00",
+      "end_date": "2026-12-30 00:00:00",
+      "status": "Planned",
+      "notes": "",
+      "source": "workbook",
+      "sheet_row": 65
+    },
+    {
+      "id": "24013eb1dba3",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -976,10 +1040,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 62
+      "sheet_row": 66
     },
     {
-      "id": "edf0c6454164",
+      "id": "d8bd65457d93",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -992,10 +1056,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 63
+      "sheet_row": 67
     },
     {
-      "id": "1f15a78e79fd",
+      "id": "747a3c94b0ba",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -1008,10 +1072,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 64
+      "sheet_row": 68
     },
     {
-      "id": "9dbf7344991f",
+      "id": "74d023b07819",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -1024,10 +1088,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 65
+      "sheet_row": 69
     },
     {
-      "id": "8a5499bfdbd4",
+      "id": "a9cac3d78699",
       "asset": "Enchilada",
       "display_asset": "Enchilada",
       "vessel_count": 1,
@@ -1040,10 +1104,10 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 66
+      "sheet_row": 70
     },
     {
-      "id": "2325d42d8289",
+      "id": "70e15f393e88",
       "asset": "Salsa",
       "display_asset": "Salsa",
       "vessel_count": 1,
@@ -1056,7 +1120,7 @@
       "status": "Planned",
       "notes": "",
       "source": "workbook",
-      "sheet_row": 67
+      "sheet_row": 71
     }
   ],
   "phase_colors": {
@@ -1072,5 +1136,5 @@
     "Other": "#f72585",
     "Intervention": "#f72585"
   },
-  "imported_at": "2026-06-20T09:37:13.658407"
+  "imported_at": "2026-07-02T09:18:19.178694"
 }

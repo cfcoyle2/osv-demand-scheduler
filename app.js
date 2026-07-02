@@ -47,6 +47,7 @@ const els = {
   forecastDateFrom: document.getElementById('forecastDateFrom'),
   forecastDateTo: document.getElementById('forecastDateTo'),
   runForecastBtn: document.getElementById('runForecastBtn'),
+  clearForecastBtn: document.getElementById('clearForecastBtn'),
   assetForecastResult: document.getElementById('assetForecastResult'),
   coordinatorInput: document.getElementById('coordinatorInput'),
   assetInput: document.getElementById('assetInput'),
@@ -2060,7 +2061,18 @@ if (els.next2WeeksBtn) {
 
 // Asset Forecast button
 if (els.runForecastBtn) {
-  els.runForecastBtn.addEventListener('click', runAssetForecast);
+  els.runForecastBtn.addEventListener('click', () => {
+    runAssetForecast();
+    if (els.clearForecastBtn) els.clearForecastBtn.style.display = 'inline-block';
+  });
+}
+
+// Clear Forecast button
+if (els.clearForecastBtn) {
+  els.clearForecastBtn.addEventListener('click', () => {
+    if (els.assetForecastResult) els.assetForecastResult.innerHTML = '';
+    els.clearForecastBtn.style.display = 'none';
+  });
 }
 
 [els.spotAssetFilter, els.spotPhaseFilter, els.spotStatusFilter].forEach(select => {
