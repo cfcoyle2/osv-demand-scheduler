@@ -9,12 +9,12 @@ const state = {
   source: '',
   bufferHours: 24,
   activeInsight: 'active',
-  filters: { coordinator: 'all', asset: 'all', status: 'all', dateFrom: '', dateTo: '' },
+  filters: { coordinator: 'all', asset: 'all', status: 'Planned', dateFrom: '', dateTo: '' },
   spot: {
     records: [],
     source: '',
     phaseColors: {},
-    filters: { asset: 'all', phase: 'all', status: 'all', dateFrom: '', dateTo: '' }
+    filters: { asset: 'all', phase: 'all', status: 'Planned', dateFrom: '', dateTo: '' }
   }
 };
 
@@ -701,6 +701,10 @@ function renderFilters() {
   syncSelect(els.coordinatorFilter, unique([...Object.keys(COORDINATOR_ASSETS), ...state.tasks.map(t => t.coordinator || coordinatorForAsset(t.asset))]), 'All coordinators');
   syncSelect(els.assetFilter, unique([...ALL_ASSETS, ...state.tasks.map(t => t.asset)]), 'All assets');
   syncSelect(els.statusFilter, unique(state.tasks.map(t => t.status)), 'All statuses');
+  // Default to 'Planned' filter if not already set and option exists
+  if (state.filters.status === 'Planned' && els.statusFilter.querySelector('option[value="Planned"]')) {
+    els.statusFilter.value = 'Planned';
+  }
 }
 
 function renderMetrics(tasks) {
