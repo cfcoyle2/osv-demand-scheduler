@@ -76,6 +76,15 @@
         <h2>Best Platform</h2>
         <p>Use a SharePoint/Teams-hosted Power Apps or Azure Static Web Apps front end backed by SharePoint Lists or Dataverse. Keep Excel as import/export, not the operating interface.</p>
       </section>
+
+      <section>
+        <h2>Snapshots</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="createSnapshotBtn" type="button" class="secondary-button" title="Save current state as baseline">📸 Create Snapshot</button>
+          <button id="compareSnapshotsBtn" type="button" class="secondary-button" title="Compare changes between snapshots">🔍 Compare</button>
+        </div>
+        <p id="snapshotStatus" style="font-size:12px;color:var(--muted);margin-top:8px;"></p>
+      </section>
       </div>
 
       <div id="spotControls" class="view-stack" hidden>
@@ -270,6 +279,32 @@
         <button type="submit" class="primary-button">Save</button>
       </div>
     </form>
+  </div>
+
+  <div id="snapshotCompareDialog" class="dialog-backdrop" hidden>
+    <div class="dialog panel" style="max-width:95vw;width:1400px;max-height:92vh;display:flex;flex-direction:column;">
+      <h2 style="margin:0 0 16px 0;">📊 Compare Snapshots</h2>
+      <div class="snapshot-compare-controls" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+        <label style="flex:1;min-width:180px;">Baseline Snapshot
+          <select id="baselineSnapshotSelect"></select>
+        </label>
+        <label style="flex:1;min-width:180px;">Compare To
+          <select id="currentSnapshotSelect">
+            <option value="current">Current Live Data</option>
+          </select>
+        </label>
+        <label style="flex:1;min-width:150px;">Filter by Asset
+          <select id="compareAssetFilter">
+            <option value="all">All Assets</option>
+          </select>
+        </label>
+        <button id="runCompareBtn" type="button" class="primary-button">Compare</button>
+      </div>
+      <div id="snapshotCompareResult" style="flex:1;overflow-y:auto;margin-bottom:16px;"></div>
+      <div class="dialog-actions" style="flex-shrink:0;border-top:1px solid var(--border,#dee2e6);padding-top:12px;margin-top:auto;">
+        <button id="closeCompareDialog" type="button">Close</button>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast" hidden></div>

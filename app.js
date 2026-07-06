@@ -81,7 +81,18 @@ const els = {
   // New feature elements
   exportConflictSummaryBtn: document.getElementById('exportConflictSummaryBtn'),
   next2WeeksBtn: document.getElementById('next2WeeksBtn'),
-  capacityAlertBadge: document.getElementById('capacityAlertBadge')
+  capacityAlertBadge: document.getElementById('capacityAlertBadge'),
+  // Snapshot comparison elements
+  createSnapshotBtn: document.getElementById('createSnapshotBtn'),
+  compareSnapshotsBtn: document.getElementById('compareSnapshotsBtn'),
+  snapshotStatus: document.getElementById('snapshotStatus'),
+  snapshotCompareDialog: document.getElementById('snapshotCompareDialog'),
+  baselineSnapshotSelect: document.getElementById('baselineSnapshotSelect'),
+  currentSnapshotSelect: document.getElementById('currentSnapshotSelect'),
+  compareAssetFilter: document.getElementById('compareAssetFilter'),
+  runCompareBtn: document.getElementById('runCompareBtn'),
+  snapshotCompareResult: document.getElementById('snapshotCompareResult'),
+  closeCompareDialog: document.getElementById('closeCompareDialog')
 };
 
 function parseDate(value) {
@@ -2333,6 +2344,265 @@ enableRouteShiftDrag();
 enableSpotTimelineDrag();
 enableSpotShiftDrag();
 
+// ============== Snapshot Comparison Feature ==============
+
+async function loadSnapshots() {
+  try {
+    const response = await fetch('/api/snapshots');
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.snapshots || [];
+  } catch {
+    return [];
+  }
+}
+
+async function createSnapshot() {
+  if (staticMode) {
+    showToast('Cannot create snapshots in read-only mode');
+    return;
+  }
+  try {
+    const response = await fetch('/api/snapshots', { method: 'POST' });
+    if (!response.ok) throw new Error('Failed to create snapshot');
+    const data = await response.json();
+    showToast(`Snapshot created: ${data.date} ${data.time}`);
+    updateSnapshotStatus();
+    return data;
+  } catch (err) {
+    showToast(err.message);
+  }
+}
+
+async function updateSnapshotStatus() {
+  if (!els.snapshotStatus) return;
+  const snapshots = await loadSnapshots();
+  if (snapshots.length === 0) {
+    els.snapshotStatus.textContent = 'No snapshots yet. Create one to track changes.';
+  } else {
+    const latest = snapshots[0];
+    els.snapshotStatus.textContent = `Latest: ${latest.date} ${latest.time} (${latest.task_count} tasks)`;
+  }
+}
+
+async function openCompareDialog() {
+  const snapshots = await loadSnapshots();
+  
+  if (snapshots.length === 0) {
+    showToast('No snapshots available. Create a snapshot first.');
+    return;
+  }
+  
+  // Populate baseline dropdown
+  els.baselineSnapshotSelect.innerHTML = snapshots.map(s => 
+    `<option value="${escapeHtml(s.id)}">${escapeHtml(s.date)} ${escapeHtml(s.time)} (${s.task_count} tasks)</option>`
+  ).join('');
+  
+  // Populate current dropdown
+  els.currentSnapshotSelect.innerHTML = '<option value="current">Current Live Data</option>' +
+    snapshots.map(s => 
+      `<option value="${escapeHtml(s.id)}">${escapeHtml(s.date)} ${escapeHtml(s.time)} (${s.task_count} tasks)</option>`
+    ).join('');
+  
+  // Populate asset filter from current tasks
+  const assets = unique(state.tasks.map(t => t.asset).filter(Boolean)).sort();
+  els.compareAssetFilter.innerHTML = '<option value="all">All Assets</option>' +
+    assets.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+  
+  els.snapshotCompareResult.innerHTML = '<p style="color:var(--muted);text-align:center;">Select snapshots and click Compare to see changes.</p>';
+  els.snapshotCompareDialog.hidden = false;
+}
+
+function closeCompareDialog() {
+  els.snapshotCompareDialog.hidden = true;
+}
+
+async function runComparison() {
+  const baseline = els.baselineSnapshotSelect.value;
+  const current = els.currentSnapshotSelect.value;
+  const assetFilter = els.compareAssetFilter.value;
+  
+  if (!baseline) {
+    showToast('Select a baseline snapshot');
+    return;
+  }
+  
+  els.snapshotCompareResult.innerHTML = '<p style="text-align:center;">Loading comparison...</p>';
+  
+  try {
+    let url = `/api/snapshots/compare?baseline=${encodeURIComponent(baseline)}&current=${encodeURIComponent(current)}`;
+    if (assetFilter && assetFilter !== 'all') {
+      url += `&asset=${encodeURIComponent(assetFilter)}`;
+    }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Comparison failed');
+    const data = await response.json();
+    renderComparisonResult(data, assetFilter);
+  } catch (err) {
+    els.snapshotCompareResult.innerHTML = `<p style="color:var(--danger);">Error: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+function renderComparisonResult(data, assetFilter = 'all') {
+  const { summary, new_tasks, removed_tasks, changed_tasks, unchanged_tasks = [], baseline, current } = data;
+  
+  const filterLabel = assetFilter && assetFilter !== 'all' 
+    ? `<span style="background:var(--primary,#007bff);color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">Filtered: ${escapeHtml(assetFilter)}</span>` 
+    : '';
+  
+  let html = `
+    <div class="comparison-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;">
+      <div class="stat-card" style="background:var(--success-bg,#d4edda);padding:12px;border-radius:6px;text-align:center;">
+        <div style="font-size:24px;font-weight:600;color:var(--success,#28a745);">${summary.new_count}</div>
+        <div style="font-size:12px;color:var(--muted);">New Tasks</div>
+      </div>
+      <div class="stat-card" style="background:var(--danger-bg,#f8d7da);padding:12px;border-radius:6px;text-align:center;">
+        <div style="font-size:24px;font-weight:600;color:var(--danger,#dc3545);">${summary.removed_count}</div>
+        <div style="font-size:12px;color:var(--muted);">Removed</div>
+      </div>
+      <div class="stat-card" style="background:var(--warning-bg,#fff3cd);padding:12px;border-radius:6px;text-align:center;">
+        <div style="font-size:24px;font-weight:600;color:var(--warning,#ffc107);">${summary.changed_count}</div>
+        <div style="font-size:12px;color:var(--muted);">Changed</div>
+      </div>
+      <div class="stat-card" style="background:var(--muted-bg,#e9ecef);padding:12px;border-radius:6px;text-align:center;">
+        <div style="font-size:24px;font-weight:600;color:var(--text);">${summary.unchanged_count}</div>
+        <div style="font-size:12px;color:var(--muted);">Unchanged</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">
+      Comparing <strong>${escapeHtml(baseline.date || baseline.id)}</strong> (${baseline.task_count} tasks) 
+      → <strong>${current.id === 'current' ? 'Live Data' : escapeHtml(current.date || current.id)}</strong> (${current.task_count} tasks)
+      ${filterLabel}
+    </p>
+  `;
+  
+  // Changed tasks (show first - most important)
+  if (changed_tasks.length > 0) {
+    html += `<details open style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:var(--warning,#b58900);font-size:15px;">⚠️ Changed Tasks (${changed_tasks.length})</summary>
+      <div style="max-height:45vh;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start Date</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Changes</th>
+          </tr></thead>
+          <tbody>${changed_tasks.map(t => {
+            const changesHtml = Object.entries(t.changes || {}).map(([field, change]) => {
+              const oldVal = change.old ? (field.includes('date') ? new Date(change.old).toLocaleString() : change.old) : '(empty)';
+              const newVal = change.new ? (field.includes('date') ? new Date(change.new).toLocaleString() : change.new) : '(empty)';
+              return `<div style="margin:2px 0;padding:2px 6px;background:var(--warning-bg,#fff3cd);border-radius:3px;font-size:11px;">
+                <strong>${escapeHtml(field)}:</strong> <span style="text-decoration:line-through;opacity:0.7;">${escapeHtml(String(oldVal))}</span> → <span style="color:var(--success,#28a745);">${escapeHtml(String(newVal))}</span>
+              </div>`;
+            }).join('');
+            return `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+              <td style="padding:8px;vertical-align:top;font-weight:500;">${escapeHtml(t.asset || '')}</td>
+              <td style="padding:8px;vertical-align:top;">${escapeHtml(t.activity || t.project || '')}</td>
+              <td style="padding:8px;vertical-align:top;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : ''}</td>
+              <td style="padding:8px;vertical-align:top;">${changesHtml}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </details>`;
+  }
+  
+  // New tasks (late additions)
+  if (new_tasks.length > 0) {
+    html += `<details style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:var(--success,#28a745);font-size:15px;">✅ New Tasks (${new_tasks.length})</summary>
+      <div style="max-height:40vh;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start Date</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Status</th>
+          </tr></thead>
+          <tbody>${new_tasks.map(t => `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+            <td style="padding:8px;">${escapeHtml(t.asset || '')}</td>
+            <td style="padding:8px;">${escapeHtml(t.activity || t.project || '')}</td>
+            <td style="padding:8px;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : ''}</td>
+            <td style="padding:8px;">${escapeHtml(t.status || 'Planned')}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </details>`;
+  }
+  
+  // Removed tasks
+  if (removed_tasks.length > 0) {
+    html += `<details style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:var(--danger,#dc3545);font-size:15px;">❌ Removed Tasks (${removed_tasks.length})</summary>
+      <div style="max-height:40vh;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start Date</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Status</th>
+          </tr></thead>
+          <tbody>${removed_tasks.map(t => `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+            <td style="padding:8px;">${escapeHtml(t.asset || '')}</td>
+            <td style="padding:8px;">${escapeHtml(t.activity || t.project || '')}</td>
+            <td style="padding:8px;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : ''}</td>
+            <td style="padding:8px;">${escapeHtml(t.status || 'Planned')}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </details>`;
+  }
+  
+  // Unchanged tasks (collapsed by default)
+  if (unchanged_tasks.length > 0) {
+    html += `<details style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:var(--muted);font-size:15px;">✓ Unchanged Tasks (${unchanged_tasks.length})</summary>
+      <div style="max-height:30vh;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start Date</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Status</th>
+          </tr></thead>
+          <tbody>${unchanged_tasks.map(t => `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+            <td style="padding:8px;">${escapeHtml(t.asset || '')}</td>
+            <td style="padding:8px;">${escapeHtml(t.activity || t.project || '')}</td>
+            <td style="padding:8px;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : ''}</td>
+            <td style="padding:8px;">${escapeHtml(t.status || 'Planned')}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </details>`;
+  }
+  
+  if (summary.new_count === 0 && summary.removed_count === 0 && summary.changed_count === 0) {
+    html += '<p style="text-align:center;color:var(--muted);padding:20px;">No changes detected between the selected snapshots.</p>';
+  }
+  
+  els.snapshotCompareResult.innerHTML = html;
+}
+
+// Snapshot event listeners
+if (els.createSnapshotBtn) {
+  els.createSnapshotBtn.addEventListener('click', createSnapshot);
+}
+
+if (els.compareSnapshotsBtn) {
+  els.compareSnapshotsBtn.addEventListener('click', openCompareDialog);
+}
+
+if (els.closeCompareDialog) {
+  els.closeCompareDialog.addEventListener('click', closeCompareDialog);
+}
+
+if (els.runCompareBtn) {
+  els.runCompareBtn.addEventListener('click', runComparison);
+}
+
+if (els.snapshotCompareDialog) {
+  els.snapshotCompareDialog.addEventListener('click', event => {
+    if (event.target === els.snapshotCompareDialog) closeCompareDialog();
+  });
+}
+
 // Initialize: check if API is available, otherwise use static mode
 (async function init() {
   const apiAvailable = await checkApiHealth();
@@ -2349,4 +2619,5 @@ enableSpotShiftDrag();
   }
   loadData().catch(err => showToast(err.message));
   loadSpotData().catch(err => showToast(err.message));
-})();/* Cache bust: 2026-07-02 11:28:08 */
+  updateSnapshotStatus();
+})();/* Cache bust: 2026-07-06 */

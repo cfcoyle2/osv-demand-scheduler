@@ -420,53 +420,85 @@ def compare_snapshots():
         baseline_tasks = [t for t in baseline_tasks if t.get('asset') == asset_filter]
         current_tasks = [t for t in current_tasks if t.get('asset') == asset_filter]
     
-    # Create lookup by task ID
-    baseline_by_id = {t['id']: t for t in baseline_tasks}
-    current_by_id = {t['id']: t for t in current_tasks}
+    # Create a content-based key for matching tasks across snapshots
+    # This handles cases where IDs are regenerated on workbook upload
+    def task_key(t):
+        """Generate a unique key based on task content rather than ID."""
+        asset = (t.get('asset') or '').strip().lower()
+        activity = (t.get('activity') or t.get('project') or '').strip().lower()
+        # Normalize date to just the date part
+        start = t.get('start_date', '')
+        if start and 'T' in start:
+            start = start.split('T')[0]
+        elif start:
+            start = start[:10]
+        return f"{asset}|{activity}|{start}"
+    
+    # Create lookups by content key (primary) and ID (fallback)
+    baseline_by_key = {}
+    for t in baseline_tasks:
+        key = task_key(t)
+        if key not in baseline_by_key:
+            baseline_by_key[key] = t
+    
+    current_by_key = {}
+    for t in current_tasks:
+        key = task_key(t)
+        if key not in current_by_key:
+            current_by_key[key] = t
     
     # Categorize tasks
     new_tasks = []  # In current but not baseline (late additions)
     removed_tasks = []  # In baseline but not current
     changed_tasks = []  # In both but with differences
     unchanged_tasks = []  # In both, identical
+    matched_baseline_keys = set()
     
-    # Fields to compare for changes
-    compare_fields = ['asset', 'vessel', 'project', 'activity', 'status', 
-                      'start_date', 'offshore_start', 'offshore_end', 'return_end',
-                      'duration_hours', 'transit_hours']
+    # Fields to compare for changes (excluding identifier fields)
+    compare_fields = ['status', 'offshore_start', 'offshore_end', 'return_end',
+                      'duration_hours', 'transit_hours', 'vessel', 'coordinator']
     
-    for task_id, task in current_by_id.items():
-        if task_id not in baseline_by_id:
-            # New task (late addition)
-            new_tasks.append({
-                **task,
-                'change_type': 'new',
-                'first_seen': current_data.get('imported_at', '')
-            })
-        else:
-            # Check for changes
-            baseline_task = baseline_by_id[task_id]
+    for task in current_tasks:
+        key = task_key(task)
+        if key in baseline_by_key and key not in matched_baseline_keys:
+            # Found a match - check for changes
+            baseline_task = baseline_by_key[key]
+            matched_baseline_keys.add(key)
             changes = {}
             for field in compare_fields:
                 old_val = baseline_task.get(field)
                 new_val = task.get(field)
+                # Normalize for comparison
                 if old_val != new_val:
+                    # Skip if both are empty/None
+                    if not old_val and not new_val:
+                        continue
                     changes[field] = {'old': old_val, 'new': new_val}
             
             if changes:
                 changed_tasks.append({
                     **task,
                     'change_type': 'changed',
-                    'changes': changes
+                    'changes': changes,
+                    'baseline_task': baseline_task
                 })
             else:
                 unchanged_tasks.append({
                     **task,
                     'change_type': 'unchanged'
                 })
+        else:
+            # New task (late addition)
+            new_tasks.append({
+                **task,
+                'change_type': 'new',
+                'first_seen': current_data.get('imported_at', '')
+            })
     
-    for task_id, task in baseline_by_id.items():
-        if task_id not in current_by_id:
+    # Find removed tasks (in baseline but not matched)
+    for task in baseline_tasks:
+        key = task_key(task)
+        if key not in matched_baseline_keys:
             removed_tasks.append({
                 **task,
                 'change_type': 'removed'
