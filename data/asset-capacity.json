@@ -22,53 +22,25 @@
       "date_to": "2026-12-30"
     },
     {
-      "asset": "Mars",
-      "vessel_count": 1,
-      "notes": "MB09 Side Track Deepening",
-      "date_from": "2026-04-28",
-      "date_to": "2026-07-01"
-    },
-    {
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "LWX 10 Deepening",
       "date_from": "2026-05-10",
-      "date_to": "2026-07-12"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-06-01",
-      "date_to": "2026-06-30"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-06-01",
-      "date_to": "2026-06-30"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-06-01",
-      "date_to": "2026-06-30"
+      "date_to": "2026-07-15"
     },
     {
       "asset": "Pontus",
       "vessel_count": 2,
       "notes": "Sisco 001 Drill New Well Deepening",
       "date_from": "2026-06-18",
-      "date_to": "2026-07-29"
+      "date_to": "2026-08-05"
     },
     {
       "asset": "Stena Evolution",
       "vessel_count": 2,
       "notes": "Sparta SP 203 Drill Bypass Deepening",
       "date_from": "2026-06-21",
-      "date_to": "2026-07-26"
+      "date_to": "2026-08-01"
     },
     {
       "asset": "Olympus",
@@ -109,22 +81,22 @@
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "LWX 10 Completion",
-      "date_from": "2026-07-12",
-      "date_to": "2026-08-10"
+      "date_from": "2026-07-15",
+      "date_to": "2026-08-14"
     },
     {
       "asset": "Noble Voyager",
       "vessel_count": 2,
-      "notes": "P13 Top Hole ",
+      "notes": "NVOY Arrival and Commisioning at Deep Sleep Dummy Well Top Hole ",
       "date_from": "2026-07-22",
-      "date_to": "2026-08-06"
+      "date_to": "2026-08-13"
     },
     {
       "asset": "Stena Evolution",
       "vessel_count": 2,
       "notes": "Sparta SP106 Deepen Hole Deepening",
-      "date_from": "2026-07-26",
-      "date_to": "2026-08-29"
+      "date_from": "2026-08-01",
+      "date_to": "2026-09-04"
     },
     {
       "asset": "ESA, Ursa",
@@ -148,25 +120,32 @@
       "date_to": "2026-08-31"
     },
     {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "UWX1 Top Hole",
-      "date_from": "2026-08-10",
-      "date_to": "2026-08-18"
+      "asset": "Noble Voyager",
+      "vessel_count": 3,
+      "notes": "Ursa North P013 Top Hole",
+      "date_from": "2026-08-14",
+      "date_to": "2026-08-24"
     },
     {
-      "asset": "Noble Voyager",
-      "vessel_count": 2,
-      "notes": "Princess P8 Sidetrack Deepening",
-      "date_from": "2026-08-18",
-      "date_to": "2026-09-03"
+      "asset": "Poseidon",
+      "vessel_count": 3,
+      "notes": "UWX1 Top Hole",
+      "date_from": "2026-08-14",
+      "date_to": "2026-08-21"
     },
     {
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "UWX1 Deepen Hole Deepening",
-      "date_from": "2026-08-18",
-      "date_to": "2026-09-13"
+      "date_from": "2026-08-21",
+      "date_to": "2026-09-17"
+    },
+    {
+      "asset": "Noble Voyager",
+      "vessel_count": 2,
+      "notes": "Princess P8 Sidetrack Deepening",
+      "date_from": "2026-08-24",
+      "date_to": "2026-09-19"
     },
     {
       "asset": "ESA, Ursa",
@@ -207,8 +186,8 @@
       "asset": "Noble Voyager",
       "vessel_count": 2,
       "notes": "Princess P8 Completion",
-      "date_from": "2026-09-13",
-      "date_to": "2026-10-03"
+      "date_from": "2026-09-19",
+      "date_to": "2026-10-09"
     },
     {
       "asset": "ESA, Ursa",
@@ -235,8 +214,8 @@
       "asset": "Noble Voyager",
       "vessel_count": 2,
       "notes": "Ursa North P013 Deepening",
-      "date_from": "2026-10-03",
-      "date_to": "2026-10-23"
+      "date_from": "2026-10-09",
+      "date_to": "2026-10-29"
     },
     {
       "asset": "ESA, Ursa",
@@ -283,22 +262,17 @@
   ],
   "monthly_capacity_entries": [
     {
-      "capacity_text": "15",
-      "date_from": "2026-06-01",
-      "date_to": "2026-06-30"
-    },
-    {
-      "capacity_text": "17",
+      "capacity_text": "16",
       "date_from": "2026-07-01",
       "date_to": "2026-07-31"
     },
     {
-      "capacity_text": "15",
+      "capacity_text": "17",
       "date_from": "2026-08-01",
       "date_to": "2026-08-31"
     },
     {
-      "capacity_text": "12",
+      "capacity_text": "14",
       "date_from": "2026-09-01",
       "date_to": "2026-09-30"
     },

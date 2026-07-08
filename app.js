@@ -91,6 +91,8 @@ const els = {
   currentSnapshotSelect: document.getElementById('currentSnapshotSelect'),
   compareAssetFilter: document.getElementById('compareAssetFilter'),
   runCompareBtn: document.getElementById('runCompareBtn'),
+  runVolatilityBtn: document.getElementById('runVolatilityBtn'),
+  volatilityResult: document.getElementById('volatilityResult'),
   snapshotCompareResult: document.getElementById('snapshotCompareResult'),
   closeCompareDialog: document.getElementById('closeCompareDialog')
 };
@@ -2409,12 +2411,475 @@ async function openCompareDialog() {
   els.compareAssetFilter.innerHTML = '<option value="all">All Assets</option>' +
     assets.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
   
-  els.snapshotCompareResult.innerHTML = '<p style="color:var(--muted);text-align:center;">Select snapshots and click Compare to see changes.</p>';
+  els.snapshotCompareResult.innerHTML = `
+    <div style="text-align:center;padding:20px;">
+      <p style="color:var(--muted);margin-bottom:16px;">Select snapshots and click Compare to see changes.</p>
+      <details style="text-align:left;max-width:600px;margin:0 auto;">
+        <summary style="cursor:pointer;font-weight:600;color:var(--primary,#007bff);">📋 What is being tracked?</summary>
+        <div style="background:#e8f4fd;color:#1a365d;padding:12px;border-radius:6px;margin-top:8px;font-size:13px;border:1px solid #bee3f8;">
+          <p style="margin:0 0 8px 0;"><strong>Tasks matched by:</strong> Asset + Activity (similar routes paired by closest dates)</p>
+          <p style="margin:0 0 8px 0;"><strong>Fields monitored for changes:</strong></p>
+          <ul style="margin:0;padding-left:20px;">
+            <li><strong>Start Date</strong> - Route scheduling date</li>
+            <li><strong>Status</strong> - Planned → In Progress → Complete</li>
+            <li><strong>Offshore Start</strong> - When vessel arrives offshore</li>
+            <li><strong>Offshore End</strong> - When offload completes</li>
+            <li><strong>Return End</strong> - Back to port time</li>
+            <li><strong>Duration Hours</strong> - On-location time</li>
+            <li><strong>Transit Hours</strong> - Return transit time</li>
+            <li><strong>Vessel</strong> - Assigned vessel</li>
+            <li><strong>Coordinator</strong> - Logistics coordinator</li>
+          </ul>
+        </div>
+      </details>
+    </div>`;
   els.snapshotCompareDialog.hidden = false;
 }
 
 function closeCompareDialog() {
   els.snapshotCompareDialog.hidden = true;
+}
+
+// Store last comparison data for summary generation
+let lastComparisonData = null;
+
+function generateLogisticsSummaryText(data) {
+  if (!data) return '';
+  
+  const { summary, new_tasks, removed_tasks, changed_tasks, baseline, current } = data;
+  const today = new Date();
+  const lines = [];
+  
+  // Calculate key metrics
+  const netRouteChange = summary.new_count - summary.removed_count;
+  const totalActiveRoutes = summary.new_count + summary.changed_count + summary.unchanged_count;
+  
+  // Find significant date shifts (±3 days or more)
+  const significantDateChanges = changed_tasks.filter(task => {
+    const changes = task.changes || {};
+    for (const field of ['start_date', 'offshore_start', 'offshore_end', 'return_end']) {
+      if (changes[field]) {
+        const oldDate = changes[field].old ? new Date(changes[field].old) : null;
+        const newDate = changes[field].new ? new Date(changes[field].new) : null;
+        if (oldDate && newDate) {
+          const diffDays = Math.abs((newDate - oldDate) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 3) return true;
+        }
+      }
+    }
+    return false;
+  });
+  
+  // Count routes pushed earlier vs later
+  let pushedEarlier = 0, pushedLater = 0;
+  for (const task of significantDateChanges) {
+    const changes = task.changes || {};
+    // Check start_date first, fall back to offshore_start
+    const dateField = changes.start_date ? 'start_date' : 'offshore_start';
+    if (changes[dateField]) {
+      const oldDate = changes[dateField].old ? new Date(changes[dateField].old) : null;
+      const newDate = changes[dateField].new ? new Date(changes[dateField].new) : null;
+      if (oldDate && newDate) {
+        if (newDate < oldDate) pushedEarlier++;
+        else pushedLater++;
+      }
+    }
+  }
+  
+  // Identify assets with most changes
+  const assetChangeCounts = {};
+  for (const task of [...new_tasks, ...removed_tasks, ...changed_tasks]) {
+    const asset = task.asset || 'Unassigned';
+    assetChangeCounts[asset] = (assetChangeCounts[asset] || 0) + 1;
+  }
+  const topChangedAssets = Object.entries(assetChangeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  
+  // Find routes in the next 7 days that were added or shifted
+  const next7Days = new Date(today);
+  next7Days.setDate(next7Days.getDate() + 7);
+  
+  const urgentNewRoutes = new_tasks.filter(t => {
+    const start = t.start_date ? new Date(t.start_date) : null;
+    return start && start >= today && start <= next7Days;
+  });
+  
+  const urgentShiftedRoutes = significantDateChanges.filter(t => {
+    const start = t.start_date ? new Date(t.start_date) : null;
+    return start && start >= today && start <= next7Days;
+  });
+  
+  // Header
+  lines.push(`OSV LOGISTICS UPDATE - Week of ${today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`);
+  lines.push('');
+  
+  // Executive Summary
+  lines.push('OVERVIEW');
+  lines.push('─'.repeat(50));
+  
+  // Net impact statement
+  if (netRouteChange > 0) {
+    lines.push(`Net increase of ${netRouteChange} route${netRouteChange !== 1 ? 's' : ''} compared to last week's plan. ${summary.new_count} new routes added, ${summary.removed_count} cancelled.`);
+  } else if (netRouteChange < 0) {
+    lines.push(`Net decrease of ${Math.abs(netRouteChange)} route${Math.abs(netRouteChange) !== 1 ? 's' : ''} compared to last week's plan. ${summary.removed_count} routes cancelled, ${summary.new_count} new routes added.`);
+  } else {
+    lines.push(`No net change in route count. ${summary.new_count} new routes offset by ${summary.removed_count} cancellations.`);
+  }
+  lines.push('');
+  
+  // Logistics impact highlights
+  lines.push('KEY LOGISTICS IMPACTS');
+  lines.push('─'.repeat(50));
+  
+  // Urgent items (next 7 days)
+  if (urgentNewRoutes.length > 0 || urgentShiftedRoutes.length > 0) {
+    const urgentCount = urgentNewRoutes.length + urgentShiftedRoutes.length;
+    lines.push(`⚠️  IMMEDIATE ATTENTION: ${urgentCount} route${urgentCount !== 1 ? 's' : ''} in the next 7 days require coordination:`);
+    if (urgentNewRoutes.length > 0) {
+      lines.push(`    • ${urgentNewRoutes.length} newly added route${urgentNewRoutes.length !== 1 ? 's' : ''}`);
+    }
+    if (urgentShiftedRoutes.length > 0) {
+      lines.push(`    • ${urgentShiftedRoutes.length} route${urgentShiftedRoutes.length !== 1 ? 's' : ''} with significant date changes`);
+    }
+    lines.push('');
+  }
+  
+  // Significant date changes summary
+  if (significantDateChanges.length > 0) {
+    lines.push(`📅  DATE SHIFTS: ${significantDateChanges.length} route${significantDateChanges.length !== 1 ? 's' : ''} shifted by 3+ days`);
+    if (pushedEarlier > 0 || pushedLater > 0) {
+      const parts = [];
+      if (pushedEarlier > 0) parts.push(`${pushedEarlier} moved earlier`);
+      if (pushedLater > 0) parts.push(`${pushedLater} pushed later`);
+      lines.push(`    • ${parts.join(', ')}`);
+    }
+    lines.push('');
+  }
+  
+  // Assets most affected
+  if (topChangedAssets.length > 0) {
+    lines.push(`🚢  ASSETS MOST AFFECTED:`);
+    for (const [asset, count] of topChangedAssets) {
+      lines.push(`    • ${asset}: ${count} route change${count !== 1 ? 's' : ''}`);
+    }
+    lines.push('');
+  }
+  
+  // Vessel demand note
+  if (summary.new_count > summary.removed_count) {
+    lines.push(`📈  CAPACITY NOTE: Increased demand - verify vessel availability for ${summary.new_count} additional routes.`);
+    lines.push('');
+  } else if (summary.removed_count > summary.new_count + 5) {
+    lines.push(`📉  CAPACITY NOTE: Reduced demand - ${summary.removed_count} cancellations may free up vessel capacity.`);
+    lines.push('');
+  }
+  
+  // Detailed breakdown for reference
+  lines.push('CHANGE BREAKDOWN');
+  lines.push('─'.repeat(50));
+  lines.push(`• New Routes: ${summary.new_count}`);
+  lines.push(`• Cancelled: ${summary.removed_count}`);
+  lines.push(`• Modified: ${summary.changed_count}`);
+  lines.push(`• Unchanged: ${summary.unchanged_count}`);
+  lines.push(`• Total Active: ${totalActiveRoutes}`);
+  lines.push('');
+  
+  // Category breakdown if available
+  const categoryCounts = summary.category_counts || {};
+  const activeCategories = Object.entries(categoryCounts).filter(([_, count]) => count > 0);
+  if (activeCategories.length > 0) {
+    lines.push('MODIFICATION TYPES');
+    lines.push('─'.repeat(50));
+    const categoryLabels = {
+      date_shift: 'Date Changes',
+      duration_change: 'Duration Changes',
+      status_update: 'Status Updates',
+      vessel_change: 'Vessel Reassignments',
+      coordinator_change: 'Coordinator Changes'
+    };
+    for (const [catId, count] of activeCategories) {
+      lines.push(`• ${categoryLabels[catId] || catId}: ${count}`);
+    }
+    lines.push('');
+  }
+  
+  // Footer
+  lines.push('─'.repeat(50));
+  lines.push(`Baseline: ${baseline.date || baseline.id}`);
+  lines.push(`Current: ${current.id === 'current' ? 'Live Data' : (current.date || current.id)}`);
+  lines.push(`Generated: ${today.toLocaleString()}`);
+  
+  return lines.join('\n');
+}
+
+function generateLogisticsSummaryHTML(data) {
+  if (!data) return '';
+  
+  const { summary, new_tasks, removed_tasks, changed_tasks, baseline, current } = data;
+  const today = new Date();
+  
+  // Calculate key metrics
+  const netRouteChange = summary.new_count - summary.removed_count;
+  const totalActiveRoutes = summary.new_count + summary.changed_count + summary.unchanged_count;
+  
+  // Find significant date shifts (±3 days or more)
+  const significantDateChanges = changed_tasks.filter(task => {
+    const changes = task.changes || {};
+    for (const field of ['start_date', 'offshore_start', 'offshore_end', 'return_end']) {
+      if (changes[field]) {
+        const oldDate = changes[field].old ? new Date(changes[field].old) : null;
+        const newDate = changes[field].new ? new Date(changes[field].new) : null;
+        if (oldDate && newDate) {
+          const diffDays = Math.abs((newDate - oldDate) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 3) return true;
+        }
+      }
+    }
+    return false;
+  });
+  
+  // Count routes pushed earlier vs later
+  let pushedEarlier = 0, pushedLater = 0;
+  for (const task of significantDateChanges) {
+    const changes = task.changes || {};
+    const dateField = changes.start_date ? 'start_date' : 'offshore_start';
+    if (changes[dateField]) {
+      const oldDate = changes[dateField].old ? new Date(changes[dateField].old) : null;
+      const newDate = changes[dateField].new ? new Date(changes[dateField].new) : null;
+      if (oldDate && newDate) {
+        if (newDate < oldDate) pushedEarlier++;
+        else pushedLater++;
+      }
+    }
+  }
+  
+  // Find routes in the next 7 days
+  const next7Days = new Date(today);
+  next7Days.setDate(next7Days.getDate() + 7);
+  
+  const urgentNewRoutes = new_tasks.filter(t => {
+    const start = t.start_date ? new Date(t.start_date) : null;
+    return start && start >= today && start <= next7Days;
+  });
+  
+  const urgentShiftedRoutes = significantDateChanges.filter(t => {
+    const start = t.start_date ? new Date(t.start_date) : null;
+    return start && start >= today && start <= next7Days;
+  });
+  
+  // Identify assets with most changes
+  const assetChangeCounts = {};
+  for (const task of [...new_tasks, ...removed_tasks, ...changed_tasks]) {
+    const asset = task.asset || 'Unassigned';
+    assetChangeCounts[asset] = (assetChangeCounts[asset] || 0) + 1;
+  }
+  const topChangedAssets = Object.entries(assetChangeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  
+  // Helper to render route table
+  const renderRouteTable = (routes, showChanges = false) => {
+    if (!routes.length) return '<p style="color:var(--muted);font-style:italic;margin:8px 0;">No routes</p>';
+    return `<table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:8px;">
+      <thead><tr style="background:var(--muted-bg,#2d3748);">
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border,#4a5568);">Asset</th>
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border,#4a5568);">Activity</th>
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border,#4a5568);">Start Date</th>
+        ${showChanges ? '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border,#4a5568);">Change</th>' : ''}
+      </tr></thead>
+      <tbody>${routes.map(t => {
+        let changeInfo = '';
+        if (showChanges && t.changes) {
+          const dateField = t.changes.start_date ? 'start_date' : (t.changes.offshore_start ? 'offshore_start' : null);
+          if (dateField && t.changes[dateField]) {
+            const oldDate = new Date(t.changes[dateField].old);
+            const newDate = new Date(t.changes[dateField].new);
+            const diffDays = Math.round((newDate - oldDate) / (1000 * 60 * 60 * 24));
+            const direction = diffDays > 0 ? 'later' : 'earlier';
+            changeInfo = `<span style="color:${diffDays > 0 ? '#f6ad55' : '#68d391'};">${Math.abs(diffDays)}d ${direction}</span>`;
+          }
+        }
+        return `<tr style="border-bottom:1px solid var(--border,#4a5568);">
+          <td style="padding:6px 8px;">${escapeHtml(t.asset || '')}</td>
+          <td style="padding:6px 8px;">${escapeHtml((t.activity || t.project || '').substring(0, 50))}${(t.activity || '').length > 50 ? '...' : ''}</td>
+          <td style="padding:6px 8px;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : 'TBD'}</td>
+          ${showChanges ? `<td style="padding:6px 8px;">${changeInfo}</td>` : ''}
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  };
+  
+  let html = `<div style="background:#1a202c;color:#e2e8f0;padding:16px;border-radius:6px;font-size:13px;">`;
+  
+  // Header
+  html += `<div style="font-size:15px;font-weight:600;margin-bottom:12px;color:#90cdf4;">
+    OSV LOGISTICS UPDATE - Week of ${today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+  </div>`;
+  
+  // Overview
+  html += `<div style="margin-bottom:16px;">
+    <div style="font-weight:600;color:#a0aec0;margin-bottom:4px;">OVERVIEW</div>
+    <div style="border-top:1px solid #4a5568;padding-top:8px;">`;
+  
+  if (netRouteChange > 0) {
+    html += `Net increase of ${netRouteChange} route${netRouteChange !== 1 ? 's' : ''} compared to last week's plan. ${summary.new_count} new routes added, ${summary.removed_count} cancelled.`;
+  } else if (netRouteChange < 0) {
+    html += `Net decrease of ${Math.abs(netRouteChange)} route${Math.abs(netRouteChange) !== 1 ? 's' : ''} compared to last week's plan. ${summary.removed_count} routes cancelled, ${summary.new_count} new routes added.`;
+  } else {
+    html += `No net change in route count. ${summary.new_count} new routes offset by ${summary.removed_count} cancellations.`;
+  }
+  html += `</div></div>`;
+  
+  // Key Logistics Impacts
+  html += `<div style="margin-bottom:16px;">
+    <div style="font-weight:600;color:#a0aec0;margin-bottom:4px;">KEY LOGISTICS IMPACTS</div>
+    <div style="border-top:1px solid #4a5568;padding-top:8px;">`;
+  
+  // Immediate Attention (clickable)
+  if (urgentNewRoutes.length > 0 || urgentShiftedRoutes.length > 0) {
+    const urgentCount = urgentNewRoutes.length + urgentShiftedRoutes.length;
+    html += `<details style="margin-bottom:12px;">
+      <summary style="cursor:pointer;color:#f6e05e;font-weight:500;">
+        ⚠️ IMMEDIATE ATTENTION: ${urgentCount} route${urgentCount !== 1 ? 's' : ''} in the next 7 days require coordination
+      </summary>
+      <div style="margin-left:20px;margin-top:8px;">`;
+    
+    if (urgentNewRoutes.length > 0) {
+      html += `<details open style="margin-bottom:8px;">
+        <summary style="cursor:pointer;color:#68d391;">• ${urgentNewRoutes.length} newly added route${urgentNewRoutes.length !== 1 ? 's' : ''}</summary>
+        ${renderRouteTable(urgentNewRoutes)}
+      </details>`;
+    }
+    
+    if (urgentShiftedRoutes.length > 0) {
+      html += `<details open style="margin-bottom:8px;">
+        <summary style="cursor:pointer;color:#f6ad55;">• ${urgentShiftedRoutes.length} route${urgentShiftedRoutes.length !== 1 ? 's' : ''} with significant date changes</summary>
+        ${renderRouteTable(urgentShiftedRoutes, true)}
+      </details>`;
+    }
+    
+    html += `</div></details>`;
+  }
+  
+  // Date Shifts (clickable) - exclude routes already shown in IMMEDIATE ATTENTION
+  const urgentShiftedIds = new Set(urgentShiftedRoutes.map(t => t.id));
+  const nonUrgentDateChanges = significantDateChanges.filter(t => !urgentShiftedIds.has(t.id));
+  
+  if (nonUrgentDateChanges.length > 0) {
+    html += `<details style="margin-bottom:12px;">
+      <summary style="cursor:pointer;color:#90cdf4;">
+        📅 DATE SHIFTS: ${nonUrgentDateChanges.length} additional route${nonUrgentDateChanges.length !== 1 ? 's' : ''} shifted by 3+ days`;
+    // Recalculate earlier/later counts for non-urgent only
+    let nonUrgentEarlier = 0, nonUrgentLater = 0;
+    for (const task of nonUrgentDateChanges) {
+      const changes = task.changes || {};
+      const dateField = changes.start_date ? 'start_date' : 'offshore_start';
+      if (changes[dateField]) {
+        const oldDate = changes[dateField].old ? new Date(changes[dateField].old) : null;
+        const newDate = changes[dateField].new ? new Date(changes[dateField].new) : null;
+        if (oldDate && newDate) {
+          if (newDate < oldDate) nonUrgentEarlier++;
+          else nonUrgentLater++;
+        }
+      }
+    }
+    if (nonUrgentEarlier > 0 || nonUrgentLater > 0) {
+      const parts = [];
+      if (nonUrgentEarlier > 0) parts.push(`${nonUrgentEarlier} moved earlier`);
+      if (nonUrgentLater > 0) parts.push(`${nonUrgentLater} pushed later`);
+      html += ` <span style="color:#a0aec0;">(${parts.join(', ')})</span>`;
+    }
+    html += `</summary>
+      <div style="margin-left:20px;margin-top:8px;">
+        ${renderRouteTable(nonUrgentDateChanges, true)}
+      </div>
+    </details>`;
+  }
+  
+  // Assets most affected
+  if (topChangedAssets.length > 0) {
+    html += `<div style="margin-bottom:12px;color:#ed8936;">
+      🚢 ASSETS MOST AFFECTED:
+      <ul style="margin:4px 0 0 20px;padding:0;">
+        ${topChangedAssets.map(([asset, count]) => `<li>${asset}: ${count} route change${count !== 1 ? 's' : ''}</li>`).join('')}
+      </ul>
+    </div>`;
+  }
+  
+  // Capacity note
+  if (summary.new_count > summary.removed_count) {
+    html += `<div style="color:#68d391;margin-bottom:12px;">
+      📈 CAPACITY NOTE: Increased demand - verify vessel availability for ${summary.new_count} additional routes.
+    </div>`;
+  } else if (summary.removed_count > summary.new_count + 5) {
+    html += `<div style="color:#fc8181;margin-bottom:12px;">
+      📉 CAPACITY NOTE: Reduced demand - ${summary.removed_count} cancellations may free up vessel capacity.
+    </div>`;
+  }
+  
+  html += `</div></div>`;
+  
+  // Change Breakdown
+  html += `<div style="margin-bottom:16px;">
+    <div style="font-weight:600;color:#a0aec0;margin-bottom:4px;">CHANGE BREAKDOWN</div>
+    <div style="border-top:1px solid #4a5568;padding-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:4px;">
+      <span>• New Routes: ${summary.new_count}</span>
+      <span>• Cancelled: ${summary.removed_count}</span>
+      <span>• Modified: ${summary.changed_count}</span>
+      <span>• Unchanged: ${summary.unchanged_count}</span>
+      <span style="grid-column:span 2;">• Total Active: ${totalActiveRoutes}</span>
+    </div>
+  </div>`;
+  
+  // Modification Types
+  const categoryCounts = summary.category_counts || {};
+  const activeCategories = Object.entries(categoryCounts).filter(([_, count]) => count > 0);
+  if (activeCategories.length > 0) {
+    const categoryLabels = {
+      date_shift: 'Date Changes',
+      duration_change: 'Duration Changes',
+      status_update: 'Status Updates',
+      vessel_change: 'Vessel Reassignments',
+      coordinator_change: 'Coordinator Changes'
+    };
+    html += `<div style="margin-bottom:16px;">
+      <div style="font-weight:600;color:#a0aec0;margin-bottom:4px;">MODIFICATION TYPES</div>
+      <div style="border-top:1px solid #4a5568;padding-top:8px;">
+        ${activeCategories.map(([catId, count]) => `<span style="display:inline-block;margin-right:16px;">• ${categoryLabels[catId] || catId}: ${count}</span>`).join('')}
+      </div>
+    </div>`;
+  }
+  
+  // Footer
+  html += `<div style="border-top:1px solid #4a5568;padding-top:8px;font-size:11px;color:#718096;">
+    Baseline: ${baseline.date || baseline.id} | 
+    Current: ${current.id === 'current' ? 'Live Data' : (current.date || current.id)} | 
+    Generated: ${today.toLocaleString()}
+  </div>`;
+  
+  html += `</div>`;
+  
+  return html;
+}
+
+function generateLogisticsSummary() {
+  if (!lastComparisonData) {
+    showToast('Run a comparison first');
+    return '';
+  }
+  return generateLogisticsSummaryText(lastComparisonData);
+}
+
+function copyLogisticsSummary() {
+  const summary = generateLogisticsSummary();
+  if (!summary) return;
+  
+  navigator.clipboard.writeText(summary).then(() => {
+    showToast('Logistics summary copied to clipboard!');
+  }).catch(() => {
+    showToast('Failed to copy summary');
+  });
 }
 
 async function runComparison() {
@@ -2427,6 +2892,9 @@ async function runComparison() {
     return;
   }
   
+  // Hide volatility results when running comparison
+  if (els.volatilityResult) els.volatilityResult.style.display = 'none';
+  
   els.snapshotCompareResult.innerHTML = '<p style="text-align:center;">Loading comparison...</p>';
   
   try {
@@ -2437,10 +2905,168 @@ async function runComparison() {
     const response = await fetch(url);
     if (!response.ok) throw new Error('Comparison failed');
     const data = await response.json();
+    lastComparisonData = data; // Store for summary generation
     renderComparisonResult(data, assetFilter);
   } catch (err) {
     els.snapshotCompareResult.innerHTML = `<p style="color:var(--danger);">Error: ${escapeHtml(err.message)}</p>`;
   }
+}
+
+async function runVolatilityAnalysis() {
+  const assetFilter = els.compareAssetFilter.value;
+  
+  if (!els.volatilityResult) return;
+  
+  els.volatilityResult.style.display = 'block';
+  els.volatilityResult.innerHTML = '<p style="text-align:center;">Analyzing schedule volatility...</p>';
+  els.snapshotCompareResult.innerHTML = ''; // Clear comparison results
+  
+  try {
+    let url = '/api/snapshots/volatility?days=30';
+    if (assetFilter && assetFilter !== 'all') {
+      url += `&asset=${encodeURIComponent(assetFilter)}`;
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Volatility analysis failed');
+    }
+    const data = await response.json();
+    renderVolatilityResult(data);
+  } catch (err) {
+    els.volatilityResult.innerHTML = `<p style="color:var(--danger);">Error: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+function renderVolatilityResult(data) {
+  const { analysis_period, summary, by_asset, weekly_trend } = data;
+  
+  // Volatility label color
+  const volColor = summary.volatility_label === 'High' ? '#e53e3e' : 
+                   summary.volatility_label === 'Medium' ? '#dd6b20' : '#38a169';
+  
+  let html = `
+    <div style="background:#1a202c;color:#e2e8f0;padding:20px;border-radius:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="margin:0;color:#90cdf4;">📈 Schedule Volatility Analysis</h3>
+        <span style="font-size:12px;color:#a0aec0;">
+          Last ${analysis_period.days} days | ${analysis_period.snapshots_analyzed} snapshots | ${analysis_period.asset_filter}
+        </span>
+      </div>
+      
+      <!-- Summary Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+        <div style="background:#2d3748;padding:12px;border-radius:6px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:${volColor};">${summary.volatility_rate}%</div>
+          <div style="font-size:11px;color:#a0aec0;">Volatility Rate</div>
+          <div style="font-size:10px;color:${volColor};font-weight:600;">${summary.volatility_label}</div>
+        </div>
+        <div style="background:#2d3748;padding:12px;border-radius:6px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:#f6ad55;">${summary.avg_shift_days}</div>
+          <div style="font-size:11px;color:#a0aec0;">Avg Days Shifted</div>
+        </div>
+        <div style="background:#2d3748;padding:12px;border-radius:6px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:#fc8181;">${summary.cancellation_rate}%</div>
+          <div style="font-size:11px;color:#a0aec0;">Cancellation Rate</div>
+        </div>
+        <div style="background:#2d3748;padding:12px;border-radius:6px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:#68d391;">${summary.new_route_rate}%</div>
+          <div style="font-size:11px;color:#a0aec0;">New Route Rate</div>
+        </div>
+      </div>
+      
+      <!-- Totals Row -->
+      <div style="display:flex;gap:16px;justify-content:center;margin-bottom:20px;font-size:12px;">
+        <span style="color:#68d391;">+${summary.total_new} new</span>
+        <span style="color:#fc8181;">-${summary.total_removed} cancelled</span>
+        <span style="color:#f6ad55;">${summary.total_changed} modified</span>
+        <span style="color:#a0aec0;">${summary.total_unchanged} unchanged</span>
+        <span style="color:#90cdf4;">${summary.total_date_shifts} date shifts</span>
+      </div>`;
+  
+  // Asset Volatility Rankings
+  if (by_asset && by_asset.length > 0) {
+    html += `
+      <div style="margin-bottom:16px;">
+        <h4 style="margin:0 0 8px 0;color:#a0aec0;font-size:13px;">🏭 Most Volatile Assets</h4>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+          <thead>
+            <tr style="background:#2d3748;">
+              <th style="padding:8px;text-align:left;border-bottom:1px solid #4a5568;">Asset</th>
+              <th style="padding:8px;text-align:center;border-bottom:1px solid #4a5568;">Volatility</th>
+              <th style="padding:8px;text-align:center;border-bottom:1px solid #4a5568;">New</th>
+              <th style="padding:8px;text-align:center;border-bottom:1px solid #4a5568;">Cancelled</th>
+              <th style="padding:8px;text-align:center;border-bottom:1px solid #4a5568;">Changed</th>
+              <th style="padding:8px;text-align:center;border-bottom:1px solid #4a5568;">Avg Shift</th>
+            </tr>
+          </thead>
+          <tbody>`;
+    
+    for (const asset of by_asset.slice(0, 8)) {
+      const assetVolColor = asset.volatility_rate > 30 ? '#fc8181' : 
+                            asset.volatility_rate > 15 ? '#f6ad55' : '#68d391';
+      html += `
+            <tr style="border-bottom:1px solid #4a5568;">
+              <td style="padding:8px;">${escapeHtml(asset.asset)}</td>
+              <td style="padding:8px;text-align:center;color:${assetVolColor};font-weight:600;">${asset.volatility_rate}%</td>
+              <td style="padding:8px;text-align:center;color:#68d391;">${asset.new}</td>
+              <td style="padding:8px;text-align:center;color:#fc8181;">${asset.removed}</td>
+              <td style="padding:8px;text-align:center;color:#f6ad55;">${asset.changed}</td>
+              <td style="padding:8px;text-align:center;">${asset.avg_shift_days > 0 ? asset.avg_shift_days + 'd' : '-'}</td>
+            </tr>`;
+    }
+    
+    html += `
+          </tbody>
+        </table>
+      </div>`;
+  }
+  
+  // Weekly Trend
+  if (weekly_trend && weekly_trend.length > 0) {
+    html += `
+      <div>
+        <h4 style="margin:0 0 8px 0;color:#a0aec0;font-size:13px;">📅 Weekly Trend</h4>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;">`;
+    
+    for (const week of weekly_trend) {
+      const weekVolColor = week.volatility_rate > 30 ? '#fc8181' : 
+                           week.volatility_rate > 15 ? '#f6ad55' : '#68d391';
+      html += `
+          <div style="background:#2d3748;padding:10px;border-radius:6px;min-width:100px;text-align:center;flex-shrink:0;">
+            <div style="font-size:10px;color:#718096;margin-bottom:4px;">${week.week}</div>
+            <div style="font-size:18px;font-weight:700;color:${weekVolColor};">${week.volatility_rate}%</div>
+            <div style="font-size:9px;color:#a0aec0;margin-top:4px;">
+              +${week.new} / -${week.removed} / ~${week.changed}
+            </div>
+          </div>`;
+    }
+    
+    html += `
+        </div>
+      </div>`;
+  }
+  
+  // Interpretation
+  html += `
+      <div style="margin-top:16px;padding:12px;background:#2d3748;border-radius:6px;border-left:3px solid ${volColor};">
+        <div style="font-size:12px;color:#e2e8f0;">
+          <strong>Interpretation:</strong> `;
+  
+  if (summary.volatility_rate > 30) {
+    html += `High schedule volatility indicates significant changes between planning cycles. Consider more frequent stakeholder coordination and shorter planning horizons.`;
+  } else if (summary.volatility_rate > 15) {
+    html += `Moderate schedule volatility is typical for dynamic operations. Continue monitoring for trends by asset or activity type.`;
+  } else {
+    html += `Low schedule volatility suggests stable planning. The schedule is reliable for downstream coordination.`;
+  }
+  
+  html += `
+        </div>
+      </div>
+    </div>`;
+  
+  els.volatilityResult.innerHTML = html;
 }
 
 function renderComparisonResult(data, assetFilter = 'all') {
@@ -2450,15 +3076,34 @@ function renderComparisonResult(data, assetFilter = 'all') {
     ? `<span style="background:var(--primary,#007bff);color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">Filtered: ${escapeHtml(assetFilter)}</span>` 
     : '';
   
+  // Build category summary badges
+  const categoryLabels = {
+    date_shift: { label: 'Date Shifts', icon: '📅', color: '#3182ce' },
+    duration_change: { label: 'Duration', icon: '⏱️', color: '#805ad5' },
+    status_update: { label: 'Status', icon: '🔄', color: '#38a169' },
+    vessel_change: { label: 'Vessel', icon: '🚢', color: '#dd6b20' },
+    coordinator_change: { label: 'Coordinator', icon: '👤', color: '#718096' }
+  };
+  
+  const categoryCounts = summary.category_counts || {};
+  const categoryBadgesHtml = Object.entries(categoryCounts)
+    .filter(([_, count]) => count > 0)
+    .map(([catId, count]) => {
+      const cat = categoryLabels[catId] || { label: catId, icon: '•', color: '#718096' };
+      return `<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:${cat.color}22;color:${cat.color};border-radius:12px;font-size:12px;font-weight:500;border:1px solid ${cat.color}44;">
+        ${cat.icon} ${count} ${cat.label}
+      </span>`;
+    }).join(' ');
+  
   let html = `
-    <div class="comparison-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;">
+    <div class="comparison-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:12px;">
       <div class="stat-card" style="background:var(--success-bg,#d4edda);padding:12px;border-radius:6px;text-align:center;">
         <div style="font-size:24px;font-weight:600;color:var(--success,#28a745);">${summary.new_count}</div>
-        <div style="font-size:12px;color:var(--muted);">New Tasks</div>
+        <div style="font-size:12px;color:var(--muted);">New Routes</div>
       </div>
       <div class="stat-card" style="background:var(--danger-bg,#f8d7da);padding:12px;border-radius:6px;text-align:center;">
         <div style="font-size:24px;font-weight:600;color:var(--danger,#dc3545);">${summary.removed_count}</div>
-        <div style="font-size:12px;color:var(--muted);">Removed</div>
+        <div style="font-size:12px;color:var(--muted);">Cancelled</div>
       </div>
       <div class="stat-card" style="background:var(--warning-bg,#fff3cd);padding:12px;border-radius:6px;text-align:center;">
         <div style="font-size:24px;font-weight:600;color:var(--warning,#ffc107);">${summary.changed_count}</div>
@@ -2469,11 +3114,17 @@ function renderComparisonResult(data, assetFilter = 'all') {
         <div style="font-size:12px;color:var(--muted);">Unchanged</div>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">
-      Comparing <strong>${escapeHtml(baseline.date || baseline.id)}</strong> (${baseline.task_count} tasks) 
-      → <strong>${current.id === 'current' ? 'Live Data' : escapeHtml(current.date || current.id)}</strong> (${current.task_count} tasks)
-      ${filterLabel}
-    </p>
+    ${categoryBadgesHtml ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">${categoryBadgesHtml}</div>` : ''}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <p style="font-size:12px;color:var(--muted);margin:0;">
+        Comparing <strong>${escapeHtml(baseline.date || baseline.id)}</strong> (${baseline.task_count} tasks) 
+        → <strong>${current.id === 'current' ? 'Live Data' : escapeHtml(current.date || current.id)}</strong> (${current.task_count} tasks)
+        ${filterLabel}
+      </p>
+      <button onclick="copyLogisticsSummary()" style="padding:8px 16px;background:var(--primary,#007bff);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;">
+        📋 Copy Weekly Summary
+      </button>
+    </div>
   `;
   
   // Changed tasks (show first - most important)
@@ -2485,9 +3136,14 @@ function renderComparisonResult(data, assetFilter = 'all') {
             <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
             <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
             <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start Date</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Category</th>
             <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Changes</th>
           </tr></thead>
           <tbody>${changed_tasks.map(t => {
+            // Build category badges for this task
+            const taskCategories = (t.change_categories || []).map(cat => 
+              `<span style="display:inline-block;padding:2px 6px;background:${cat.color}22;color:${cat.color};border-radius:8px;font-size:10px;font-weight:500;white-space:nowrap;margin:1px 0;">${cat.icon} ${cat.label}</span>`
+            ).join('<br>');
             const changesHtml = Object.entries(t.changes || {}).map(([field, change]) => {
               const oldVal = change.old ? (field.includes('date') ? new Date(change.old).toLocaleString() : change.old) : '(empty)';
               const newVal = change.new ? (field.includes('date') ? new Date(change.new).toLocaleString() : change.new) : '(empty)';
@@ -2499,6 +3155,7 @@ function renderComparisonResult(data, assetFilter = 'all') {
               <td style="padding:8px;vertical-align:top;font-weight:500;">${escapeHtml(t.asset || '')}</td>
               <td style="padding:8px;vertical-align:top;">${escapeHtml(t.activity || t.project || '')}</td>
               <td style="padding:8px;vertical-align:top;">${t.start_date ? new Date(t.start_date).toLocaleDateString() : ''}</td>
+              <td style="padding:8px;vertical-align:top;">${taskCategories || '-'}</td>
               <td style="padding:8px;vertical-align:top;">${changesHtml}</td>
             </tr>`;
           }).join('')}</tbody>
@@ -2577,6 +3234,40 @@ function renderComparisonResult(data, assetFilter = 'all') {
     html += '<p style="text-align:center;color:var(--muted);padding:20px;">No changes detected between the selected snapshots.</p>';
   }
   
+  // Generate and display logistics summary
+  const logisticsSummaryHTML = generateLogisticsSummaryHTML(data);
+  html += `
+    <details open style="margin-top:20px;border-top:1px solid var(--border,#dee2e6);padding-top:12px;">
+      <summary style="cursor:pointer;font-weight:600;color:var(--primary,#007bff);font-size:15px;">📊 Logistics Summary</summary>
+      <div style="position:relative;margin-top:8px;">
+        <button onclick="copyLogisticsSummary()" style="position:absolute;top:8px;right:8px;padding:6px 12px;background:var(--primary,#007bff);color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;z-index:1;">
+          📋 Copy Text
+        </button>
+        ${logisticsSummaryHTML}
+      </div>
+    </details>`;
+  
+  // Add tracking info legend at the bottom
+  html += `
+    <details style="margin-top:20px;border-top:1px solid var(--border,#dee2e6);padding-top:12px;">
+      <summary style="cursor:pointer;font-weight:600;color:var(--primary,#007bff);font-size:13px;">📋 What is being tracked?</summary>
+      <div style="background:#e8f4fd;color:#1a365d;padding:12px;border-radius:6px;margin-top:8px;font-size:12px;border:1px solid #bee3f8;">
+        <p style="margin:0 0 8px 0;"><strong>Tasks matched by:</strong> Asset + Activity (similar routes paired by closest dates)</p>
+        <p style="margin:0 0 8px 0;"><strong>Fields monitored for changes:</strong></p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px;">
+          <span>• <strong>Start Date</strong> - Route schedule</span>
+          <span>• <strong>Status</strong> - Workflow state</span>
+          <span>• <strong>Offshore Start</strong> - Arrival time</span>
+          <span>• <strong>Offshore End</strong> - Offload complete</span>
+          <span>• <strong>Return End</strong> - Back to port</span>
+          <span>• <strong>Duration Hours</strong> - On-location time</span>
+          <span>• <strong>Transit Hours</strong> - Return transit</span>
+          <span>• <strong>Vessel</strong> - Assigned vessel</span>
+          <span>• <strong>Coordinator</strong> - Logistics lead</span>
+        </div>
+      </div>
+    </details>`;
+  
   els.snapshotCompareResult.innerHTML = html;
 }
 
@@ -2595,6 +3286,10 @@ if (els.closeCompareDialog) {
 
 if (els.runCompareBtn) {
   els.runCompareBtn.addEventListener('click', runComparison);
+}
+
+if (els.runVolatilityBtn) {
+  els.runVolatilityBtn.addEventListener('click', runVolatilityAnalysis);
 }
 
 if (els.snapshotCompareDialog) {

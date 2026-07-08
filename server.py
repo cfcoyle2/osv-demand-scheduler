@@ -14,7 +14,7 @@ import os
 import json
 import uuid
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
@@ -420,87 +420,167 @@ def compare_snapshots():
         baseline_tasks = [t for t in baseline_tasks if t.get('asset') == asset_filter]
         current_tasks = [t for t in current_tasks if t.get('asset') == asset_filter]
     
-    # Create a content-based key for matching tasks across snapshots
-    # This handles cases where IDs are regenerated on workbook upload
-    def task_key(t):
-        """Generate a unique key based on task content rather than ID."""
+    # Helper to parse dates for comparison
+    def parse_task_date(date_str):
+        """Parse a date string to a datetime object for comparison."""
+        if not date_str:
+            return None
+        try:
+            if 'T' in date_str:
+                return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            return datetime.strptime(date_str[:10], '%Y-%m-%d')
+        except (ValueError, TypeError):
+            return None
+    
+    # Create a soft key (asset + activity only) for grouping similar tasks
+    def soft_key(t):
+        """Generate a key based on asset and activity only (no date)."""
         asset = (t.get('asset') or '').strip().lower()
         activity = (t.get('activity') or t.get('project') or '').strip().lower()
-        # Normalize date to just the date part
-        start = t.get('start_date', '')
-        if start and 'T' in start:
-            start = start.split('T')[0]
-        elif start:
-            start = start[:10]
-        return f"{asset}|{activity}|{start}"
+        return f"{asset}|{activity}"
     
-    # Create lookups by content key (primary) and ID (fallback)
-    baseline_by_key = {}
+    # Group tasks by soft key
+    from collections import defaultdict
+    baseline_by_soft_key = defaultdict(list)
     for t in baseline_tasks:
-        key = task_key(t)
-        if key not in baseline_by_key:
-            baseline_by_key[key] = t
+        baseline_by_soft_key[soft_key(t)].append(t)
     
-    current_by_key = {}
+    current_by_soft_key = defaultdict(list)
     for t in current_tasks:
-        key = task_key(t)
-        if key not in current_by_key:
-            current_by_key[key] = t
+        current_by_soft_key[soft_key(t)].append(t)
     
     # Categorize tasks
     new_tasks = []  # In current but not baseline (late additions)
     removed_tasks = []  # In baseline but not current
     changed_tasks = []  # In both but with differences
     unchanged_tasks = []  # In both, identical
-    matched_baseline_keys = set()
+    matched_baseline_indices = set()  # Track matched baseline tasks by (soft_key, index)
+    matched_current_indices = set()   # Track matched current tasks by (soft_key, index)
     
-    # Fields to compare for changes (excluding identifier fields)
-    compare_fields = ['status', 'offshore_start', 'offshore_end', 'return_end',
+    # Fields to compare for changes (now includes start_date)
+    compare_fields = ['start_date', 'status', 'offshore_start', 'offshore_end', 'return_end',
                       'duration_hours', 'transit_hours', 'vessel', 'coordinator']
     
-    for task in current_tasks:
-        key = task_key(task)
-        if key in baseline_by_key and key not in matched_baseline_keys:
-            # Found a match - check for changes
-            baseline_task = baseline_by_key[key]
-            matched_baseline_keys.add(key)
-            changes = {}
-            for field in compare_fields:
-                old_val = baseline_task.get(field)
-                new_val = task.get(field)
-                # Normalize for comparison
-                if old_val != new_val:
-                    # Skip if both are empty/None
-                    if not old_val and not new_val:
-                        continue
-                    changes[field] = {'old': old_val, 'new': new_val}
+    # Define change categories based on which fields changed
+    def categorize_changes(changes_dict):
+        """Determine change categories based on which fields were modified."""
+        categories = []
+        date_fields = {'start_date', 'offshore_start', 'offshore_end', 'return_end'}
+        duration_fields = {'duration_hours', 'transit_hours'}
+        
+        changed_field_names = set(changes_dict.keys())
+        
+        if changed_field_names & date_fields:
+            categories.append({'id': 'date_shift', 'label': 'Date Shift', 'icon': '📅', 'color': '#3182ce'})
+        if changed_field_names & duration_fields:
+            categories.append({'id': 'duration_change', 'label': 'Duration Change', 'icon': '⏱️', 'color': '#805ad5'})
+        if 'status' in changed_field_names:
+            categories.append({'id': 'status_update', 'label': 'Status Update', 'icon': '🔄', 'color': '#38a169'})
+        if 'vessel' in changed_field_names:
+            categories.append({'id': 'vessel_change', 'label': 'Vessel Change', 'icon': '🚢', 'color': '#dd6b20'})
+        if 'coordinator' in changed_field_names:
+            categories.append({'id': 'coordinator_change', 'label': 'Coordinator Change', 'icon': '👤', 'color': '#718096'})
+        
+        return categories
+    
+    # Track category counts for summary
+    category_counts = {
+        'date_shift': 0,
+        'duration_change': 0,
+        'status_update': 0,
+        'vessel_change': 0,
+        'coordinator_change': 0
+    }
+    
+    # Match tasks using soft key (asset + activity), then pair by closest dates
+    all_soft_keys = set(baseline_by_soft_key.keys()) | set(current_by_soft_key.keys())
+    
+    for sk in all_soft_keys:
+        baseline_group = baseline_by_soft_key.get(sk, [])
+        current_group = current_by_soft_key.get(sk, [])
+        
+        # Create pairing based on closest dates
+        baseline_available = list(range(len(baseline_group)))
+        current_available = list(range(len(current_group)))
+        
+        # Match each current task to the closest available baseline task
+        for ci in list(current_available):
+            current_task = current_group[ci]
+            current_date = parse_task_date(current_task.get('start_date'))
             
-            if changes:
-                changed_tasks.append({
-                    **task,
-                    'change_type': 'changed',
-                    'changes': changes,
-                    'baseline_task': baseline_task
-                })
-            else:
-                unchanged_tasks.append({
-                    **task,
-                    'change_type': 'unchanged'
-                })
-        else:
-            # New task (late addition)
+            best_match_bi = None
+            best_match_diff = float('inf')
+            
+            for bi in baseline_available:
+                baseline_task = baseline_group[bi]
+                baseline_date = parse_task_date(baseline_task.get('start_date'))
+                
+                if current_date and baseline_date:
+                    diff = abs((current_date - baseline_date).days)
+                else:
+                    diff = 0 if (not current_date and not baseline_date) else 9999
+                
+                if diff < best_match_diff:
+                    best_match_diff = diff
+                    best_match_bi = bi
+            
+            if best_match_bi is not None and best_match_diff <= 30:  # Within 30 days = likely same route
+                baseline_task = baseline_group[best_match_bi]
+                baseline_available.remove(best_match_bi)
+                current_available.remove(ci)
+                matched_current_indices.add((sk, ci))
+                matched_baseline_indices.add((sk, best_match_bi))
+                
+                # Compare fields
+                changes = {}
+                for field in compare_fields:
+                    old_val = baseline_task.get(field)
+                    new_val = current_task.get(field)
+                    
+                    # Normalize dates for comparison (just compare date portion)
+                    if field in ['start_date', 'offshore_start', 'offshore_end', 'return_end']:
+                        old_date = parse_task_date(old_val)
+                        new_date = parse_task_date(new_val)
+                        if old_date and new_date:
+                            # Consider same if within 1 hour (handles timezone issues)
+                            if abs((new_date - old_date).total_seconds()) < 3600:
+                                continue
+                    
+                    if old_val != new_val:
+                        if not old_val and not new_val:
+                            continue
+                        changes[field] = {'old': old_val, 'new': new_val}
+                
+                if changes:
+                    categories = categorize_changes(changes)
+                    for cat in categories:
+                        if cat['id'] in category_counts:
+                            category_counts[cat['id']] += 1
+                    changed_tasks.append({
+                        **current_task,
+                        'change_type': 'changed',
+                        'changes': changes,
+                        'change_categories': categories,
+                        'baseline_task': baseline_task
+                    })
+                else:
+                    unchanged_tasks.append({
+                        **current_task,
+                        'change_type': 'unchanged'
+                    })
+        
+        # Remaining current tasks are new
+        for ci in current_available:
             new_tasks.append({
-                **task,
+                **current_group[ci],
                 'change_type': 'new',
                 'first_seen': current_data.get('imported_at', '')
             })
-    
-    # Find removed tasks (in baseline but not matched)
-    for task in baseline_tasks:
-        key = task_key(task)
-        if key not in matched_baseline_keys:
+        
+        # Remaining baseline tasks are removed
+        for bi in baseline_available:
             removed_tasks.append({
-                **task,
+                **baseline_group[bi],
                 'change_type': 'removed'
             })
     
@@ -523,12 +603,245 @@ def compare_snapshots():
             'removed_count': len(removed_tasks),
             'changed_count': len(changed_tasks),
             'unchanged_count': len(unchanged_tasks),
-            'assets': assets
+            'assets': assets,
+            'category_counts': category_counts
         },
         'new_tasks': new_tasks,
         'removed_tasks': removed_tasks,
         'changed_tasks': changed_tasks,
         'unchanged_tasks': unchanged_tasks
+    })
+
+
+@app.route('/api/snapshots/volatility', methods=['GET'])
+def analyze_volatility():
+    """Analyze schedule volatility/stability over time.
+    
+    Compares consecutive snapshots to measure how much the schedule changes.
+    
+    Query params:
+        days: Number of days to analyze (default: 30)
+        asset: Filter by specific asset (optional)
+    """
+    days = request.args.get('days', 30, type=int)
+    asset_filter = request.args.get('asset', '').strip()
+    
+    # Get all snapshots sorted chronologically
+    snapshot_files = sorted(SNAPSHOTS_DIR.glob('tasks_*.json'))
+    
+    if len(snapshot_files) < 2:
+        return jsonify({
+            'error': 'Need at least 2 snapshots for volatility analysis',
+            'snapshot_count': len(snapshot_files)
+        }), 400
+    
+    # Filter to requested time window
+    cutoff_date = datetime.now() - timedelta(days=days)
+    filtered_snapshots = []
+    for sf in snapshot_files:
+        try:
+            # Parse date from filename: tasks_YYYYMMDD_HHMMSS.json
+            date_str = sf.stem.split('_')[1]
+            snap_date = datetime.strptime(date_str, '%Y%m%d')
+            if snap_date >= cutoff_date:
+                filtered_snapshots.append(sf)
+        except (IndexError, ValueError):
+            continue
+    
+    if len(filtered_snapshots) < 2:
+        # Include at least 2 most recent snapshots
+        filtered_snapshots = snapshot_files[-2:]
+    
+    # Compare consecutive snapshots
+    comparisons = []
+    total_new = 0
+    total_removed = 0
+    total_changed = 0
+    total_unchanged = 0
+    total_date_shifts = 0
+    total_shift_days = 0
+    shift_count = 0
+    
+    asset_volatility = {}  # Track volatility by asset
+    weekly_data = {}  # Track by week
+    
+    def parse_date(d):
+        if not d:
+            return None
+        try:
+            if 'T' in str(d):
+                return datetime.fromisoformat(str(d).replace('Z', '+00:00'))
+            return datetime.strptime(str(d).split()[0], '%Y-%m-%d')
+        except:
+            return None
+    
+    for i in range(len(filtered_snapshots) - 1):
+        baseline_path = filtered_snapshots[i]
+        current_path = filtered_snapshots[i + 1]
+        
+        with open(baseline_path, 'r') as f:
+            baseline_data = json.load(f)
+        with open(current_path, 'r') as f:
+            current_data = json.load(f)
+        
+        baseline_tasks = baseline_data.get('tasks', [])
+        current_tasks = current_data.get('tasks', [])
+        
+        # Apply asset filter
+        if asset_filter:
+            baseline_tasks = [t for t in baseline_tasks if asset_filter.lower() in t.get('asset', '').lower()]
+            current_tasks = [t for t in current_tasks if asset_filter.lower() in t.get('asset', '').lower()]
+        
+        # Simple matching by asset + activity (soft key)
+        baseline_keys = {(t.get('asset', ''), t.get('activity', '')): t for t in baseline_tasks}
+        current_keys = {(t.get('asset', ''), t.get('activity', '')): t for t in current_tasks}
+        
+        new_count = 0
+        removed_count = 0
+        changed_count = 0
+        unchanged_count = 0
+        period_shifts = 0
+        
+        # Find new and changed tasks
+        for key, task in current_keys.items():
+            asset = task.get('asset', 'Unassigned')
+            if asset not in asset_volatility:
+                asset_volatility[asset] = {'new': 0, 'removed': 0, 'changed': 0, 'unchanged': 0, 'total_shift_days': 0, 'shift_count': 0}
+            
+            if key in baseline_keys:
+                baseline_task = baseline_keys[key]
+                # Check for date changes
+                old_start = parse_date(baseline_task.get('start_date'))
+                new_start = parse_date(task.get('start_date'))
+                
+                if old_start and new_start and old_start != new_start:
+                    changed_count += 1
+                    asset_volatility[asset]['changed'] += 1
+                    diff_days = abs((new_start - old_start).days)
+                    if diff_days >= 1:
+                        period_shifts += 1
+                        total_shift_days += diff_days
+                        shift_count += 1
+                        asset_volatility[asset]['total_shift_days'] += diff_days
+                        asset_volatility[asset]['shift_count'] += 1
+                else:
+                    unchanged_count += 1
+                    asset_volatility[asset]['unchanged'] += 1
+            else:
+                new_count += 1
+                asset_volatility[asset]['new'] += 1
+        
+        # Find removed tasks
+        for key, task in baseline_keys.items():
+            asset = task.get('asset', 'Unassigned')
+            if asset not in asset_volatility:
+                asset_volatility[asset] = {'new': 0, 'removed': 0, 'changed': 0, 'unchanged': 0, 'total_shift_days': 0, 'shift_count': 0}
+            if key not in current_keys:
+                removed_count += 1
+                asset_volatility[asset]['removed'] += 1
+        
+        total_new += new_count
+        total_removed += removed_count
+        total_changed += changed_count
+        total_unchanged += unchanged_count
+        total_date_shifts += period_shifts
+        
+        # Track weekly data
+        try:
+            date_str = current_path.stem.split('_')[1]
+            snap_date = datetime.strptime(date_str, '%Y%m%d')
+            week_key = snap_date.strftime('%Y-W%W')
+            if week_key not in weekly_data:
+                weekly_data[week_key] = {'new': 0, 'removed': 0, 'changed': 0, 'total_tasks': 0, 'comparisons': 0}
+            weekly_data[week_key]['new'] += new_count
+            weekly_data[week_key]['removed'] += removed_count
+            weekly_data[week_key]['changed'] += changed_count
+            weekly_data[week_key]['total_tasks'] = len(current_tasks)
+            weekly_data[week_key]['comparisons'] += 1
+        except:
+            pass
+        
+        comparisons.append({
+            'baseline': baseline_path.name,
+            'current': current_path.name,
+            'new': new_count,
+            'removed': removed_count,
+            'changed': changed_count,
+            'unchanged': unchanged_count,
+            'date_shifts': period_shifts
+        })
+    
+    # Calculate summary metrics
+    total_comparisons = len(comparisons)
+    total_tasks_tracked = total_new + total_removed + total_changed + total_unchanged
+    
+    # Volatility rate = (changes / total tasks) * 100
+    volatility_rate = round((total_new + total_removed + total_changed) / max(total_tasks_tracked, 1) * 100, 1)
+    
+    # Average days shifted
+    avg_shift_days = round(total_shift_days / max(shift_count, 1), 1)
+    
+    # Cancellation rate
+    cancellation_rate = round(total_removed / max(total_tasks_tracked, 1) * 100, 1)
+    
+    # New route rate
+    new_route_rate = round(total_new / max(total_tasks_tracked, 1) * 100, 1)
+    
+    # Process asset volatility into ranked list
+    asset_rankings = []
+    for asset, stats in asset_volatility.items():
+        total_events = stats['new'] + stats['removed'] + stats['changed']
+        total_asset_tasks = total_events + stats['unchanged']
+        asset_vol_rate = round(total_events / max(total_asset_tasks, 1) * 100, 1)
+        avg_asset_shift = round(stats['total_shift_days'] / max(stats['shift_count'], 1), 1) if stats['shift_count'] > 0 else 0
+        asset_rankings.append({
+            'asset': asset,
+            'volatility_rate': asset_vol_rate,
+            'new': stats['new'],
+            'removed': stats['removed'],
+            'changed': stats['changed'],
+            'avg_shift_days': avg_asset_shift,
+            'total_events': total_events
+        })
+    
+    asset_rankings.sort(key=lambda x: x['volatility_rate'], reverse=True)
+    
+    # Process weekly data
+    weekly_trend = []
+    for week, stats in sorted(weekly_data.items()):
+        total_events = stats['new'] + stats['removed'] + stats['changed']
+        week_vol_rate = round(total_events / max(stats['total_tasks'], 1) * 100, 1)
+        weekly_trend.append({
+            'week': week,
+            'volatility_rate': week_vol_rate,
+            'new': stats['new'],
+            'removed': stats['removed'],
+            'changed': stats['changed'],
+            'total_tasks': stats['total_tasks']
+        })
+    
+    return jsonify({
+        'analysis_period': {
+            'days': days,
+            'snapshots_analyzed': len(filtered_snapshots),
+            'comparisons': total_comparisons,
+            'asset_filter': asset_filter or 'All Assets'
+        },
+        'summary': {
+            'volatility_rate': volatility_rate,
+            'volatility_label': 'High' if volatility_rate > 30 else ('Medium' if volatility_rate > 15 else 'Low'),
+            'avg_shift_days': avg_shift_days,
+            'cancellation_rate': cancellation_rate,
+            'new_route_rate': new_route_rate,
+            'total_new': total_new,
+            'total_removed': total_removed,
+            'total_changed': total_changed,
+            'total_unchanged': total_unchanged,
+            'total_date_shifts': total_date_shifts
+        },
+        'by_asset': asset_rankings[:10],  # Top 10 most volatile assets
+        'weekly_trend': weekly_trend,
+        'comparisons': comparisons[-10:]  # Last 10 comparisons
     })
 
 

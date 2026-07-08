@@ -3,7 +3,7 @@
   "sheet_name": "2026 Spot Hire Update",
   "records": [
     {
-      "id": "275872f92c18",
+      "id": "389c4c423e08",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -19,7 +19,7 @@
       "sheet_row": 11
     },
     {
-      "id": "b91089301617",
+      "id": "9a5d8452e36c",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -35,7 +35,7 @@
       "sheet_row": 12
     },
     {
-      "id": "fbab64c25034",
+      "id": "d9997d3e6ccb",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -51,7 +51,7 @@
       "sheet_row": 13
     },
     {
-      "id": "2ca501a93d52",
+      "id": "e8376c4ef837",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 1,
@@ -67,7 +67,7 @@
       "sheet_row": 14
     },
     {
-      "id": "a4bda3402d71",
+      "id": "c7aefe24f2d7",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 1,
@@ -83,7 +83,7 @@
       "sheet_row": 15
     },
     {
-      "id": "04046d2b3858",
+      "id": "47220ce1522d",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 1,
@@ -99,7 +99,7 @@
       "sheet_row": 21
     },
     {
-      "id": "fda1ec3f6c7b",
+      "id": "8db9045e4418",
       "asset": "Proteus",
       "display_asset": "Proteus",
       "vessel_count": 1,
@@ -115,7 +115,7 @@
       "sheet_row": 26
     },
     {
-      "id": "06a58151d785",
+      "id": "0e5426d09c1a",
       "asset": "Stena",
       "display_asset": "Stena",
       "vessel_count": 1,
@@ -131,7 +131,7 @@
       "sheet_row": 30
     },
     {
-      "id": "1b1d8d391bfe",
+      "id": "b3565e5ecc2f",
       "asset": "Thalassa",
       "display_asset": "Thalassa",
       "vessel_count": 1,
@@ -147,7 +147,7 @@
       "sheet_row": 34
     },
     {
-      "id": "66db3078bcfc",
+      "id": "6038e465ebc5",
       "asset": "Vito",
       "display_asset": "Vito",
       "vessel_count": 1,
@@ -163,7 +163,7 @@
       "sheet_row": 36
     },
     {
-      "id": "154885585d18",
+      "id": "eaff037575e6",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "vessel_count": 1,
@@ -179,7 +179,7 @@
       "sheet_row": 37
     },
     {
-      "id": "4128c9a74b4e",
+      "id": "c5ff96daf9a7",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -195,7 +195,7 @@
       "sheet_row": 39
     },
     {
-      "id": "73ae5c742227",
+      "id": "eed4008eb1fd",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -211,7 +211,7 @@
       "sheet_row": 42
     },
     {
-      "id": "87797dbb1779",
+      "id": "fe3106ac10dd",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "vessel_count": 1,
@@ -227,7 +227,7 @@
       "sheet_row": 45
     },
     {
-      "id": "414fc9f3ba1a",
+      "id": "56a28e90d198",
       "asset": "Whale",
       "display_asset": "Whale",
       "vessel_count": 1,
@@ -243,7 +243,7 @@
       "sheet_row": 46
     },
     {
-      "id": "3eb0ea5e1cd5",
+      "id": "f7bd8c8bd5dc",
       "asset": "Enchilada",
       "display_asset": "Enchilada",
       "vessel_count": 1,
@@ -259,7 +259,7 @@
       "sheet_row": 47
     },
     {
-      "id": "7a9dd27b471f",
+      "id": "ed7c5bbef028",
       "asset": "Salsa",
       "display_asset": "Salsa",
       "vessel_count": 1,
@@ -287,5 +287,5 @@
     "Frac Spot Hire": "#e76f51",
     "Other": "#f72585"
   },
-  "imported_at": "2026-07-02T16:14:40.247956"
+  "imported_at": "2026-07-08T13:36:20.767018"
 }
