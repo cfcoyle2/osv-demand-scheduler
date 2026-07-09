@@ -3420,5 +3420,8 @@
   ],
   "source": "workbook:Asset_Activity_Tracker_MASTER.xlsx:OSV Demand Tracker",
   "buffer_hours": 24,
-  "imported_at": "2026-07-09T08:25:53.352881"
+  "imported_at": "2026-07-09T08:25:53.352881",
+  "snapshot_id": "tasks_20260709_082553.json",
+  "snapshot_date": "2026-07-09",
+  "snapshot_time": "08:25:53"
 }
