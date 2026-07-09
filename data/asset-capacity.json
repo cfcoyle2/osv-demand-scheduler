@@ -78,6 +78,13 @@
       "date_to": "2026-07-31"
     },
     {
+      "asset": "Q5000",
+      "vessel_count": 2,
+      "notes": "Demob",
+      "date_from": "2026-07-03",
+      "date_to": "2026-07-16"
+    },
+    {
       "asset": "Poseidon",
       "vessel_count": 2,
       "notes": "LWX 10 Completion",
@@ -262,7 +269,7 @@
   ],
   "monthly_capacity_entries": [
     {
-      "capacity_text": "16",
+      "capacity_text": "18",
       "date_from": "2026-07-01",
       "date_to": "2026-07-31"
     },
