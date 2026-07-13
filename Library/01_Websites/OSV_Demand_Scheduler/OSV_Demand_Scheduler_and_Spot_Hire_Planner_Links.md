@@ -1,7 +1,7 @@
 # OSV Demand Scheduler and Spot Hire Planner Links
 
 Saved: May 25, 2026
-Updated: July 6, 2026
+Updated: July 13, 2026
 
 ---
 
@@ -9,8 +9,8 @@ Updated: July 6, 2026
 
 | App | URL |
 |-----|-----|
-| **OSV Demand Scheduler** | http://127.0.0.1:8000/?v=20260706 |
-| **Spot Hire Planner** | http://127.0.0.1:8000/spot_hire.html?v=20260706 |
+| **OSV Demand Scheduler** | [http://127.0.0.1:8000/](http://127.0.0.1:8000/) |
+| **Spot Hire Planner** | [http://127.0.0.1:8000/spot_hire.html](http://127.0.0.1:8000/spot_hire.html) |
 | **API Health Check** | http://127.0.0.1:8000/api/health |
 
 **Start command:**

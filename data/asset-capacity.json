@@ -1,179 +1,25 @@
 {
   "asset_capacities": [
     {
-      "asset": "Appomatox, Vito, Olympus",
+      "asset": "ESA, Ursa",
       "vessel_count": 1,
       "notes": "EV Run",
-      "date_from": "2026-01-01",
+      "date_from": "2025-01-01",
       "date_to": "2026-12-30"
     },
     {
       "asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
       "notes": "EV Run",
-      "date_from": "2026-01-01",
+      "date_from": "2025-01-01",
       "date_to": "2026-12-30"
     },
     {
       "asset": "Perdido/Whale",
       "vessel_count": 1,
       "notes": "EV Run",
-      "date_from": "2026-01-01",
+      "date_from": "2025-01-01",
       "date_to": "2026-12-30"
-    },
-    {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "LWX 10 Deepening",
-      "date_from": "2026-05-10",
-      "date_to": "2026-07-15"
-    },
-    {
-      "asset": "Pontus",
-      "vessel_count": 2,
-      "notes": "Sisco 001 Drill New Well Deepening",
-      "date_from": "2026-06-18",
-      "date_to": "2026-08-05"
-    },
-    {
-      "asset": "Stena Evolution",
-      "vessel_count": 2,
-      "notes": "Sparta SP 203 Drill Bypass Deepening",
-      "date_from": "2026-06-21",
-      "date_to": "2026-08-01"
-    },
-    {
-      "asset": "Olympus",
-      "vessel_count": 1,
-      "notes": "A23 Drill Deepening",
-      "date_from": "2026-06-21",
-      "date_to": "2026-08-18"
-    },
-    {
-      "asset": "Mars",
-      "vessel_count": 1,
-      "notes": "MB09 Completion",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-19"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
-      "asset": "Q5000",
-      "vessel_count": 2,
-      "notes": "Demob",
-      "date_from": "2026-07-03",
-      "date_to": "2026-07-16"
-    },
-    {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "LWX 10 Completion",
-      "date_from": "2026-07-15",
-      "date_to": "2026-08-14"
-    },
-    {
-      "asset": "Noble Voyager",
-      "vessel_count": 2,
-      "notes": "NVOY Arrival and Commisioning at Deep Sleep Dummy Well Top Hole ",
-      "date_from": "2026-07-22",
-      "date_to": "2026-08-13"
-    },
-    {
-      "asset": "Stena Evolution",
-      "vessel_count": 2,
-      "notes": "Sparta SP106 Deepen Hole Deepening",
-      "date_from": "2026-08-01",
-      "date_to": "2026-09-04"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-08-01",
-      "date_to": "2026-08-31"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-08-01",
-      "date_to": "2026-08-31"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-08-01",
-      "date_to": "2026-08-31"
-    },
-    {
-      "asset": "Noble Voyager",
-      "vessel_count": 3,
-      "notes": "Ursa North P013 Top Hole",
-      "date_from": "2026-08-14",
-      "date_to": "2026-08-24"
-    },
-    {
-      "asset": "Poseidon",
-      "vessel_count": 3,
-      "notes": "UWX1 Top Hole",
-      "date_from": "2026-08-14",
-      "date_to": "2026-08-21"
-    },
-    {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "UWX1 Deepen Hole Deepening",
-      "date_from": "2026-08-21",
-      "date_to": "2026-09-17"
-    },
-    {
-      "asset": "Noble Voyager",
-      "vessel_count": 2,
-      "notes": "Princess P8 Sidetrack Deepening",
-      "date_from": "2026-08-24",
-      "date_to": "2026-09-19"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-09-01",
-      "date_to": "2026-09-30"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-09-01",
-      "date_to": "2026-09-30"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-09-01",
-      "date_to": "2026-09-30"
     },
     {
       "asset": "Enchilada",
@@ -188,115 +34,40 @@
       "notes": "Abandonment PA",
       "date_from": "2026-09-01",
       "date_to": "2026-12-31"
-    },
-    {
-      "asset": "Noble Voyager",
-      "vessel_count": 2,
-      "notes": "Princess P8 Completion",
-      "date_from": "2026-09-19",
-      "date_to": "2026-10-09"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-10-01",
-      "date_to": "2026-10-31"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-10-01",
-      "date_to": "2026-10-31"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-10-01",
-      "date_to": "2026-10-31"
-    },
-    {
-      "asset": "Noble Voyager",
-      "vessel_count": 2,
-      "notes": "Ursa North P013 Deepening",
-      "date_from": "2026-10-09",
-      "date_to": "2026-10-29"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-11-01",
-      "date_to": "2026-11-30"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-11-01",
-      "date_to": "2026-11-30"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-11-01",
-      "date_to": "2026-11-30"
-    },
-    {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-12-01",
-      "date_to": "2026-12-31"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-12-01",
-      "date_to": "2026-12-31"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-12-01",
-      "date_to": "2026-12-31"
     }
   ],
   "monthly_capacity_entries": [
     {
-      "capacity_text": "18",
+      "capacity_text": "3",
       "date_from": "2026-07-01",
       "date_to": "2026-07-31"
     },
     {
-      "capacity_text": "17",
+      "capacity_text": "3",
       "date_from": "2026-08-01",
       "date_to": "2026-08-31"
     },
     {
-      "capacity_text": "14",
+      "capacity_text": "5",
       "date_from": "2026-09-01",
       "date_to": "2026-09-30"
     },
     {
-      "capacity_text": "12",
+      "capacity_text": "5",
       "date_from": "2026-10-01",
       "date_to": "2026-10-31"
     },
     {
-      "capacity_text": "8",
+      "capacity_text": "5",
       "date_from": "2026-11-01",
       "date_to": "2026-11-30"
     },
     {
-      "capacity_text": "8",
+      "capacity_text": "5",
       "date_from": "2026-12-01",
       "date_to": "2026-12-31"
     }
-  ]
+  ],
+  "updated_at": "2026-07-13T12:21:33.229300",
+  "source": "auto-sync from Spot Hire Planner"
 }

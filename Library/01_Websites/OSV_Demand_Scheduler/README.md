@@ -4,8 +4,8 @@
 
 Open the active local prototypes here when the backend server is running:
 
-- OSV Demand Scheduler: http://127.0.0.1:8000/
-- Spot Hire Planner: http://127.0.0.1:8000/spot-hire
+- OSV Demand Scheduler: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- Spot Hire Planner: [http://127.0.0.1:8000/spot_hire.html](http://127.0.0.1:8000/spot_hire.html)
 
 Windows internet shortcuts are included in this folder for both pages.
 
@@ -71,8 +71,8 @@ Set-Location "Library/01_Websites/Vessel_Logistics_Gantt/backend"
 
 Then open:
 
-- OSV Demand Scheduler: http://127.0.0.1:8000/
-- Spot Hire Planner: http://127.0.0.1:8000/spot-hire
+- OSV Demand Scheduler: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- Spot Hire Planner: [http://127.0.0.1:8000/spot_hire.html](http://127.0.0.1:8000/spot_hire.html)
 
 ## Recommended Hosting Direction
 
