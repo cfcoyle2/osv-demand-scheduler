@@ -8,7 +8,7 @@ const state = {
   timelineBoundsStart: null,
   source: '',
   bufferHours: 24,
-  activeInsight: 'active',
+  activeInsight: null,
   filters: { coordinator: 'all', asset: 'all', status: 'Planned', dateFrom: '', dateTo: '' },
   spot: {
     records: [],
@@ -731,7 +731,7 @@ function renderMetrics(tasks) {
     { key: 'coordinators', label: 'Coordinators', value: coordinators },
     { key: 'watch', label: 'Demand Watch', value: state.conflicts.length }
   ];
-  els.statusStrip.innerHTML = metrics.map(metric => `<button type="button" class="metric ${state.activeInsight === metric.key ? 'active' : ''}" data-insight="${metric.key}"><span>${metric.label}</span><strong>${metric.value}</strong></button>`).join('');
+  els.statusStrip.innerHTML = metrics.map(metric => `<button type="button" class="metric ${state.activeInsight === metric.key && metric.key !== 'active' ? 'active' : ''}" data-insight="${metric.key}"><span>${metric.label}</span><strong>${metric.value}</strong></button>`).join('');
 }
 
 function groupCounts(items, keyFn) {
@@ -748,6 +748,13 @@ function routeCard(task) {
 }
 
 function renderInsightPanel(tasks) {
+  if (!state.activeInsight || state.activeInsight === 'active') {
+    els.insightPanel.hidden = true;
+    els.insightPanel.innerHTML = '';
+    return;
+  }
+
+  els.insightPanel.hidden = false;
   const activeTasks = tasks.filter(t => String(t.status).toLowerCase() !== 'complete');
   const panels = {
     active: {
@@ -815,7 +822,7 @@ function renderInsightPanel(tasks) {
       };
     })()
   };
-  const panel = panels[state.activeInsight] || panels.active;
+  const panel = panels[state.activeInsight] || panels.watch;
   els.insightPanel.innerHTML = `<div class="insight-heading"><div><h2>${panel.title}</h2><p>${panel.text}</p></div></div>${panel.body}`;
 }
 
@@ -1996,7 +2003,8 @@ els.spotEditForm.addEventListener('submit', event => saveSpotEdit(event).catch(e
 els.statusStrip.addEventListener('click', event => {
   const metric = event.target.closest('[data-insight]');
   if (!metric) return;
-  state.activeInsight = metric.dataset.insight;
+  const nextInsight = metric.dataset.insight;
+  state.activeInsight = nextInsight === 'active' || state.activeInsight === nextInsight ? null : nextInsight;
   render();
 });
 
