@@ -9,7 +9,7 @@
 | App | URL |
 |-----|-----|
 | **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260713-current-data |
-| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-current-data |
+| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-spot-hire-impacts |
 
 > Note: GitHub Pages is read-only. Good for viewing schedules but cannot save changes.
 

@@ -12,7 +12,7 @@ Upload these shortcuts for **team-wide access** (GitHub Pages - works for everyo
 | File | Description | URL |
 |------|-------------|-----|
 | **OSV_Demand_Scheduler.url** | Main scheduler app | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260713-current-data |
-| **Spot_Hire_Planner.url** | Spot hire planning | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-current-data |
+| **Spot_Hire_Planner.url** | Spot hire planning | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-spot-hire-impacts |
 
 > **Note:** GitHub Pages version is **read-only** - data changes won't persist.
 

@@ -18,7 +18,7 @@ Use these links when you just want to view the current data without making chang
 
 ### Links (GitHub Pages - Read-Only)
 - **OSV Demand Scheduler:** https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260713-current-data
-- **Spot Hire Planner:** https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-current-data
+- **Spot Hire Planner:** https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-spot-hire-impacts
 
 ### SharePoint Shortcuts
 - `OSV_Demand_Scheduler_GitHub.url`
