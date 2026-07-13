@@ -27,8 +27,8 @@ Or double-click: `Start_OSV_Scheduler.bat`
 
 | App | URL |
 |-----|-----|
-| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/ |
-| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html |
+| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260713-current-data |
+| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-current-data |
 
 ---
 

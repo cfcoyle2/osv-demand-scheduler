@@ -95,6 +95,7 @@ function showToast(message) {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
+const STATIC_DATA_VERSION = '20260713-current-data';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -115,7 +116,7 @@ async function api(path, options = {}) {
   if (staticMode && (!options.method || options.method === 'GET')) {
     const staticPath = STATIC_DATA_MAP[path];
     if (staticPath) {
-      const response = await fetch(staticPath);
+      const response = await fetch(`${staticPath}?v=${STATIC_DATA_VERSION}`, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Failed to load static data: ${staticPath}`);
       return response.json();
     }
