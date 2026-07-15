@@ -345,7 +345,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260713-current-data';
+const STATIC_DATA_VERSION = '20260715-morning-data';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -2396,6 +2396,27 @@ async function updateSnapshotStatus() {
   }
 }
 
+function getSnapshotTimestamp(snapshot) {
+  if (!snapshot || !snapshot.date) return null;
+  const time = snapshot.time || '00:00:00';
+  const date = new Date(`${snapshot.date}T${time}`);
+  return Number.isNaN(date.getTime()) ? null : date.getTime();
+}
+
+function chooseWeeklyBaselineSnapshot(snapshots) {
+  if (!snapshots.length) return null;
+  if (snapshots.length === 1) return snapshots[0];
+
+  const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+  return snapshots.reduce((best, snapshot) => {
+    const snapshotTime = getSnapshotTimestamp(snapshot);
+    const bestTime = getSnapshotTimestamp(best);
+    if (snapshotTime === null) return best;
+    if (bestTime === null) return snapshot;
+    return Math.abs(snapshotTime - oneWeekAgo) < Math.abs(bestTime - oneWeekAgo) ? snapshot : best;
+  }, snapshots[0]);
+}
+
 async function openCompareDialog() {
   const snapshots = await loadSnapshots();
   
@@ -2403,10 +2424,12 @@ async function openCompareDialog() {
     showToast('No snapshots available. Create a snapshot first.');
     return;
   }
+
+  const defaultBaseline = chooseWeeklyBaselineSnapshot(snapshots);
   
   // Populate baseline dropdown
   els.baselineSnapshotSelect.innerHTML = snapshots.map(s => 
-    `<option value="${escapeHtml(s.id)}">${escapeHtml(s.date)} ${escapeHtml(s.time)} (${s.task_count} tasks)</option>`
+    `<option value="${escapeHtml(s.id)}" ${defaultBaseline && s.id === defaultBaseline.id ? 'selected' : ''}>${escapeHtml(s.date)} ${escapeHtml(s.time)} (${s.task_count} tasks)</option>`
   ).join('');
   
   // Populate current dropdown
@@ -2422,7 +2445,7 @@ async function openCompareDialog() {
   
   els.snapshotCompareResult.innerHTML = `
     <div style="text-align:center;padding:20px;">
-      <p style="color:var(--muted);margin-bottom:16px;">Select snapshots and click Compare to see changes.</p>
+      <p style="color:var(--muted);margin-bottom:16px;">Baseline defaults to the snapshot closest to one week ago. Select snapshots and click Compare to see changes.</p>
       <details style="text-align:left;max-width:600px;margin:0 auto;">
         <summary style="cursor:pointer;font-weight:600;color:var(--primary,#007bff);">📋 What is being tracked?</summary>
         <div style="background:#e8f4fd;color:#1a365d;padding:12px;border-radius:6px;margin-top:8px;font-size:13px;border:1px solid #bee3f8;">
