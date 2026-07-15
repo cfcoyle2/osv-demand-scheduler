@@ -135,6 +135,13 @@ function parseDateFilter(value, endOfDay = false) {
   return date;
 }
 
+function isCurrentOrFutureConflict(conflict) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const overlapEnd = parseDate(conflict.overlap_end);
+  return !overlapEnd || overlapEnd >= today;
+}
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, char => ({
     '&': '&amp;',
@@ -345,7 +352,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260715-logistics-update';
+const STATIC_DATA_VERSION = '20260715-demand-watch';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -402,7 +409,7 @@ async function loadData() {
   state.tasks = tasksPayload.tasks || [];
   state.source = tasksPayload.source || '';
   state.bufferHours = tasksPayload.buffer_hours || 24;
-  state.conflicts = conflictsPayload.conflicts || [];
+  state.conflicts = (conflictsPayload.conflicts || []).filter(isCurrentOrFutureConflict);
   state.fleet = conflictsPayload.fleet || null;
   state.assetCapacity = normalizeAssetCapacityEntries(capacityPayload.asset_capacities || capacityPayload.entries || []);
   state.monthlyCapacityEntries = normalizeMonthlyCapacityEntries(capacityPayload.monthly_capacity_entries || []);

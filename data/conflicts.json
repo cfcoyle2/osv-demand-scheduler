@@ -3,245 +3,287 @@
     {
       "type": "on_location_overlap",
       "severity": "conflict",
-      "asset": "Q5000",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "3ddd216791ed",
-        "8e84a54db7ea"
-      ],
-      "tasks": [
-        {
-          "id": "3ddd216791ed",
-          "activity": "GL 03 OSV Pre-Mob OWIRS and Groceries",
-          "project": "Vito VA-11 Drift/ CTCO"
-        },
-        {
-          "id": "8e84a54db7ea",
-          "activity": "Dark Vision for VA-10",
-          "project": "Vito VA-11 Drift/ CTCO to VA-10"
-        }
-      ],
-      "overlap_minutes": 2880,
-      "overlap_start": "2026-06-19T00:00:00",
-      "overlap_end": "2026-06-21T00:00:00",
-      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Jun 19 to Jun 21): 'GL 03 OSV Pre-Mob OWIRS and Groceries', 'Dark Vision for VA-10'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Noble Voyager",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "15660c86b690",
-        "c7b234d32f18"
-      ],
-      "tasks": [
-        {
-          "id": "15660c86b690",
-          "activity": "GL 02a OSV - Backload Marine Riser 23jts",
-          "project": "NVOY Dummy Well - Rig Acceptance"
-        },
-        {
-          "id": "c7b234d32f18",
-          "activity": "GL 01 OSV - 36hrs - 38 & 32\" Csg, LPWH Tools, CTRS, WBM, CMT",
-          "project": "Princess P13 - Top Hole"
-        }
-      ],
-      "overlap_minutes": 1440,
-      "overlap_start": "2026-08-10T00:00:00",
-      "overlap_end": "2026-08-11T00:00:00",
-      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Aug 10 to Aug 11): 'GL 02a OSV - Backload Marine Riser 23jts', 'GL 01 OSV - 36hrs - 38 & 32\" Csg, LPWH Tools, CTRS, WBM, CMT'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Noble Voyager",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "63cbe218597b",
-        "578c04e2dd46"
-      ],
-      "tasks": [
-        {
-          "id": "63cbe218597b",
-          "activity": "GL 03 OSV - 60hrs - WBM, Foam & N2 Equip, 28\" Csg, CTRS, WH Tools",
-          "project": "Princess P13 - Top Hole"
-        },
-        {
-          "id": "578c04e2dd46",
-          "activity": "GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets",
-          "project": "Princess P13 - Top Hole"
-        }
-      ],
-      "overlap_minutes": 945,
-      "overlap_start": "2026-08-15T20:15:00",
-      "overlap_end": "2026-08-16T12:00:00",
-      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Aug 15 to Aug 16): 'GL 03 OSV - 60hrs - WBM, Foam & N2 Equip, 28\" Csg, CTRS, WH Tools', 'GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Noble Voyager",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "578c04e2dd46",
-        "e292e3b1dedc"
-      ],
-      "tasks": [
-        {
-          "id": "578c04e2dd46",
-          "activity": "GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets",
-          "project": "Princess P13 - Top Hole"
-        },
-        {
-          "id": "e292e3b1dedc",
-          "activity": "GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical",
-          "project": "Princess P13 - Top Hole"
-        }
-      ],
-      "overlap_minutes": 2160,
-      "overlap_start": "2026-08-17T08:15:00",
-      "overlap_end": "2026-08-18T20:15:00",
-      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Aug 17 to Aug 18): 'GL 06 OSV - 72hrs - WBM, CMT, 22\" Csg, HPWHH, Empty Baskets', 'GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Noble Voyager",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "e292e3b1dedc",
-        "9b2976003dce"
-      ],
-      "tasks": [
-        {
-          "id": "e292e3b1dedc",
-          "activity": "GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical",
-          "project": "Princess P13 - Top Hole"
-        },
-        {
-          "id": "9b2976003dce",
-          "activity": "GL 08 OSV - 60hrs - Backload WBM & Equipment",
-          "project": "Princess P13 - Top Hole"
-        }
-      ],
-      "overlap_minutes": 1830,
-      "overlap_start": "2026-08-19T01:45:00",
-      "overlap_end": "2026-08-20T08:15:00",
-      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Aug 19 to Aug 20): 'GL 07 OSV - 72hrs - WBM, Empty Baskets, N2 Tanks, Foam Chemical', 'GL 08 OSV - 60hrs - Backload WBM & Equipment'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Noble Voyager",
-      "asset_capacity": 1,
-      "active_routes": 2,
-      "task_ids": [
-        "9b2976003dce",
-        "e87ca5e1b559"
-      ],
-      "tasks": [
-        {
-          "id": "9b2976003dce",
-          "activity": "GL 08 OSV - 60hrs - Backload WBM & Equipment",
-          "project": "Princess P13 - Top Hole"
-        },
-        {
-          "id": "e87ca5e1b559",
-          "activity": "GL 01 OSV - 36hrs - SBM, Barite, CMT, BOPA, WH Tools, WBCO, 4-1/2\" & 3-1/2\" DP",
-          "project": "Princess P8 TA - Prep for Sidetrack"
-        }
-      ],
-      "overlap_minutes": 1452,
-      "overlap_start": "2026-08-20T13:33:00",
-      "overlap_end": "2026-08-21T13:45:00",
-      "message": "Noble Voyager: 2 routes are on location at the same time against 1 configured vessel (Aug 20 to Aug 21): 'GL 08 OSV - 60hrs - Backload WBM & Equipment', 'GL 01 OSV - 36hrs - SBM, Barite, CMT, BOPA, WH Tools, WBCO, 4-1/2\" & 3-1/2\" DP'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
       "asset": "Mars",
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "8c9f415ee7e7",
-        "a9df5f137118"
+        "175633fa9def",
+        "0658282475dc"
       ],
       "tasks": [
         {
-          "id": "8c9f415ee7e7",
-          "activity": "GL 04 Drill 10.625\" Pilot Hole section",
+          "id": "175633fa9def",
+          "activity": "GL 09 Run Upper Tieback - OSV - 48Hrs",
           "project": "A-23 St2 Drill"
         },
         {
-          "id": "a9df5f137118",
-          "activity": "GL 05 Abandon 10.625\" Pilot Hole",
+          "id": "0658282475dc",
+          "activity": "GL 10 Drill 6.5\" Open Hole Horizontal - OSV - 60 hrs",
           "project": "A-23 St2 Drill"
         }
       ],
-      "overlap_minutes": 2160,
-      "overlap_start": "2026-07-14T05:30:00",
-      "overlap_end": "2026-07-15T17:30:00",
-      "message": "Mars: 2 routes are on location at the same time against 1 configured vessel (Jul 14 to Jul 15): 'GL 04 Drill 10.625\" Pilot Hole section', 'GL 05 Abandon 10.625\" Pilot Hole'."
+      "overlap_minutes": 390,
+      "overlap_start": "2026-08-18T11:30:00",
+      "overlap_end": "2026-08-18T18:00:00",
+      "message": "Mars: 2 routes are on location at the same time against 1 configured vessel (Aug 18 to Aug 18): 'GL 09 Run Upper Tieback - OSV - 48Hrs', 'GL 10 Drill 6.5\" Open Hole Horizontal - OSV - 60 hrs'."
     },
     {
       "type": "on_location_overlap",
       "severity": "conflict",
-      "asset": "Olympus",
-      "asset_capacity": 1,
-      "active_routes": 2,
+      "asset": "Perdido",
+      "asset_capacity": 2,
+      "active_routes": 3,
       "task_ids": [
-        "29bc154d524e",
-        "c63d0243ef23"
+        "10152e2de58b",
+        "f018b3dcb545",
+        "126b2f6518c3"
       ],
       "tasks": [
         {
-          "id": "29bc154d524e",
-          "activity": "GL 05b Backhaul ODR to Core",
-          "project": "MB 09"
+          "id": "10152e2de58b",
+          "activity": "GL 05 OSV / 9 5/8'' Expandable casing section - 48 hrs",
+          "project": "GA023 Drill ByPass"
         },
         {
-          "id": "c63d0243ef23",
-          "activity": "GL 05c Outer Production Riser",
-          "project": "MB 09"
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
         }
       ],
-      "overlap_minutes": 2160,
-      "overlap_start": "2026-06-24T09:00:00",
-      "overlap_end": "2026-06-25T21:00:00",
-      "message": "Olympus: 2 routes are on location at the same time against 1 configured vessel (Jun 24 to Jun 25): 'GL 05b Backhaul ODR to Core', 'GL 05c Outer Production Riser'."
+      "overlap_minutes": 1350,
+      "overlap_start": "2026-08-03T06:00:00",
+      "overlap_end": "2026-08-04T04:30:00",
+      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 03 to Aug 04): 'GL 05 OSV / 9 5/8'' Expandable casing section - 48 hrs', 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
     },
     {
       "type": "on_location_overlap",
       "severity": "conflict",
-      "asset": "Olympus",
-      "asset_capacity": 1,
-      "active_routes": 2,
+      "asset": "Perdido",
+      "asset_capacity": 2,
+      "active_routes": 3,
       "task_ids": [
-        "a0683d1c4776",
-        "c765db3da870"
+        "f018b3dcb545",
+        "126b2f6518c3",
+        "637ab1b7f8ef"
       ],
       "tasks": [
         {
-          "id": "a0683d1c4776",
-          "activity": "GL 06 Run Upper Tieback",
-          "project": "MB 09"
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
         },
         {
-          "id": "c765db3da870",
-          "activity": "GL 01 Set Sump Packer on E-line",
-          "project": "MB 09 Completions"
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "637ab1b7f8ef",
+          "activity": "GL 06 OSV Drill 9 1/2'' x11'' section and 8 5/8 expandable liner - 48 hrs",
+          "project": "GA023 Drill ByPass"
         }
       ],
-      "overlap_minutes": 1890,
-      "overlap_start": "2026-06-30T13:30:00",
-      "overlap_end": "2026-07-01T21:00:00",
-      "message": "Olympus: 2 routes are on location at the same time against 1 configured vessel (Jun 30 to Jul 01): 'GL 06 Run Upper Tieback', 'GL 01 Set Sump Packer on E-line'."
+      "overlap_minutes": 2880,
+      "overlap_start": "2026-08-06T03:30:00",
+      "overlap_end": "2026-08-08T03:30:00",
+      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 06 to Aug 08): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 06 OSV Drill 9 1/2'' x11'' section and 8 5/8 expandable liner - 48 hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 2,
+      "active_routes": 3,
+      "task_ids": [
+        "f018b3dcb545",
+        "126b2f6518c3",
+        "3d8cc851fdcd"
+      ],
+      "tasks": [
+        {
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "3d8cc851fdcd",
+          "activity": "GL 07 OSV 8 1/2 x 9 7/8'' Drill section - 72 hrs",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 2880,
+      "overlap_start": "2026-08-16T01:00:00",
+      "overlap_end": "2026-08-18T01:00:00",
+      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 16 to Aug 18): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 07 OSV 8 1/2 x 9 7/8'' Drill section - 72 hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 2,
+      "active_routes": 3,
+      "task_ids": [
+        "f018b3dcb545",
+        "126b2f6518c3",
+        "44f353671522"
+      ],
+      "tasks": [
+        {
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "44f353671522",
+          "activity": "GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 1530,
+      "overlap_start": "2026-08-20T18:00:00",
+      "overlap_end": "2026-08-21T19:30:00",
+      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 20 to Aug 21): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 2,
+      "active_routes": 4,
+      "task_ids": [
+        "f018b3dcb545",
+        "126b2f6518c3",
+        "44f353671522",
+        "58ae51e68b96"
+      ],
+      "tasks": [
+        {
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "44f353671522",
+          "activity": "GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs",
+          "project": "GA023 Drill ByPass"
+        },
+        {
+          "id": "58ae51e68b96",
+          "activity": "GL 09 OSV / THS installation - 96 hrs",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 1350,
+      "overlap_start": "2026-08-21T19:30:00",
+      "overlap_end": "2026-08-22T18:00:00",
+      "message": "Perdido: 4 routes are on location at the same time against 2 configured vessels (Aug 21 to Aug 22): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs', 'GL 09 OSV / THS installation - 96 hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 3,
+      "task_ids": [
+        "f018b3dcb545",
+        "126b2f6518c3",
+        "58ae51e68b96"
+      ],
+      "tasks": [
+        {
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "58ae51e68b96",
+          "activity": "GL 09 OSV / THS installation - 96 hrs",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 1530,
+      "overlap_start": "2026-08-22T18:00:00",
+      "overlap_end": "2026-08-23T19:30:00",
+      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Aug 22 to Aug 23): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 09 OSV / THS installation - 96 hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "f018b3dcb545",
+        "126b2f6518c3"
+      ],
+      "tasks": [
+        {
+          "id": "f018b3dcb545",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "126b2f6518c3",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        }
+      ],
+      "overlap_minutes": 35190,
+      "overlap_start": "2026-08-23T19:30:00",
+      "overlap_end": "2026-09-17T06:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Aug 23 to Sep 17): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "eff922e96216",
+        "1ead5a5fe305"
+      ],
+      "tasks": [
+        {
+          "id": "eff922e96216",
+          "activity": "GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg",
+          "project": "H&P 205 Rig Idle"
+        },
+        {
+          "id": "1ead5a5fe305",
+          "activity": "GL 30 Holding at Port",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 1800,
+      "overlap_start": "2026-12-05T00:00:00",
+      "overlap_end": "2026-12-06T06:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Dec 05 to Dec 06): 'GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg', 'GL 30 Holding at Port'."
     }
   ]
 }
