@@ -22,13 +22,6 @@
       "date_to": "2026-12-30"
     },
     {
-      "asset": "Poseidon",
-      "vessel_count": 2,
-      "notes": "LWX 10 Deepening",
-      "date_from": "2026-05-10",
-      "date_to": "2026-07-15"
-    },
-    {
       "asset": "Pontus",
       "vessel_count": 2,
       "notes": "Sisco 001 Drill New Well Deepening",
@@ -276,7 +269,7 @@
   ],
   "monthly_capacity_entries": [
     {
-      "capacity_text": "18",
+      "capacity_text": "17",
       "date_from": "2026-07-01",
       "date_to": "2026-07-31"
     },
@@ -306,6 +299,6 @@
       "date_to": "2026-12-31"
     }
   ],
-  "updated_at": "2026-07-15T12:37:41.730522",
+  "updated_at": "2026-07-16T07:41:46.744525",
   "source": "auto-sync from Spot Hire Planner"
 }
