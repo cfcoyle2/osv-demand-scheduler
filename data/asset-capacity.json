@@ -89,7 +89,7 @@
       "vessel_count": 2,
       "notes": "GA-23 Drill Bypass Deepening",
       "date_from": "2026-07-18",
-      "date_to": "2026-08-21"
+      "date_to": "2026-08-22"
     },
     {
       "asset": "Noble Voyager",
@@ -183,13 +183,6 @@
       "date_to": "2026-12-31"
     },
     {
-      "asset": "Salsa",
-      "vessel_count": 1,
-      "notes": "Abandonment PA",
-      "date_from": "2026-09-01",
-      "date_to": "2026-12-31"
-    },
-    {
       "asset": "Noble Voyager",
       "vessel_count": 2,
       "notes": "Princess P8 Completion",
@@ -223,6 +216,13 @@
       "notes": "Ursa North P013 Deepening",
       "date_from": "2026-10-09",
       "date_to": "2026-10-29"
+    },
+    {
+      "asset": "Salsa",
+      "vessel_count": 1,
+      "notes": "Abandonment PA",
+      "date_from": "2026-10-15",
+      "date_to": "2027-01-15"
     },
     {
       "asset": "ESA, Ursa",
@@ -279,12 +279,12 @@
       "date_to": "2026-08-31"
     },
     {
-      "capacity_text": "14",
+      "capacity_text": "13",
       "date_from": "2026-09-01",
       "date_to": "2026-09-30"
     },
     {
-      "capacity_text": "12",
+      "capacity_text": "11",
       "date_from": "2026-10-01",
       "date_to": "2026-10-31"
     },
@@ -297,8 +297,13 @@
       "capacity_text": "8",
       "date_from": "2026-12-01",
       "date_to": "2026-12-31"
+    },
+    {
+      "capacity_text": "1",
+      "date_from": "2027-01-01",
+      "date_to": "2027-01-31"
     }
   ],
-  "updated_at": "2026-07-16T07:41:46.744525",
+  "updated_at": "2026-07-16T08:08:38.720436",
   "source": "auto-sync from Spot Hire Planner"
 }
