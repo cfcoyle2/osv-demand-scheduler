@@ -215,11 +215,13 @@ def save_spot_hire():
         
         with open(DATA_DIR / 'spot-hire.json', 'w') as f:
             json.dump(spot_data, f, indent=2)
+        update_asset_capacity_from_spot_hire(spot_data.get('records', []))
         return jsonify({'success': True, 'id': new_record['id']})
     
     # Otherwise, save the full data structure
     with open(DATA_DIR / 'spot-hire.json', 'w') as f:
         json.dump(data, f, indent=2)
+    update_asset_capacity_from_spot_hire(data.get('records', []))
     return jsonify({'success': True})
 
 
@@ -304,6 +306,7 @@ def apply_spot_hire_changes():
     spot_data['records'] = list(records_by_id.values())
     with open(DATA_DIR / 'spot-hire.json', 'w') as f:
         json.dump(spot_data, f, indent=2)
+    update_asset_capacity_from_spot_hire(spot_data.get('records', []))
     
     return jsonify({'success': True, 'changes_applied': len(changes)})
 
@@ -326,6 +329,7 @@ def delete_spot_hire_record(record_id):
     
     with open(DATA_DIR / 'spot-hire.json', 'w') as f:
         json.dump(spot_data, f, indent=2)
+    update_asset_capacity_from_spot_hire(spot_data.get('records', []))
     
     return jsonify({'success': True})
 
@@ -1258,13 +1262,13 @@ def save_spot_hire_data(records, filename, sheet_name):
     """Save parsed spot hire records to JSON file."""
     # Always include all standard phases in color mapping for consistent legend
     phase_colors = {phase: PHASE_COLORS.get(phase, PHASE_COLORS['Other']) for phase in STANDARD_PHASES}
-    
+
     # Also add any additional phases from records
     for record in records:
         phase = record.get('phase')
         if phase and phase not in phase_colors:
             phase_colors[phase] = PHASE_COLORS.get(phase, PHASE_COLORS['Other'])
-    
+
     data = {
         'source': f'workbook:{filename}:{sheet_name}',
         'sheet_name': sheet_name,
@@ -1274,6 +1278,129 @@ def save_spot_hire_data(records, filename, sheet_name):
     }
     with open(DATA_DIR / 'spot-hire.json', 'w') as f:
         json.dump(data, f, indent=2)
+
+    # Auto-update asset capacity from spot hire data
+    update_asset_capacity_from_spot_hire(records)
+
+
+def update_asset_capacity_from_spot_hire(records):
+    """Update asset-capacity.json from spot hire records.
+
+    Only includes records with status='Planned' that haven't ended yet.
+    """
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    asset_capacities = []
+
+    for record in records:
+        # Only include 'Planned' status
+        status = record.get('status', '').strip()
+        if status.lower() != 'planned':
+            continue
+
+        # Parse dates
+        start_str = record.get('start_date', '')
+        end_str = record.get('end_date', '')
+
+        try:
+            if 'T' in str(start_str):
+                start_date = datetime.fromisoformat(str(start_str).replace('Z', '+00:00')).replace(tzinfo=None)
+            else:
+                start_date = datetime.strptime(str(start_str).split()[0], '%Y-%m-%d')
+
+            if 'T' in str(end_str):
+                end_date = datetime.fromisoformat(str(end_str).replace('Z', '+00:00')).replace(tzinfo=None)
+            else:
+                end_date = datetime.strptime(str(end_str).split()[0], '%Y-%m-%d')
+        except (ValueError, TypeError):
+            continue
+
+        # Skip activities that have already ended
+        if end_date < today:
+            continue
+
+        # Build notes from activity/phase
+        activity = record.get('activity', '')
+        phase = record.get('phase', '')
+        if activity and phase and phase.lower() not in activity.lower():
+            notes = f"{activity} {phase}".strip()
+        else:
+            notes = activity or phase or ''
+
+        asset_capacities.append({
+            "asset": record.get('asset', ''),
+            "vessel_count": int(record.get('vessel_count', 1) or 1),
+            "notes": notes,
+            "date_from": start_date.strftime("%Y-%m-%d"),
+            "date_to": end_date.strftime("%Y-%m-%d")
+        })
+
+    # Sort by start date
+    asset_capacities.sort(key=lambda x: x["date_from"])
+
+    # Calculate monthly capacity entries
+    monthly_capacity = calculate_monthly_capacity(asset_capacities)
+
+    # Save to asset-capacity.json
+    capacity_data = {
+        "asset_capacities": asset_capacities,
+        "monthly_capacity_entries": monthly_capacity,
+        "updated_at": datetime.now().isoformat(),
+        "source": "auto-sync from Spot Hire Planner"
+    }
+
+    with open(DATA_DIR / 'asset-capacity.json', 'w') as f:
+        json.dump(capacity_data, f, indent=2)
+
+    print(f"Auto-updated asset capacity: {len(asset_capacities)} entries, {len(monthly_capacity)} months")
+
+
+def calculate_monthly_capacity(asset_capacities):
+    """Calculate maximum vessel count needed per month."""
+    if not asset_capacities:
+        return []
+
+    today = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    end_date = today + timedelta(days=6 * 31)  # 6 months ahead
+
+    monthly_entries = []
+    current_month = today
+
+    while current_month < end_date:
+        # Get first and last day of month
+        month_start = current_month.replace(day=1)
+        if current_month.month == 12:
+            next_month = current_month.replace(year=current_month.year + 1, month=1, day=1)
+        else:
+            next_month = current_month.replace(month=current_month.month + 1, day=1)
+        month_end = next_month - timedelta(days=1)
+
+        # Calculate max vessels needed on any day in this month
+        max_vessels = 0
+        current_day = month_start
+
+        while current_day <= month_end:
+            daily_vessels = 0
+            for cap in asset_capacities:
+                try:
+                    cap_start = datetime.strptime(cap["date_from"], "%Y-%m-%d")
+                    cap_end = datetime.strptime(cap["date_to"], "%Y-%m-%d")
+                    if cap_start <= current_day <= cap_end:
+                        daily_vessels += cap["vessel_count"]
+                except (ValueError, KeyError):
+                    continue
+            max_vessels = max(max_vessels, daily_vessels)
+            current_day += timedelta(days=1)
+
+        if max_vessels > 0:
+            monthly_entries.append({
+                "capacity_text": str(max_vessels),
+                "date_from": month_start.strftime("%Y-%m-%d"),
+                "date_to": month_end.strftime("%Y-%m-%d")
+            })
+
+        current_month = next_month
+
+    return monthly_entries
 
 
 # ============== Main ==============
