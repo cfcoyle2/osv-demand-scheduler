@@ -352,7 +352,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260720-morning-update';
+const STATIC_DATA_VERSION = '20260720-date-shift-days';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -2410,6 +2410,30 @@ function getSnapshotTimestamp(snapshot) {
   return Number.isNaN(date.getTime()) ? null : date.getTime();
 }
 
+const SNAPSHOT_DATE_FIELDS = new Set(['start_date', 'offshore_start', 'offshore_end', 'return_end']);
+
+function isSnapshotDateField(field) {
+  return SNAPSHOT_DATE_FIELDS.has(field) || field.includes('date');
+}
+
+function getDateShiftDays(change) {
+  if (!change || !change.old || !change.new) return null;
+  const oldDate = new Date(change.old);
+  const newDate = new Date(change.new);
+  if (Number.isNaN(oldDate.getTime()) || Number.isNaN(newDate.getTime())) return null;
+  return Math.round((newDate - oldDate) / (1000 * 60 * 60 * 24));
+}
+
+function formatDateShiftBadge(change) {
+  const diffDays = getDateShiftDays(change);
+  if (diffDays === null || diffDays === 0) return '';
+  const sign = diffDays > 0 ? '+' : '-';
+  const label = `${sign}${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'}`;
+  const direction = diffDays > 0 ? 'later' : 'earlier';
+  const color = diffDays > 0 ? '#dd6b20' : '#2f855a';
+  return `<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:8px;background:${color}22;color:${color};font-weight:600;white-space:nowrap;">${label} ${direction}</span>`;
+}
+
 function chooseWeeklyBaselineSnapshot(snapshots) {
   if (!snapshots.length) return null;
   if (snapshots.length === 1) return snapshots[0];
@@ -3184,10 +3208,12 @@ function renderComparisonResult(data, assetFilter = 'all') {
               `<span style="display:inline-block;padding:2px 6px;background:${cat.color}22;color:${cat.color};border-radius:8px;font-size:10px;font-weight:500;white-space:nowrap;margin:1px 0;">${cat.icon} ${cat.label}</span>`
             ).join('<br>');
             const changesHtml = Object.entries(t.changes || {}).map(([field, change]) => {
-              const oldVal = change.old ? (field.includes('date') ? new Date(change.old).toLocaleString() : change.old) : '(empty)';
-              const newVal = change.new ? (field.includes('date') ? new Date(change.new).toLocaleString() : change.new) : '(empty)';
+              const isDateField = isSnapshotDateField(field);
+              const oldVal = change.old ? (isDateField ? new Date(change.old).toLocaleString() : change.old) : '(empty)';
+              const newVal = change.new ? (isDateField ? new Date(change.new).toLocaleString() : change.new) : '(empty)';
+              const shiftBadge = isDateField ? formatDateShiftBadge(change) : '';
               return `<div style="margin:2px 0;padding:2px 6px;background:var(--warning-bg,#fff3cd);border-radius:3px;font-size:11px;">
-                <strong>${escapeHtml(field)}:</strong> <span style="text-decoration:line-through;opacity:0.7;">${escapeHtml(String(oldVal))}</span> → <span style="color:var(--success,#28a745);">${escapeHtml(String(newVal))}</span>
+                <strong>${escapeHtml(field)}:</strong> <span style="text-decoration:line-through;opacity:0.7;">${escapeHtml(String(oldVal))}</span> → <span style="color:var(--success,#28a745);">${escapeHtml(String(newVal))}</span>${shiftBadge}
               </div>`;
             }).join('');
             return `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
