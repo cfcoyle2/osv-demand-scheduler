@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=20260713-route-schedule-focus">
+  <link rel="stylesheet" href="styles.css?v=20260722-loading-magenta-reimport">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -13,7 +13,7 @@
         <span class="shell-brand">Shell</span>
         <span class="shell-subbrand">Gulf of America Logistics</span>
       </div>
-      <h1>OSV Demand Scheduler</h1>
+      <h1>Kabal Lite</h1>
     </div>
     <div class="header-actions">
       <div class="view-tabs" aria-label="Scheduler views">
@@ -62,7 +62,13 @@
       <section>
         <h2>Filters</h2>
         <label>Logistics Coordinator<select id="coordinatorFilter"><option value="all">All coordinators</option></select></label>
-        <label>Asset<select id="assetFilter"><option value="all">All assets</option></select></label>
+        <div class="filter-field">
+          <span class="filter-label">Asset</span>
+          <details id="assetFilter" class="checkbox-dropdown">
+            <summary id="assetFilterSummary">All assets</summary>
+            <div id="assetFilterOptions" class="checkbox-dropdown-menu"></div>
+          </details>
+        </div>
         <label>Status<select id="statusFilter"><option value="all">All statuses</option></select></label>
         <div class="date-filter-grid">
           <label>View From<input id="dateFromFilter" type="date"></label>
@@ -137,6 +143,7 @@
           </div>
           <div class="legend" aria-label="Route color code legend">
             <strong>Color codes</strong>
+            <span><i class="leg-loading"></i>Magenta: loading time to BDD</span>
             <span><i class="leg-base"></i>Teal: BDD to offshore required</span>
             <span><i class="leg-offshore"></i>Green: on-location/offload duration</span>
             <span><i class="leg-return"></i>Amber: transit back to port</span>
@@ -310,6 +317,6 @@
   </div>
 
   <div id="toast" class="toast" hidden></div>
-  <script src="app.js?v=20260720-saved-updates"></script>
+  <script src="app.js?v=20260722-loading-magenta-reimport"></script>
 </body>
 </html>

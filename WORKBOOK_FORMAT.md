@@ -8,6 +8,13 @@ This guide explains how to format your Excel workbook for import into the OSV De
 2. **Open the app**: http://127.0.0.1:8000
 3. **Upload your workbook**: Click "Upload Workbook" and select your `.xlsx` file
 
+You can now use one combined workbook for both apps. Run `python create_combined_update_template.py` to generate `OSV_Scheduler_Combined_Update_YYYYMMDD.xlsx`, then maintain both tabs in that single file:
+
+- `OSV Demand Tracker` updates the OSV Demand Scheduler
+- `Spot Hire Update` updates the Spot Hire Planner and auto-syncs asset capacity
+
+Upload the combined workbook once from the OSV Demand Scheduler page. The server will process both recognized tabs in the same upload.
+
 ---
 
 ## Excel Workbook Format
@@ -33,6 +40,7 @@ The server will auto-detect sheets containing route/task data. Name your sheet s
 | Vessel | Vessel name | `Route Demand` |
 | Project | Well/project name | (empty) |
 | Status | Task status | `Planned` |
+| Loading Time | When loading begins; starts the Route Schedule bar | (empty) |
 | Offshore Start | Arrival at asset | (calculated) |
 | Offshore End | Departure from asset | (calculated) |
 | Return End | Return to port | (calculated) |
@@ -44,6 +52,7 @@ The server will auto-detect sheets containing route/task data. Name your sheet s
 The parser is flexible with column names:
 - **Asset**: `Asset`, `Platform`, `Rig`
 - **Start Date**: `Start Date`, `Start`, `Sail Date`
+- **Loading Time**: `Loading Time`, `Loading`, `Load Time`, `Load Date`
 - **Activity**: `Activity`, `Description`, `Task`, `Scope`
 - **Duration**: `Duration Hours`, `Duration`, `Hours`
 - **Transit**: `Transit Hours`, `Transit`, `Steam`

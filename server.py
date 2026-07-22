@@ -29,13 +29,15 @@ except ImportError:
     print("WARNING: openpyxl not installed. Excel upload will be limited.")
     print("Install with: pip install openpyxl")
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+BASE_DIR = Path(__file__).parent.resolve()
+
+app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path='')
 CORS(app)
 
 # Configuration
-DATA_DIR = Path(__file__).parent / 'data'
+DATA_DIR = BASE_DIR / 'data'
 SNAPSHOTS_DIR = DATA_DIR / 'snapshots'
-UPLOAD_FOLDER = Path(__file__).parent / 'uploads'
+UPLOAD_FOLDER = BASE_DIR / 'uploads'
 ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'json'}
 
 # Ensure directories exist
@@ -88,25 +90,84 @@ def safe_float(value, default=0.0):
         return default
 
 
+def parse_datetime_for_calc(value):
+    """Parse stored date strings for schedule calculations."""
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        raw = value.strip()
+        if not raw:
+            return None
+        for candidate in (raw, raw.replace('Z', '+00:00'), raw.replace(' ', 'T')):
+            try:
+                return datetime.fromisoformat(candidate)
+            except ValueError:
+                continue
+    return None
+
+
+def normalize_task_schedule(task):
+    """Ensure route task derived dates are consistent after app edits."""
+    duration_hours = safe_float(task.get('duration_hours'), 24.0)
+    transit_hours = safe_float(task.get('transit_hours'), 18.0)
+    task['duration_hours'] = duration_hours
+    task['transit_hours'] = transit_hours
+
+    start = parse_datetime_for_calc(task.get('start_date'))
+    offshore_start = parse_datetime_for_calc(task.get('offshore_start')) or start
+    if offshore_start:
+        task['offshore_start'] = offshore_start.isoformat(timespec='seconds')
+        offshore_end = offshore_start + timedelta(hours=duration_hours)
+        task['offshore_end'] = offshore_end.isoformat(timespec='seconds')
+        task['return_end'] = (offshore_end + timedelta(hours=transit_hours)).isoformat(timespec='seconds')
+    elif start:
+        task['offshore_start'] = start.isoformat(timespec='seconds')
+        offshore_end = start + timedelta(hours=duration_hours)
+        task['offshore_end'] = offshore_end.isoformat(timespec='seconds')
+        task['return_end'] = (offshore_end + timedelta(hours=transit_hours)).isoformat(timespec='seconds')
+    return task
+
+
+def load_tasks_data():
+    try:
+        with open(DATA_DIR / 'tasks.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {'tasks': [], 'source': '', 'buffer_hours': 24}
+
+
+def write_tasks_data(data):
+    with open(DATA_DIR / 'tasks.json', 'w') as f:
+        json.dump(data, f, indent=2)
+
+
+def get_json_file(path, default):
+    try:
+        with open(path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
+
+
 # ============== Static File Routes ==============
 
 @app.route('/')
 def index():
-    return send_file('index.html')
+    return send_file(BASE_DIR / 'index.html')
 
 
 @app.route('/spot-hire')
 @app.route('/spot_hire.html')
 def spot_hire():
-    return send_file('spot_hire.html')
+    return send_file(BASE_DIR / 'spot_hire.html')
 
 
 @app.route('/<path:filename>')
 def serve_static(filename):
     # Serve static files from root directory
-    if os.path.isfile(filename):
-        return send_file(filename)
-    return send_from_directory('.', filename)
+    return send_from_directory(BASE_DIR, filename)
 
 
 # ============== Health Check ==============
@@ -124,18 +185,82 @@ def health():
 
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
-    try:
-        with open(DATA_DIR / 'tasks.json', 'r') as f:
-            return jsonify(json.load(f))
-    except FileNotFoundError:
-        return jsonify({'tasks': [], 'source': '', 'buffer_hours': 24})
+    return jsonify(load_tasks_data())
 
 
 @app.route('/api/tasks', methods=['POST'])
 def save_tasks():
     data = request.get_json()
-    with open(DATA_DIR / 'tasks.json', 'w') as f:
-        json.dump(data, f, indent=2)
+    if not data:
+        return jsonify({'error': 'No task data provided'}), 400
+
+    if 'tasks' in data:
+        for task in data.get('tasks', []):
+            normalize_task_schedule(task)
+        write_tasks_data(data)
+        return jsonify({'success': True, 'count': len(data.get('tasks', []))})
+
+    if 'asset' in data and ('activity' in data or 'project' in data):
+        tasks_data = load_tasks_data()
+        new_task = {
+            'id': generate_id(),
+            'asset': data.get('asset', ''),
+            'coordinator': data.get('coordinator', ''),
+            'vessel': data.get('vessel', 'Route Demand'),
+            'project': data.get('project', ''),
+            'activity': data.get('activity', ''),
+            'status': data.get('status', 'Planned'),
+            'loading_time': data.get('loading_time'),
+            'start_date': data.get('start_date'),
+            'offshore_start': data.get('offshore_start') or data.get('start_date'),
+            'duration_hours': data.get('duration_hours', 24),
+            'transit_hours': data.get('transit_hours', 18),
+            'source': 'app'
+        }
+        normalize_task_schedule(new_task)
+        tasks_data.setdefault('tasks', []).append(new_task)
+        write_tasks_data(tasks_data)
+        return jsonify({'success': True, 'id': new_task['id']})
+
+    return jsonify({'error': 'Expected a full tasks payload or a single task'}), 400
+
+
+@app.route('/api/changes', methods=['POST'])
+def apply_task_changes():
+    """Apply batch changes to route-demand tasks."""
+    data = request.get_json() or {}
+    changes = data.get('changes', [])
+    tasks_data = load_tasks_data()
+    tasks = tasks_data.get('tasks', [])
+    tasks_by_id = {task.get('id'): task for task in tasks if task.get('id')}
+
+    for change in changes:
+        task_id = change.get('id')
+        if task_id and task_id in tasks_by_id:
+            task = tasks_by_id[task_id]
+            for field in ['asset', 'coordinator', 'vessel', 'project', 'activity', 'status',
+                          'loading_time', 'start_date', 'offshore_start', 'duration_hours', 'transit_hours']:
+                if field in change:
+                    task[field] = change[field]
+            normalize_task_schedule(task)
+
+    tasks_data['tasks'] = tasks
+    write_tasks_data(tasks_data)
+    return jsonify({'success': True, 'changes_applied': len(changes)})
+
+
+@app.route('/api/tasks/<task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    """Delete a route-demand task by ID."""
+    tasks_data = load_tasks_data()
+    tasks = tasks_data.get('tasks', [])
+    original_count = len(tasks)
+    tasks_data['tasks'] = [task for task in tasks if task.get('id') != task_id]
+
+    if len(tasks_data['tasks']) == original_count:
+        return jsonify({'error': 'Task not found'}), 404
+
+    write_tasks_data(tasks_data)
     return jsonify({'success': True})
 
 
@@ -171,6 +296,23 @@ def save_asset_capacity():
     with open(DATA_DIR / 'asset-capacity.json', 'w') as f:
         json.dump(data, f, indent=2)
     return jsonify({'success': True})
+
+
+@app.route('/api/export', methods=['GET'])
+def export_data():
+    """Download the current scheduler data as a combined JSON file."""
+    payload = {
+        'exported_at': datetime.now().isoformat(),
+        'tasks': load_tasks_data(),
+        'conflicts': get_json_file(DATA_DIR / 'conflicts.json', {'conflicts': [], 'fleet': None}),
+        'asset_capacity': get_json_file(DATA_DIR / 'asset-capacity.json', {'asset_capacities': [], 'monthly_capacity_entries': []}),
+        'spot_hire': get_json_file(DATA_DIR / 'spot-hire.json', {'records': [], 'source': '', 'phase_colors': {}}),
+        'spot_hire_impacts': load_impacts()
+    }
+    body = json.dumps(payload, indent=2)
+    response = app.response_class(body, mimetype='application/json')
+    response.headers['Content-Disposition'] = f'attachment; filename=osv_scheduler_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+    return response
 
 
 @app.route('/api/spot-hire', methods=['GET'])
@@ -462,14 +604,14 @@ def compare_snapshots():
     matched_current_indices = set()   # Track matched current tasks by (soft_key, index)
     
     # Fields to compare for changes (now includes start_date)
-    compare_fields = ['start_date', 'status', 'offshore_start', 'offshore_end', 'return_end',
+    compare_fields = ['loading_time', 'start_date', 'status', 'offshore_start', 'offshore_end', 'return_end',
                       'duration_hours', 'transit_hours', 'vessel', 'coordinator']
     
     # Define change categories based on which fields changed
     def categorize_changes(changes_dict):
         """Determine change categories based on which fields were modified."""
         categories = []
-        date_fields = {'start_date', 'offshore_start', 'offshore_end', 'return_end'}
+        date_fields = {'loading_time', 'start_date', 'offshore_start', 'offshore_end', 'return_end'}
         duration_fields = {'duration_hours', 'transit_hours'}
         
         changed_field_names = set(changes_dict.keys())
@@ -1086,6 +1228,7 @@ def parse_tasks_sheet(sheet, filename, sheet_name):
         'project': find_column(headers, ['project', 'well', 'campaign']),
         'activity': find_column(headers, ['activity', 'activity_name', 'description', 'task', 'scope', 'cargo', 'load', 'run', 'shipment']),
         'status': find_column(headers, ['status', 'state']),
+        'loading_time': find_column(headers, ['loading_time', 'loading', 'load_time', 'load_date', 'loadout', 'load_out', 'loadout_date']),
         'start_date': find_column(headers, ['start_date', 'start', 'sail_date', 'base_delivery_date', 'delivery_date', 'sail']),
         'offshore_start': find_column(headers, ['offshore_start', 'arrive', 'arrival', 'offshore_req_date', 'offshore_req', 'req_date']),
         'offshore_end': find_column(headers, ['offshore_end', 'depart', 'departure', 'offloading_complete_date', 'offloading_complete', 'complete_date']),
@@ -1108,6 +1251,7 @@ def parse_tasks_sheet(sheet, filename, sheet_name):
             'project': get_cell_value(row, column_map['project']),
             'activity': get_cell_value(row, column_map['activity']),
             'status': get_cell_value(row, column_map['status'], 'Planned'),
+            'loading_time': parse_date(get_cell_value(row, column_map['loading_time'])),
             'start_date': parse_date(get_cell_value(row, column_map['start_date'])),
             'offshore_start': parse_date(get_cell_value(row, column_map['offshore_start'])),
             'offshore_end': parse_date(get_cell_value(row, column_map['offshore_end'])),

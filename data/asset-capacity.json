@@ -26,7 +26,7 @@
       "vessel_count": 2,
       "notes": "Sisco 001 Drill New Well Deepening",
       "date_from": "2026-06-18",
-      "date_to": "2026-08-07"
+      "date_to": "2026-08-14"
     },
     {
       "asset": "Stena Evolution",
@@ -111,6 +111,13 @@
       "notes": "UWX1 Top Hole",
       "date_from": "2026-08-14",
       "date_to": "2026-08-21"
+    },
+    {
+      "asset": "Pontus",
+      "vessel_count": 3,
+      "notes": "Vito Top Hole",
+      "date_from": "2026-08-14",
+      "date_to": "2026-08-31"
     },
     {
       "asset": "Stena Evolution",
@@ -260,7 +267,7 @@
       "date_to": "2026-07-31"
     },
     {
-      "capacity_text": "19",
+      "capacity_text": "23",
       "date_from": "2026-08-01",
       "date_to": "2026-08-31"
     },
@@ -290,6 +297,6 @@
       "date_to": "2027-01-31"
     }
   ],
-  "updated_at": "2026-07-20T12:58:37.482413",
+  "updated_at": "2026-07-22T10:24:59.430918",
   "source": "auto-sync from Spot Hire Planner"
 }

@@ -53,6 +53,8 @@ const els = {
   assetInput: document.getElementById('assetInput'),
   coordinatorFilter: document.getElementById('coordinatorFilter'),
   assetFilter: document.getElementById('assetFilter'),
+  assetFilterSummary: document.getElementById('assetFilterSummary'),
+  assetFilterOptions: document.getElementById('assetFilterOptions'),
   statusFilter: document.getElementById('statusFilter'),
   dateFromFilter: document.getElementById('dateFromFilter'),
   dateToFilter: document.getElementById('dateToFilter'),
@@ -158,20 +160,60 @@ function showToast(message) {
   window.setTimeout(() => { els.toast.hidden = true; }, 3200);
 }
 
+function selectedAssetFilters() {
+  const value = state.filters.asset;
+  if (Array.isArray(value)) return value.filter(asset => asset && asset !== 'all');
+  return value && value !== 'all' ? [value] : [];
+}
+
+function assetFilterLabel() {
+  const selected = selectedAssetFilters();
+  if (!selected.length) return 'All Assets';
+  if (selected.length === 1) return selected[0];
+  return `${selected.length} Assets`;
+}
+
+function taskMatchesAssetFilter(task) {
+  const selected = selectedAssetFilters();
+  return !selected.length || selected.includes(task.asset);
+}
+
+function setAssetFilter(value) {
+  const selected = Array.isArray(value) ? value : [value];
+  const normalized = unique(selected.filter(asset => asset && asset !== 'all'));
+  state.filters.asset = normalized.length ? normalized : 'all';
+  updateAssetFilterControl();
+}
+
+function updateAssetFilterControl() {
+  const selected = selectedAssetFilters();
+  const selectedSet = new Set(selected);
+  els.assetFilterSummary.textContent = assetFilterLabel();
+  els.assetFilterOptions.querySelectorAll('input[type="checkbox"]').forEach(input => {
+    input.checked = selected.length ? selectedSet.has(input.value) : input.value === 'all';
+  });
+}
+
+function selectedAssetValuesFromControl() {
+  return Array.from(els.assetFilterOptions.querySelectorAll('input[type="checkbox"]:checked'))
+    .map(input => input.value)
+    .filter(value => value !== 'all');
+}
+
 // === NEW FEATURE: Export Conflict Summary ===
 function generateConflictSummary() {
-  const filteredAsset = state.filters.asset !== 'all' ? state.filters.asset : null;
+  const selectedAssets = selectedAssetFilters();
   const lines = [];
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const currentWeekStart = getWeekStart(today);
   
   lines.push(`OSV Demand Conflict Summary - ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`);
-  lines.push(filteredAsset ? `Asset: ${filteredAsset}` : 'All Assets');
+  lines.push(`Asset: ${assetFilterLabel()}`);
   lines.push('---');
   
   // Get relevant tasks and calculate weekly demand using same logic as grid
-  const relevantTasks = filteredAsset ? state.tasks.filter(t => t.asset === filteredAsset) : state.tasks;
+  const relevantTasks = selectedAssets.length ? state.tasks.filter(taskMatchesAssetFilter) : state.tasks;
   const weeklyData = calculateWeeklyDemand(relevantTasks);
   const weekDemandMap = new Map();
   weeklyData.forEach(w => {
@@ -192,8 +234,8 @@ function generateConflictSummary() {
     const peakDemand = weekDemandMap.get(weekKey) || 0;
     
     // Get capacity using same logic as grid
-    const capacity = filteredAsset 
-      ? getCapacityForAssetAtDate(filteredAsset, weekStart)
+    const capacity = selectedAssets.length === 1 
+      ? getCapacityForAssetAtDate(selectedAssets[0], weekStart)
       : getCapacityForWeek(weekKey);
     
     const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
@@ -352,7 +394,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260720-saved-updates';
+const STATIC_DATA_VERSION = '20260722-loading-magenta-reimport';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -609,8 +651,8 @@ function collectMonthlyCapacityEntriesFromDom() {
 function peakConcurrentOnLocation(tasks) {
   const intervals = [];
   for (const task of tasks || []) {
-    // From-port planning basis: Base Delivery Date (load and depart) to return completion.
-    const start = parseDate(task.start_date) || parseDate(task.offshore_start);
+    // From-port planning basis: Loading Time/BDD through Return to Port.
+    const start = routeStartDate(task);
     const end = parseDate(task.return_end) || parseDate(task.offshore_end) || start;
     if (!start || !end || end <= start) continue;
     intervals.push({ start, end, asset: task.asset || 'Unassigned' });
@@ -673,7 +715,7 @@ function filteredTasks() {
     const overlapsRange = (!rangeStart || (routeEnd && routeEnd >= rangeStart)) &&
       (!rangeEnd || (routeStart && routeStart <= rangeEnd));
     return (state.filters.coordinator === 'all' || (task.coordinator || coordinatorForAsset(task.asset)) === state.filters.coordinator) &&
-      (state.filters.asset === 'all' || task.asset === state.filters.asset) &&
+      taskMatchesAssetFilter(task) &&
       (state.filters.status === 'all' || task.status === state.filters.status) &&
       overlapsRange;
   }).sort((a, b) => (parseDate(a.start_date) || 0) - (parseDate(b.start_date) || 0));
@@ -687,6 +729,16 @@ function syncSelect(select, values, allLabel) {
   const current = select.value || 'all';
   select.innerHTML = `<option value="all">${allLabel}</option>` + values.map(value => `<option>${escapeHtml(value)}</option>`).join('');
   select.value = values.includes(current) ? current : 'all';
+}
+
+function syncAssetFilter(select, values, allLabel) {
+  const current = selectedAssetFilters().filter(asset => values.includes(asset));
+  els.assetFilterOptions.innerHTML = `
+    <label class="checkbox-option"><input type="checkbox" value="all"><span>${allLabel}</span></label>
+    ${values.map(value => `<label class="checkbox-option"><input type="checkbox" value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`).join('')}
+  `;
+  state.filters.asset = current.length ? current : 'all';
+  updateAssetFilterControl();
 }
 
 function fillSelect(select, values, selectedValue = '') {
@@ -720,7 +772,7 @@ function hydrateCoordinatorControls() {
 
 function renderFilters() {
   syncSelect(els.coordinatorFilter, unique([...Object.keys(COORDINATOR_ASSETS), ...state.tasks.map(t => t.coordinator || coordinatorForAsset(t.asset))]), 'All coordinators');
-  syncSelect(els.assetFilter, unique([...ALL_ASSETS, ...state.tasks.map(t => t.asset)]), 'All assets');
+  syncAssetFilter(els.assetFilter, unique([...ALL_ASSETS, ...state.tasks.map(t => t.asset)]), 'All assets');
   syncSelect(els.statusFilter, unique(state.tasks.map(t => t.status)), 'All statuses');
   // Default to 'Planned' filter if not already set and option exists
   if (state.filters.status === 'Planned' && els.statusFilter.querySelector('option[value="Planned"]')) {
@@ -772,7 +824,7 @@ function renderInsightPanel(tasks) {
     assets: {
       title: 'Asset Demand',
       text: 'Routes grouped by Gulf of America asset for the current view. Click an asset to drill into the Gantt schedule.',
-      body: `<div class="insight-scroll"><div class="insight-grid">${groupCounts(tasks, t => t.asset).map(([asset, count]) => `<button type="button" class="insight-item insight-item-action ${state.filters.asset === asset ? 'active' : ''}" data-asset-drill="${escapeHtml(asset)}" title="${state.filters.asset === asset ? 'Show all assets' : `Filter schedule to ${asset}`}" aria-pressed="${state.filters.asset === asset ? 'true' : 'false'}"><strong>${escapeHtml(asset)}</strong><span>${count} route${count === 1 ? '' : 's'}</span></button>`).join('') || '<div class="empty-state">No asset demand in the current view.</div>'}</div></div>`
+      body: `<div class="insight-scroll"><div class="insight-grid">${groupCounts(tasks, t => t.asset).map(([asset, count]) => { const active = selectedAssetFilters().includes(asset); return `<button type="button" class="insight-item insight-item-action ${active ? 'active' : ''}" data-asset-drill="${escapeHtml(asset)}" title="${active ? `Remove ${asset} from filter` : `Add ${asset} to filter`}" aria-pressed="${active ? 'true' : 'false'}"><strong>${escapeHtml(asset)}</strong><span>${count} route${count === 1 ? '' : 's'}</span></button>`; }).join('') || '<div class="empty-state">No asset demand in the current view.</div>'}</div></div>`
     },
     coordinators: {
       title: 'Coordinator Load',
@@ -780,9 +832,10 @@ function renderInsightPanel(tasks) {
       body: `<div class="insight-scroll"><div class="insight-grid">${groupCounts(tasks, t => t.coordinator || coordinatorForAsset(t.asset)).map(([coordinator, count]) => `<button type="button" class="insight-item insight-item-action ${state.filters.coordinator === coordinator ? 'active' : ''}" data-coordinator-drill="${escapeHtml(coordinator)}" title="${state.filters.coordinator === coordinator ? 'Show all coordinators' : `Filter to ${coordinator}`}" aria-pressed="${state.filters.coordinator === coordinator ? 'true' : 'false'}"><strong>${escapeHtml(coordinator)}</strong><span>${count} route${count === 1 ? '' : 's'}</span></button>`).join('') || '<div class="empty-state">No coordinator demand in the current view.</div>'}</div></div>`
     },
     watch: (() => {
-      const filteredAsset = state.filters.asset !== 'all' ? state.filters.asset : null;
-      const relevantConflicts = filteredAsset
-        ? state.conflicts.filter(c => c.asset === filteredAsset)
+      const selectedAssets = selectedAssetFilters();
+      const filteredAsset = selectedAssets.length === 1 ? selectedAssets[0] : null;
+      const relevantConflicts = selectedAssets.length
+        ? state.conflicts.filter(c => selectedAssets.includes(c.asset))
         : state.conflicts;
       
       let forecastHtml = '';
@@ -814,18 +867,18 @@ function renderInsightPanel(tasks) {
         }
       }
       
-      const conflictText = filteredAsset
-        ? `${relevantConflicts.length} demand watch item${relevantConflicts.length === 1 ? '' : 's'} for ${filteredAsset}.`
+      const conflictText = selectedAssets.length
+        ? `${relevantConflicts.length} demand watch item${relevantConflicts.length === 1 ? '' : 's'} for ${assetFilterLabel()}.`
         : `${relevantConflicts.length} demand watch item${relevantConflicts.length === 1 ? '' : 's'} detected across all assets.`;
       
       return {
-        title: filteredAsset ? `Demand Watch - ${filteredAsset}` : 'Demand Watch',
+        title: selectedAssets.length ? `Demand Watch - ${assetFilterLabel()}` : 'Demand Watch',
         text: `${conflictText} Click any item to jump to the Gantt chart.`,
         body: `<div class="insight-scroll">${forecastHtml}<div class="insight-list">${relevantConflicts.map(item => {
           const label = item.type === 'fleet_monthly_capacity' ? 'Monthly OSV Capacity' : (item.asset || item.resource || '');
           const severityLabel = item.severity === 'warning' ? 'Demand warning' : 'Demand conflict';
           return `<button type="button" class="insight-item insight-item-action" data-conflict-tasks="${escapeHtml(JSON.stringify(item.task_ids || []))}" data-conflict-start="${escapeHtml(item.overlap_start || '')}"><strong>${escapeHtml(severityLabel)} - ${escapeHtml(label)}</strong><span>${escapeHtml(item.message)}</span></button>`;
-        }).join('') || '<div class="empty-state">No demand watch items' + (filteredAsset ? ` for ${filteredAsset}` : '') + '.</div>'}</div></div>`
+        }).join('') || '<div class="empty-state">No demand watch items' + (selectedAssets.length ? ` for ${assetFilterLabel()}` : '') + '.</div>'}</div></div>`
       };
     })()
   };
@@ -834,7 +887,7 @@ function renderInsightPanel(tasks) {
 }
 
 function timelineBounds(tasks) {
-  const dates = tasks.flatMap(t => [parseDate(t.start_date), parseDate(t.return_end)]).filter(Boolean);
+  const dates = tasks.flatMap(t => [routeStartDate(t), parseDate(t.return_end)]).filter(Boolean);
   if (!dates.length) {
     const now = new Date();
     return { start: now, end: new Date(now.getTime() + 7 * 86400000) };
@@ -852,6 +905,10 @@ function pct(date, bounds) {
   return ((date - bounds.start) / (bounds.end - bounds.start)) * 100;
 }
 
+function routeStartDate(task) {
+  return parseDate(task.loading_time) || parseDate(task.start_date) || parseDate(task.offshore_start);
+}
+
 function conflictTaskIds() {
   const ids = new Set();
   state.conflicts.forEach(c => (c.task_ids || []).forEach(id => ids.add(id)));
@@ -865,7 +922,7 @@ function buildAssetVesselSlots(tasks) {
 
   tasks.forEach(task => {
     const asset = task.asset || 'Unassigned';
-    const start = parseDate(task.start_date) || parseDate(task.offshore_start);
+    const start = routeStartDate(task);
     const end = parseDate(task.return_end) || parseDate(task.offshore_end) || start;
     if (!start || !end) return;
     const rows = byAsset.get(asset) || [];
@@ -912,18 +969,21 @@ function renderTimeline(tasks) {
   const conflictIds = conflictTaskIds();
   const vesselSlots = buildAssetVesselSlots(tasks);
   const rows = tasks.map(task => {
-    const start = parseDate(task.start_date);
+    const loadingStart = routeStartDate(task);
+    const start = parseDate(task.start_date) || loadingStart;
     const offshoreStart = parseDate(task.offshore_start) || start;
     const offshoreEnd = parseDate(task.offshore_end) || offshoreStart;
-    const end = parseDate(task.return_end) || offshoreEnd || start;
-    if (!start || !end) return '';
-    const span = Math.max(1, end - start);
-    const left = Math.max(0, pct(start, bounds));
+    const end = parseDate(task.return_end) || offshoreEnd || start || loadingStart;
+    if (!loadingStart || !end) return '';
+    const span = Math.max(1, end - loadingStart);
+    const left = Math.max(0, pct(loadingStart, bounds));
     const width = Math.max(1.5, pct(end, bounds) - left);
+    const loadingWidth = start && start > loadingStart ? Math.max(0, ((start - loadingStart) / span) * 100) : 0;
+    const baseLeft = start && start > loadingStart ? loadingWidth : 0;
     const baseWidth = Math.max(0, ((offshoreStart - start) / span) * 100);
-    const offshoreLeft = Math.max(0, ((offshoreStart - start) / span) * 100);
+    const offshoreLeft = Math.max(0, ((offshoreStart - loadingStart) / span) * 100);
     const offshoreWidth = Math.max(0, ((offshoreEnd - offshoreStart) / span) * 100);
-    const returnLeft = Math.max(0, ((offshoreEnd - start) / span) * 100);
+    const returnLeft = Math.max(0, ((offshoreEnd - loadingStart) / span) * 100);
     const returnWidth = Math.max(0, 100 - returnLeft);
     const routeTitle = [task.asset, task.activity || 'Route'].filter(Boolean).join(' / ');
     const routeProject = task.project || 'No project';
@@ -943,7 +1003,8 @@ function renderTimeline(tasks) {
       <div class="route-label"><strong>${escapeHtml(routeTitle)}</strong><span>${escapeHtml(routeProject)}</span>${vesselLabel}</div>
       <div class="bar-lane" style="background-size: ${dayWidth}px 100%;">
         <button class="task-bar${hasConflict ? ' conflict-bar' : ''}" data-edit="${task.id}" data-shift="${task.id}" style="left:${left}%;width:${width}%;" title="${multiVesselAsset ? `Allocated vessel slot V${vesselSlot}. ` : ''}${hasConflict ? 'Demand watch item - see Demand Watch tab. ' : ''}Drag to shift route dates. Click to edit ${escapeHtml(task.activity)}.">
-          <span class="segment seg-base" style="left:0;width:${baseWidth}%;"></span>
+          <span class="segment seg-loading" style="left:0;width:${loadingWidth}%;"></span>
+          <span class="segment seg-base" style="left:${baseLeft}%;width:${baseWidth}%;"></span>
           <span class="segment seg-offshore" style="left:${offshoreLeft}%;width:${offshoreWidth}%;"></span>
           <span class="segment seg-return" style="left:${returnLeft}%;width:${returnWidth}%;"></span>
           <span class="task-title">${conflictBadge}${vesselBadge}${escapeHtml(routeTitle)}</span>
@@ -1254,21 +1315,23 @@ function calculateWeeklyDemand(tasks) {
 function renderWeeklyDemandForecast(tasks = state.tasks) {
   if (!els.weeklyDemandGrid) return;
   
-  // Check if filtering to a specific asset
-  const filteredAsset = state.filters.asset !== 'all' ? state.filters.asset : null;
-  const relevantTasks = filteredAsset ? tasks.filter(t => t.asset === filteredAsset) : tasks;
+  const selectedAssets = selectedAssetFilters();
+  const filteredAsset = selectedAssets.length === 1 ? selectedAssets[0] : null;
+  const relevantTasks = selectedAssets.length ? tasks.filter(taskMatchesAssetFilter) : tasks;
   
   // Update header based on filter
   const headerEl = document.getElementById('weeklyDemandHeader');
   const descEl = document.getElementById('weeklyDemandDesc');
   if (headerEl) {
-    headerEl.textContent = filteredAsset ? `Weekly Demand Forecast - ${filteredAsset}` : 'Weekly Demand Forecast';
+    headerEl.textContent = selectedAssets.length ? `Weekly Demand Forecast - ${assetFilterLabel()}` : 'Weekly Demand Forecast';
   }
   if (descEl) {
     if (filteredAsset) {
       const capacityEntry = state.assetCapacity.find(e => e.asset === filteredAsset);
       const capacityNote = capacityEntry?.notes ? ` (${capacityEntry.notes})` : '';
       descEl.textContent = `Showing ${filteredAsset} demand vs assigned vessel capacity${capacityNote}. Click over-capacity weeks to see routes.`;
+    } else if (selectedAssets.length) {
+      descEl.textContent = 'Showing selected asset demand against fleet capacity. Select one asset to compare against assigned vessel capacity.';
     } else {
       descEl.textContent = '8-week lookahead. Click capacity to edit per week.';
     }
@@ -1561,9 +1624,9 @@ function scrollToConflictTasks(taskIds, conflictStart) {
   
   // Only clear filters that would hide the target task
   // Keep asset filter if it matches the target task's asset
-  if (state.filters.asset !== 'all' && state.filters.asset !== targetAsset) {
-    state.filters.asset = 'all';
-    els.assetFilter.value = 'all';
+  const selectedAssets = selectedAssetFilters();
+  if (selectedAssets.length && !selectedAssets.includes(targetAsset)) {
+    setAssetFilter('all');
   }
   state.filters.status = 'all';
   state.filters.coordinator = 'all';
@@ -1691,6 +1754,7 @@ async function shiftRoute(taskId, dayDelta) {
   if (!task || !dayDelta) return;
   const change = {
     id: task.id,
+    loading_time: shiftIso(task.loading_time, dayDelta),
     start_date: shiftIso(task.start_date, dayDelta),
     offshore_start: shiftIso(task.offshore_start, dayDelta),
     duration_hours: Number(task.duration_hours || 24),
@@ -2020,10 +2084,12 @@ els.insightPanel.addEventListener('click', event => {
   if (assetButton) {
     const asset = assetButton.dataset.assetDrill;
     if (!asset) return;
-    state.filters.asset = state.filters.asset === asset ? 'all' : asset;
-    els.assetFilter.value = state.filters.asset;
+    const selectedAssets = selectedAssetFilters();
+    setAssetFilter(selectedAssets.includes(asset)
+      ? selectedAssets.filter(item => item !== asset)
+      : [...selectedAssets, asset]);
     render();
-    showToast(state.filters.asset === 'all' ? 'Showing all assets' : `Filtered to ${asset}`);
+    showToast(selectedAssetFilters().length ? `Filtered to ${assetFilterLabel()}` : 'Showing all assets');
     return;
   }
   // NEW: Coordinator drill handler
@@ -2057,13 +2123,19 @@ els.conflicts.addEventListener('click', event => {
   } catch (_) {}
 });
 
-[els.coordinatorFilter, els.assetFilter, els.statusFilter].forEach(select => {
+[els.coordinatorFilter, els.statusFilter].forEach(select => {
   select.addEventListener('change', () => {
     state.filters.coordinator = els.coordinatorFilter.value;
-    state.filters.asset = els.assetFilter.value;
     state.filters.status = els.statusFilter.value;
     render();
   });
+});
+
+els.assetFilter.addEventListener('change', event => {
+  const changedInput = event.target.closest('input[type="checkbox"]');
+  if (!changedInput) return;
+  setAssetFilter(changedInput.value === 'all' ? 'all' : selectedAssetValuesFromControl());
+  render();
 });
 
 [els.dateFromFilter, els.dateToFilter].forEach(input => {

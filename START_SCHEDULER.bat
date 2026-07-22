@@ -13,9 +13,13 @@ echo ============================================
 echo.
 
 REM Wait 2 seconds then open browser
-start "" timeout /t 2 /nobreak >nul & start http://localhost:8000
+start "" cmd /c "timeout /t 2 /nobreak >nul & start http://localhost:8000"
 
-REM Start Python HTTP server
-python -m http.server 8000
+REM Start Flask API server
+if exist ".venv\Scripts\python.exe" (
+	".venv\Scripts\python.exe" server.py
+) else (
+	python server.py
+)
 
 pause
