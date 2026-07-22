@@ -9,6 +9,7 @@ const state = {
   source: '',
   bufferHours: 24,
   activeInsight: null,
+  conflictFocusTaskIds: null,
   filters: { coordinator: 'all', asset: 'all', status: 'Planned', dateFrom: '', dateTo: '' },
   spot: {
     records: [],
@@ -394,7 +395,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260722-loading-magenta-reimport';
+const STATIC_DATA_VERSION = '20260722-conflict-focus';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -709,12 +710,16 @@ function switchView(view) {
 function filteredTasks() {
   const rangeStart = parseDateFilter(state.filters.dateFrom);
   const rangeEnd = parseDateFilter(state.filters.dateTo, true);
+  const focusIds = Array.isArray(state.conflictFocusTaskIds) && state.conflictFocusTaskIds.length
+    ? new Set(state.conflictFocusTaskIds)
+    : null;
   return state.tasks.filter(task => {
     const routeStart = parseDate(task.start_date) || parseDate(task.offshore_start);
     const routeEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || routeStart;
     const overlapsRange = (!rangeStart || (routeEnd && routeEnd >= rangeStart)) &&
       (!rangeEnd || (routeStart && routeStart <= rangeEnd));
-    return (state.filters.coordinator === 'all' || (task.coordinator || coordinatorForAsset(task.asset)) === state.filters.coordinator) &&
+    return (!focusIds || focusIds.has(task.id)) &&
+      (state.filters.coordinator === 'all' || (task.coordinator || coordinatorForAsset(task.asset)) === state.filters.coordinator) &&
       taskMatchesAssetFilter(task) &&
       (state.filters.status === 'all' || task.status === state.filters.status) &&
       overlapsRange;
@@ -1615,19 +1620,17 @@ function scrollToConflictTasks(taskIds, conflictStart) {
     return;
   }
   
-  // Find the task to get its asset
-  const targetTask = state.tasks.find(t => t.id === taskIds[0]);
-  const targetAsset = targetTask?.asset;
+  const conflictTasks = taskIds
+    .map(id => state.tasks.find(task => task.id === id))
+    .filter(Boolean);
+  const targetTask = conflictTasks[0];
+  const targetAssets = unique(conflictTasks.map(task => task.asset));
   
   // Switch to route view if needed
   if (state.view !== 'route') switchView('route');
   
-  // Only clear filters that would hide the target task
-  // Keep asset filter if it matches the target task's asset
-  const selectedAssets = selectedAssetFilters();
-  if (selectedAssets.length && !selectedAssets.includes(targetAsset)) {
-    setAssetFilter('all');
-  }
+  state.conflictFocusTaskIds = taskIds;
+  if (targetAssets.length) setAssetFilter(targetAssets);
   state.filters.status = 'all';
   state.filters.coordinator = 'all';
   state.filters.dateFrom = '';
@@ -1649,32 +1652,37 @@ function scrollToConflictTasks(taskIds, conflictStart) {
       return;
     }
     
-    // Get the task bar inside the row
-    const taskBar = row.querySelector('.task-bar');
-    
     // Step 1: Scroll the page to bring the row into view vertically
     row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     
-    // Step 2: After vertical scroll, scroll timeline horizontally to show the task bar
+    // Step 2: After vertical scroll, center the timeline on the conflict date when available.
     setTimeout(() => {
-      if (taskBar) {
-        const rowRect = row.getBoundingClientRect();
-        const barRect = taskBar.getBoundingClientRect();
+      const conflictDate = parseDate(conflictStart);
+      if (conflictDate && state.timelineBoundsStart) {
+        const routeLabelWidth = 220;
+        const dayWidth = Number(els.timeline.dataset.dayWidth || 112);
         const timelineRect = els.timeline.getBoundingClientRect();
-        
-        // Calculate where the bar is relative to the timeline viewport
-        const barCenterX = barRect.left + barRect.width / 2;
-        const timelineCenterX = timelineRect.left + timelineRect.width / 2;
-        
-        // Scroll timeline horizontally to center the task bar
-        const scrollOffset = barCenterX - timelineCenterX;
-        els.timeline.scrollLeft += scrollOffset;
+        const daysFromStart = (conflictDate - state.timelineBoundsStart) / 86400000;
+        const conflictX = routeLabelWidth + (daysFromStart * dayWidth);
+        els.timeline.scrollLeft = Math.max(0, conflictX - (timelineRect.width / 2));
+      } else {
+        const taskBar = row.querySelector('.task-bar');
+        if (taskBar) {
+          const barRect = taskBar.getBoundingClientRect();
+          const timelineRect = els.timeline.getBoundingClientRect();
+          const barCenterX = barRect.left + barRect.width / 2;
+          const timelineCenterX = timelineRect.left + timelineRect.width / 2;
+          els.timeline.scrollLeft += barCenterX - timelineCenterX;
+        }
       }
       
-      // Flash highlight to draw attention
-      row.classList.add('conflict-flash');
-      setTimeout(() => row.classList.remove('conflict-flash'), 3000);
-      showToast(`Scrolled to ${targetTask?.activity || 'route'}`);
+      taskIds.forEach(taskId => {
+        const conflictRow = els.timeline.querySelector(`[data-task-id="${taskId}"]`);
+        if (!conflictRow) return;
+        conflictRow.classList.add('conflict-flash');
+        setTimeout(() => conflictRow.classList.remove('conflict-flash'), 3500);
+      });
+      showToast(`Focused ${taskIds.length} conflicted route${taskIds.length === 1 ? '' : 's'}`);
     }, 500);
   }, 400);
 }
@@ -1695,6 +1703,9 @@ function render() {
 }
 
 function rangeText() {
+  if (Array.isArray(state.conflictFocusTaskIds) && state.conflictFocusTaskIds.length) {
+    return `Focused on ${state.conflictFocusTaskIds.length} route${state.conflictFocusTaskIds.length === 1 ? '' : 's'} from the selected Demand Watch item.`;
+  }
   if (!state.filters.dateFrom && !state.filters.dateTo) {
     return 'Showing all entered demand. Drag empty schedule space to pan, or drag a route bar to shift it by whole days.';
   }
@@ -2125,6 +2136,7 @@ els.conflicts.addEventListener('click', event => {
 
 [els.coordinatorFilter, els.statusFilter].forEach(select => {
   select.addEventListener('change', () => {
+    state.conflictFocusTaskIds = null;
     state.filters.coordinator = els.coordinatorFilter.value;
     state.filters.status = els.statusFilter.value;
     render();
@@ -2134,12 +2146,14 @@ els.conflicts.addEventListener('click', event => {
 els.assetFilter.addEventListener('change', event => {
   const changedInput = event.target.closest('input[type="checkbox"]');
   if (!changedInput) return;
+  state.conflictFocusTaskIds = null;
   setAssetFilter(changedInput.value === 'all' ? 'all' : selectedAssetValuesFromControl());
   render();
 });
 
 [els.dateFromFilter, els.dateToFilter].forEach(input => {
   input.addEventListener('change', () => {
+    state.conflictFocusTaskIds = null;
     state.filters.dateFrom = els.dateFromFilter.value;
     state.filters.dateTo = els.dateToFilter.value;
     render();
