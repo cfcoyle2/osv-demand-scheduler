@@ -7,17 +7,17 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "c8e954f0133b",
-        "98d4ce694171"
+        "c4b7acf7f17e",
+        "6017ef8a30e5"
       ],
       "tasks": [
         {
-          "id": "c8e954f0133b",
+          "id": "c4b7acf7f17e",
           "activity": "GL 07 Harvey America Pre-Demob OWIRS",
           "project": "Vito VA-10 Drift/ CTCO"
         },
         {
-          "id": "98d4ce694171",
+          "id": "6017ef8a30e5",
           "activity": "GL 08 OSV - Complete De-Mob of Rig",
           "project": "Vito VA-10 Drift / CTCO"
         }
@@ -34,17 +34,17 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "d28aa45ad5ee",
-        "02fedb3872a0"
+        "896f140def11",
+        "acea6f4531cb"
       ],
       "tasks": [
         {
-          "id": "d28aa45ad5ee",
+          "id": "896f140def11",
           "activity": "GL 09 Run Upper Tieback - OSV - 48Hrs",
           "project": "A-23 St2 Drill"
         },
         {
-          "id": "02fedb3872a0",
+          "id": "acea6f4531cb",
           "activity": "GL 10 Drill 6.5\" Open Hole Horizontal - OSV - 60 hrs",
           "project": "A-23 St2 Drill"
         }
@@ -58,257 +58,20 @@
       "type": "on_location_overlap",
       "severity": "conflict",
       "asset": "Perdido",
-      "asset_capacity": 2,
-      "active_routes": 3,
-      "task_ids": [
-        "1d68b756e3fd",
-        "0215a5aa94b5",
-        "c13fa1161f54"
-      ],
-      "tasks": [
-        {
-          "id": "1d68b756e3fd",
-          "activity": "GL 03 OSV / 11 3/4'' x 11 7/8'' casing run",
-          "project": "GA023 Drill ByPass"
-        },
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        }
-      ],
-      "overlap_minutes": 1800,
-      "overlap_start": "2026-08-03T06:00:00",
-      "overlap_end": "2026-08-04T12:00:00",
-      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 03 to Aug 04): 'GL 03 OSV / 11 3/4'' x 11 7/8'' casing run', 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 2,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "d2b885f27bf8"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "d2b885f27bf8",
-          "activity": "GL 04 OSV / Drill 10 1/4'' x 12 1/4''",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 2880,
-      "overlap_start": "2026-08-06T00:00:00",
-      "overlap_end": "2026-08-08T00:00:00",
-      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 06 to Aug 08): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 04 OSV / Drill 10 1/4'' x 12 1/4'''."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 2,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "7b27a0de5c0d"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "7b27a0de5c0d",
-          "activity": "GL 05 OSV / 9 5/8'' Expandable casing section - 48 hrs",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 2880,
-      "overlap_start": "2026-08-10T05:30:00",
-      "overlap_end": "2026-08-12T05:30:00",
-      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 10 to Aug 12): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 05 OSV / 9 5/8'' Expandable casing section - 48 hrs'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 2,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "34f9c84623e6"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "34f9c84623e6",
-          "activity": "GL 06 OSV Drill 9 1/2'' x11'' section and 8 5/8 expandable liner - 48 hrs",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 2880,
-      "overlap_start": "2026-08-14T04:30:00",
-      "overlap_end": "2026-08-16T04:30:00",
-      "message": "Perdido: 3 routes are on location at the same time against 2 configured vessels (Aug 14 to Aug 16): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 06 OSV Drill 9 1/2'' x11'' section and 8 5/8 expandable liner - 48 hrs'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 1,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "fc372d1aaae9"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "fc372d1aaae9",
-          "activity": "GL 07 OSV 8 1/2 x 9 7/8'' Drill section - 72 hrs",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 4320,
-      "overlap_start": "2026-08-24T02:00:00",
-      "overlap_end": "2026-08-27T02:00:00",
-      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Aug 24 to Aug 27): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 07 OSV 8 1/2 x 9 7/8'' Drill section - 72 hrs'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54"
+        "cb2dcb008aab",
+        "884ca21dabd1"
       ],
       "tasks": [
         {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        }
-      ],
-      "overlap_minutes": 2460,
-      "overlap_start": "2026-08-27T02:00:00",
-      "overlap_end": "2026-08-28T19:00:00",
-      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Aug 27 to Aug 28): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 1,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "c7b979d5bf10"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c7b979d5bf10",
-          "activity": "GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 1530,
-      "overlap_start": "2026-08-28T19:00:00",
-      "overlap_end": "2026-08-29T20:30:00",
-      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Aug 28 to Aug 29): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 1,
-      "active_routes": 4,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "c7b979d5bf10",
-        "a09e26b94968"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c7b979d5bf10",
+          "id": "cb2dcb008aab",
           "activity": "GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs",
           "project": "GA023 Drill ByPass"
         },
         {
-          "id": "a09e26b94968",
+          "id": "884ca21dabd1",
           "activity": "GL 09 OSV / THS installation - 96 hrs",
           "project": "GA023 Drill ByPass"
         }
@@ -316,40 +79,7 @@
       "overlap_minutes": 1350,
       "overlap_start": "2026-08-29T20:30:00",
       "overlap_end": "2026-08-30T19:00:00",
-      "message": "Perdido: 4 routes are on location at the same time against 1 configured vessel (Aug 29 to Aug 30): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs', 'GL 09 OSV / THS installation - 96 hrs'."
-    },
-    {
-      "type": "on_location_overlap",
-      "severity": "conflict",
-      "asset": "Perdido",
-      "asset_capacity": 1,
-      "active_routes": 3,
-      "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54",
-        "a09e26b94968"
-      ],
-      "tasks": [
-        {
-          "id": "0215a5aa94b5",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "c13fa1161f54",
-          "activity": "Perdido Riser Swap - BSEE TBD",
-          "project": "Perdido Riser Swap"
-        },
-        {
-          "id": "a09e26b94968",
-          "activity": "GL 09 OSV / THS installation - 96 hrs",
-          "project": "GA023 Drill ByPass"
-        }
-      ],
-      "overlap_minutes": 4410,
-      "overlap_start": "2026-08-30T19:00:00",
-      "overlap_end": "2026-09-02T20:30:00",
-      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Aug 30 to Sep 02): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'GL 09 OSV / THS installation - 96 hrs'."
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Aug 29 to Aug 30): 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs', 'GL 09 OSV / THS installation - 96 hrs'."
     },
     {
       "type": "on_location_overlap",
@@ -358,25 +88,25 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "0215a5aa94b5",
-        "c13fa1161f54"
+        "fcc0603de984",
+        "803186c045c0"
       ],
       "tasks": [
         {
-          "id": "0215a5aa94b5",
+          "id": "fcc0603de984",
           "activity": "Perdido Riser Swap - BSEE TBD",
           "project": "Perdido Riser Swap"
         },
         {
-          "id": "c13fa1161f54",
+          "id": "803186c045c0",
           "activity": "Perdido Riser Swap - BSEE TBD",
           "project": "Perdido Riser Swap"
         }
       ],
-      "overlap_minutes": 20730,
-      "overlap_start": "2026-09-02T20:30:00",
-      "overlap_end": "2026-09-17T06:00:00",
-      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Sep 02 to Sep 17): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
+      "overlap_minutes": 64800,
+      "overlap_start": "2026-09-03T06:00:00",
+      "overlap_end": "2026-10-18T06:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Sep 03 to Oct 18): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
     },
     {
       "type": "on_location_overlap",
@@ -385,17 +115,17 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "e77572738b45",
-        "751e8b518988"
+        "f23dacfa46aa",
+        "cbbbc10b92b3"
       ],
       "tasks": [
         {
-          "id": "e77572738b45",
+          "id": "f23dacfa46aa",
           "activity": "GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg",
           "project": "H&P 205 Rig Idle"
         },
         {
-          "id": "751e8b518988",
+          "id": "cbbbc10b92b3",
           "activity": "GL 30 Holding at Port",
           "project": "GA023 Drill ByPass"
         }
