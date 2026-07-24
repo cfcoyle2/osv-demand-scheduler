@@ -395,7 +395,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260723-osv-update';
+const STATIC_DATA_VERSION = '20260724-compare-align';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -505,26 +505,66 @@ function parseMonthlyCapacityText(value) {
   return Number.isFinite(parsed) ? Math.max(0, parsed) : null;
 }
 
-function getCapacityForAssetAtDate(asset, dateObj) {
-  // Find the best matching capacity entry for this asset at this date
-  if (!state.assetCapacity || !state.assetCapacity.length) return 1;
-  
-  // Normalize to date string for comparison (avoids timezone issues)
-  const checkDate = dateObj.toISOString().split('T')[0];
-  
-  for (const entry of state.assetCapacity) {
-    if (entry.asset !== asset) continue;
-    
+function dateKey(dateObj) {
+  return dateObj.toISOString().split('T')[0];
+}
+
+function activeAssetCapacityEntries(asset, dateObj) {
+  if (!asset || asset === 'all' || !state.assetCapacity || !state.assetCapacity.length || !dateObj) return [];
+  const checkDate = dateKey(dateObj);
+  return state.assetCapacity.filter(entry => {
+    if (entry.asset !== asset) return false;
     const dateFrom = entry.date_from || '';
     const dateTo = entry.date_to || '';
-    
-    // Check if date falls within range (string comparison works for YYYY-MM-DD)
-    if (dateFrom && checkDate < dateFrom) continue;
-    if (dateTo && checkDate > dateTo) continue;
-    
-    return Math.max(0, Number(entry.vessel_count) || 1);
-  }
-  return 1; // Default capacity
+    if (dateFrom && checkDate < dateFrom) return false;
+    if (dateTo && checkDate > dateTo) return false;
+    return true;
+  });
+}
+
+function normalizedAllocationText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\b(deepen|deepening|drill|completion|commisioning|commissioning|activity|well)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function allocationMatchesTask(entry, task) {
+  const allocation = normalizedAllocationText(entry.notes);
+  if (!allocation) return false;
+  const project = normalizedAllocationText(task.project);
+  const activity = normalizedAllocationText(task.activity);
+  return Boolean(
+    (project && (project.includes(allocation) || allocation.includes(project))) ||
+    (activity && (activity.includes(allocation) || allocation.includes(activity)))
+  );
+}
+
+function bestPlannedAllocation(entries) {
+  if (!entries.length) return { capacity: 1, notes: '' };
+  const bestEntry = entries.reduce((best, entry) => {
+    const entryCount = Math.max(0, Number(entry.vessel_count) || 1);
+    const bestCount = Math.max(0, Number(best.vessel_count) || 1);
+    return entryCount > bestCount ? entry : best;
+  }, entries[0]);
+  return {
+    capacity: Math.max(0, Number(bestEntry.vessel_count) || 1),
+    notes: bestEntry.notes || ''
+  };
+}
+
+function plannedAssetCapacityAtDate(asset, dateObj, activeTasks = []) {
+  const dateEntries = activeAssetCapacityEntries(asset, dateObj);
+  const taskEntries = !asset || asset === 'all' || !state.assetCapacity || !activeTasks.length
+    ? []
+    : state.assetCapacity.filter(entry => entry.asset === asset && activeTasks.some(task => allocationMatchesTask(entry, task)));
+  return bestPlannedAllocation([...taskEntries, ...dateEntries]);
+}
+
+function getCapacityForAssetAtDate(asset, dateObj) {
+  return plannedAssetCapacityAtDate(asset, dateObj).capacity;
 }
 
 function generateWeeklyCapacityForecast(asset, tasks) {
@@ -1524,6 +1564,13 @@ function runAssetForecast() {
   // Calculate peak concurrent demand
   let peakDemand = 0;
   let peakDate = null;
+  let capacityAtPeak = selectedAsset === 'all' ? getOsvCapacity() : 1;
+  let capacityNotesAtPeak = '';
+  let spotHireNeeded = 0;
+  let shortageDate = null;
+  let demandAtShortage = 0;
+  let capacityAtShortage = capacityAtPeak;
+  let capacityNotesAtShortage = '';
   
   // Get date range from tasks
   let minDate = null, maxDate = null;
@@ -1544,33 +1591,49 @@ function runAssetForecast() {
   checkDate.setHours(12, 0, 0, 0); // Use noon to avoid timezone issues
   
   while (checkDate <= maxDate) {
-    let concurrent = 0;
-    filteredTasks.forEach(task => {
+    const activeTasks = filteredTasks.filter(task => {
       const taskStart = parseDate(task.start_date);
       const taskEnd = parseDate(task.return_end) || parseDate(task.offshore_end) || taskStart;
-      if (!taskStart || !taskEnd) return;
+      if (!taskStart || !taskEnd) return false;
       
       // Normalize to date-only comparison
       const checkDateOnly = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
       const startDateOnly = new Date(taskStart.getFullYear(), taskStart.getMonth(), taskStart.getDate());
       const endDateOnly = new Date(taskEnd.getFullYear(), taskEnd.getMonth(), taskEnd.getDate());
       
-      if (startDateOnly <= checkDateOnly && endDateOnly >= checkDateOnly) {
-        concurrent++;
-      }
+      return startDateOnly <= checkDateOnly && endDateOnly >= checkDateOnly;
     });
+    const concurrent = activeTasks.length;
     
     if (concurrent > peakDemand) {
       peakDemand = concurrent;
       peakDate = new Date(checkDate);
     }
+
+    const plannedCapacity = selectedAsset === 'all'
+      ? { capacity: getOsvCapacity(), notes: '' }
+      : plannedAssetCapacityAtDate(selectedAsset, checkDate, activeTasks);
+    const dailyShortage = Math.max(0, concurrent - plannedCapacity.capacity);
+
+    if (concurrent >= peakDemand) {
+      capacityAtPeak = plannedCapacity.capacity;
+      capacityNotesAtPeak = plannedCapacity.notes;
+    }
+
+    if (dailyShortage > spotHireNeeded) {
+      spotHireNeeded = dailyShortage;
+      shortageDate = new Date(checkDate);
+      demandAtShortage = concurrent;
+      capacityAtShortage = plannedCapacity.capacity;
+      capacityNotesAtShortage = plannedCapacity.notes;
+    }
     
     checkDate.setDate(checkDate.getDate() + 1);
   }
   
-  const capacity = getOsvCapacity();
-  const overCapacity = peakDemand > capacity;
-  const spotHireNeeded = Math.max(0, peakDemand - capacity);
+  const overCapacity = spotHireNeeded > 0;
+  const capacity = overCapacity ? capacityAtShortage : capacityAtPeak;
+  const capacityNotes = overCapacity ? capacityNotesAtShortage : capacityNotesAtPeak;
   
   const summaryHtml = `<div class="forecast-summary">
     <div class="forecast-stat">
@@ -1583,7 +1646,7 @@ function runAssetForecast() {
     </div>
     <div class="forecast-stat">
       <span class="stat-value">${capacity}</span>
-      <span class="stat-label">OSV Capacity</span>
+      <span class="stat-label">${selectedAsset === 'all' ? 'OSV Capacity' : 'Planned Allocation'}</span>
     </div>
     <div class="forecast-stat ${overCapacity ? 'over-capacity' : ''}">
       <span class="stat-value">${spotHireNeeded}</span>
@@ -1592,7 +1655,12 @@ function runAssetForecast() {
   </div>`;
   
   const peakDateStr = peakDate ? peakDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'N/A';
-  const peakInfo = peakDemand > 0 ? `<p style="font-size:12px;color:var(--muted);margin:0 0 12px 0;">Peak demand of <strong>${peakDemand} vessels</strong> occurs on <strong>${peakDateStr}</strong>.</p>` : '';
+  const shortageDateStr = shortageDate ? shortageDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
+  const capacityNoteText = capacityNotes ? ` Planned allocation source: <strong>${escapeHtml(capacityNotes)}</strong>.` : '';
+  const shortageText = overCapacity
+    ? ` Spot hire need peaks at <strong>${spotHireNeeded}</strong> on <strong>${shortageDateStr}</strong> (${demandAtShortage} demand vs ${capacityAtShortage} planned).`
+    : '';
+  const peakInfo = peakDemand > 0 ? `<p style="font-size:12px;color:var(--muted);margin:0 0 12px 0;">Peak demand of <strong>${peakDemand} vessels</strong> occurs on <strong>${peakDateStr}</strong>.${capacityNoteText}${shortageText}</p>` : '';
   
   const activitiesHtml = `<div class="forecast-activities">
     <h4>Activities in Range (${filteredTasks.length})</h4>
@@ -2516,8 +2584,8 @@ function formatDateShiftBadge(change) {
   const sign = diffDays > 0 ? '+' : '-';
   const label = `${sign}${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'}`;
   const direction = diffDays > 0 ? 'later' : 'earlier';
-  const color = diffDays > 0 ? '#dd6b20' : '#2f855a';
-  return `<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:8px;background:${color}22;color:${color};font-weight:600;white-space:nowrap;">${label} ${direction}</span>`;
+  const directionClass = diffDays > 0 ? 'later' : 'earlier';
+  return `<span class="compare-date-shift ${directionClass}"><span class="compare-date-shift-value">${label}</span><span class="compare-date-shift-direction">${direction}</span></span>`;
 }
 
 function chooseWeeklyBaselineSnapshot(snapshots) {
@@ -3298,8 +3366,12 @@ function renderComparisonResult(data, assetFilter = 'all') {
               const oldVal = change.old ? (isDateField ? new Date(change.old).toLocaleString() : change.old) : '(empty)';
               const newVal = change.new ? (isDateField ? new Date(change.new).toLocaleString() : change.new) : '(empty)';
               const shiftBadge = isDateField ? formatDateShiftBadge(change) : '';
-              return `<div style="margin:2px 0;padding:2px 6px;background:var(--warning-bg,#fff3cd);border-radius:3px;font-size:11px;">
-                <strong>${escapeHtml(field)}:</strong> <span style="text-decoration:line-through;opacity:0.7;">${escapeHtml(String(oldVal))}</span> → <span style="color:var(--success,#28a745);">${escapeHtml(String(newVal))}</span>${shiftBadge}
+              return `<div class="compare-change-row">
+                <strong class="compare-change-field">${escapeHtml(field)}:</strong>
+                <span class="compare-change-old">${escapeHtml(String(oldVal))}</span>
+                <span class="compare-change-arrow">→</span>
+                <span class="compare-change-new">${escapeHtml(String(newVal))}</span>
+                <span class="compare-change-delta">${shiftBadge}</span>
               </div>`;
             }).join('');
             return `<tr style="border-bottom:1px solid var(--border,#dee2e6);">

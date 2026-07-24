@@ -759,6 +759,250 @@ def compare_snapshots():
     })
 
 
+@app.route('/api/spot-hire/snapshots', methods=['GET'])
+def list_spot_hire_snapshots():
+    """List available spot hire snapshots."""
+    snapshots = []
+    for snapshot_file in sorted(SNAPSHOTS_DIR.glob('spot_hire_*.json'), reverse=True):
+        try:
+            with open(snapshot_file, 'r') as f:
+                data = json.load(f)
+            snapshots.append({
+                'id': snapshot_file.name,
+                'date': data.get('snapshot_date', ''),
+                'time': data.get('snapshot_time', ''),
+                'imported_at': data.get('imported_at', ''),
+                'source': data.get('source', ''),
+                'record_count': len(data.get('records', []))
+            })
+        except (json.JSONDecodeError, IOError):
+            continue
+    return jsonify({'snapshots': snapshots})
+
+
+@app.route('/api/spot-hire/snapshots', methods=['POST'])
+def create_spot_hire_snapshot():
+    """Create a snapshot from the current spot hire data."""
+    try:
+        with open(DATA_DIR / 'spot-hire.json', 'r') as f:
+            current_data = json.load(f)
+    except FileNotFoundError:
+        return jsonify({'error': 'No spot hire data to snapshot'}), 400
+
+    timestamp = datetime.now()
+    snapshot_filename = f"spot_hire_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
+    snapshot_data = {
+        **current_data,
+        'snapshot_id': snapshot_filename,
+        'snapshot_date': timestamp.strftime('%Y-%m-%d'),
+        'snapshot_time': timestamp.strftime('%H:%M:%S'),
+        'imported_at': timestamp.isoformat(),
+        'snapshot_type': 'manual'
+    }
+
+    with open(SNAPSHOTS_DIR / snapshot_filename, 'w') as f:
+        json.dump(snapshot_data, f, indent=2)
+
+    return jsonify({
+        'success': True,
+        'snapshot_id': snapshot_filename,
+        'date': timestamp.strftime('%Y-%m-%d'),
+        'time': timestamp.strftime('%H:%M:%S'),
+        'record_count': len(current_data.get('records', []))
+    })
+
+
+@app.route('/api/spot-hire/snapshots/compare', methods=['GET'])
+def compare_spot_hire_snapshots():
+    """Compare spot hire snapshots to identify activity changes and cancellations."""
+    baseline_id = request.args.get('baseline')
+    current_id = request.args.get('current', 'current')
+    asset_filter = request.args.get('asset')
+
+    if not baseline_id:
+        return jsonify({'error': 'baseline parameter required'}), 400
+
+    baseline_path = SNAPSHOTS_DIR / baseline_id
+    if not baseline_path.exists():
+        return jsonify({'error': f'Baseline snapshot {baseline_id} not found'}), 404
+
+    try:
+        with open(baseline_path, 'r') as f:
+            baseline_data = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        return jsonify({'error': f'Error reading baseline: {e}'}), 500
+
+    if current_id == 'current':
+        try:
+            with open(DATA_DIR / 'spot-hire.json', 'r') as f:
+                current_data = json.load(f)
+        except FileNotFoundError:
+            current_data = {'records': []}
+    else:
+        current_path = SNAPSHOTS_DIR / current_id
+        if not current_path.exists():
+            return jsonify({'error': f'Current snapshot {current_id} not found'}), 404
+        try:
+            with open(current_path, 'r') as f:
+                current_data = json.load(f)
+        except (json.JSONDecodeError, IOError) as e:
+            return jsonify({'error': f'Error reading current: {e}'}), 500
+
+    baseline_records = baseline_data.get('records', [])
+    current_records = current_data.get('records', [])
+
+    if asset_filter:
+        baseline_records = [r for r in baseline_records if r.get('asset') == asset_filter or r.get('display_asset') == asset_filter]
+        current_records = [r for r in current_records if r.get('asset') == asset_filter or r.get('display_asset') == asset_filter]
+
+    def parse_record_date(value):
+        if not value:
+            return None
+        try:
+            if 'T' in str(value):
+                return datetime.fromisoformat(str(value).replace('Z', '+00:00')).replace(tzinfo=None)
+            return datetime.strptime(str(value).split()[0], '%Y-%m-%d')
+        except (ValueError, TypeError):
+            return None
+
+    def normalize_text(value):
+        return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9]+', ' ', str(value or '').lower())).strip()
+
+    def soft_key(record):
+        asset = normalize_text(record.get('asset') or record.get('display_asset'))
+        activity = normalize_text(record.get('activity'))
+        return f"{asset}|{activity}"
+
+    def is_cancelled(record):
+        return 'cancel' in str(record.get('status') or '').lower()
+
+    def categorize_record_changes(changes_dict, current_record):
+        categories = []
+        changed_fields = set(changes_dict.keys())
+        if changed_fields & {'start_date', 'end_date'}:
+            categories.append({'id': 'date_change', 'label': 'Date Change', 'icon': '📅', 'color': '#3182ce'})
+        if 'status' in changed_fields:
+            if is_cancelled(current_record):
+                categories.append({'id': 'cancelled', 'label': 'Cancelled', 'icon': 'X', 'color': '#c53030'})
+            else:
+                categories.append({'id': 'status_update', 'label': 'Status Update', 'icon': '↻', 'color': '#38a169'})
+        if changed_fields & {'vessel_count', 'asset', 'display_asset'}:
+            categories.append({'id': 'allocation_change', 'label': 'Allocation', 'icon': 'OSV', 'color': '#dd6b20'})
+        if changed_fields & {'area', 'phase', 'activity', 'notes'}:
+            categories.append({'id': 'scope_change', 'label': 'Scope', 'icon': 'Edit', 'color': '#805ad5'})
+        return categories
+
+    from collections import defaultdict
+    baseline_by_key = defaultdict(list)
+    current_by_key = defaultdict(list)
+    for record in baseline_records:
+        baseline_by_key[soft_key(record)].append(record)
+    for record in current_records:
+        current_by_key[soft_key(record)].append(record)
+
+    compare_fields = ['start_date', 'end_date', 'status', 'vessel_count', 'asset', 'display_asset', 'area', 'phase', 'activity', 'notes']
+    category_counts = {'date_change': 0, 'status_update': 0, 'allocation_change': 0, 'scope_change': 0, 'cancelled': 0}
+    new_records = []
+    removed_records = []
+    changed_records = []
+    unchanged_records = []
+
+    all_keys = set(baseline_by_key.keys()) | set(current_by_key.keys())
+    for key in all_keys:
+        baseline_group = baseline_by_key.get(key, [])
+        current_group = current_by_key.get(key, [])
+        baseline_available = list(range(len(baseline_group)))
+        current_available = list(range(len(current_group)))
+
+        for current_index in list(current_available):
+            current_record = current_group[current_index]
+            current_start = parse_record_date(current_record.get('start_date'))
+            best_baseline_index = None
+            best_diff = float('inf')
+
+            for baseline_index in baseline_available:
+                baseline_record = baseline_group[baseline_index]
+                baseline_start = parse_record_date(baseline_record.get('start_date'))
+                if current_start and baseline_start:
+                    diff = abs((current_start - baseline_start).days)
+                else:
+                    diff = 0 if not current_start and not baseline_start else 9999
+                if diff < best_diff:
+                    best_diff = diff
+                    best_baseline_index = baseline_index
+
+            if best_baseline_index is None or best_diff > 90:
+                continue
+
+            baseline_record = baseline_group[best_baseline_index]
+            baseline_available.remove(best_baseline_index)
+            current_available.remove(current_index)
+
+            changes = {}
+            for field in compare_fields:
+                old_value = baseline_record.get(field)
+                new_value = current_record.get(field)
+                if field in {'start_date', 'end_date'}:
+                    old_date = parse_record_date(old_value)
+                    new_date = parse_record_date(new_value)
+                    if old_date and new_date and abs((new_date - old_date).total_seconds()) < 3600:
+                        continue
+                if old_value != new_value and (old_value or new_value):
+                    changes[field] = {'old': old_value, 'new': new_value}
+
+            if changes:
+                categories = categorize_record_changes(changes, current_record)
+                for category in categories:
+                    category_counts[category['id']] = category_counts.get(category['id'], 0) + 1
+                changed_records.append({
+                    **current_record,
+                    'change_type': 'changed',
+                    'changes': changes,
+                    'change_categories': categories,
+                    'baseline_record': baseline_record
+                })
+            else:
+                unchanged_records.append({**current_record, 'change_type': 'unchanged'})
+
+        for current_index in current_available:
+            current_record = current_group[current_index]
+            if is_cancelled(current_record):
+                category_counts['cancelled'] += 1
+            new_records.append({**current_record, 'change_type': 'new'})
+
+        for baseline_index in baseline_available:
+            category_counts['cancelled'] += 1
+            removed_records.append({**baseline_group[baseline_index], 'change_type': 'removed'})
+
+    assets = sorted(set((r.get('display_asset') or r.get('asset') or '') for r in baseline_records + current_records if (r.get('display_asset') or r.get('asset'))))
+
+    return jsonify({
+        'baseline': {
+            'id': baseline_id,
+            'date': baseline_data.get('snapshot_date', ''),
+            'record_count': len(baseline_records)
+        },
+        'current': {
+            'id': current_id,
+            'date': current_data.get('snapshot_date', current_data.get('imported_at', '')[:10] if current_data.get('imported_at') else ''),
+            'record_count': len(current_records)
+        },
+        'summary': {
+            'new_count': len(new_records),
+            'removed_count': len(removed_records),
+            'changed_count': len(changed_records),
+            'unchanged_count': len(unchanged_records),
+            'cancelled_count': category_counts.get('cancelled', 0),
+            'assets': assets,
+            'category_counts': category_counts
+        },
+        'new_records': new_records,
+        'removed_records': removed_records,
+        'changed_records': changed_records,
+        'unchanged_records': unchanged_records
+    })
+
+
 @app.route('/api/snapshots/volatility', methods=['GET'])
 def analyze_volatility():
     """Analyze schedule volatility/stability over time.

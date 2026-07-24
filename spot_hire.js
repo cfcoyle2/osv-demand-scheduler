@@ -73,6 +73,16 @@ const els = {
   impactsInput: document.getElementById('impactsInput'),
   impactMeta: document.getElementById('impactMeta'),
   saveImpactsButton: document.getElementById('saveImpactsButton'),
+  createSpotSnapshotBtn: document.getElementById('createSpotSnapshotBtn'),
+  compareSpotSnapshotsBtn: document.getElementById('compareSpotSnapshotsBtn'),
+  spotSnapshotStatus: document.getElementById('spotSnapshotStatus'),
+  spotCompareDialog: document.getElementById('spotCompareDialog'),
+  spotBaselineSnapshotSelect: document.getElementById('spotBaselineSnapshotSelect'),
+  spotCurrentSnapshotSelect: document.getElementById('spotCurrentSnapshotSelect'),
+  spotCompareAssetFilter: document.getElementById('spotCompareAssetFilter'),
+  runSpotCompareBtn: document.getElementById('runSpotCompareBtn'),
+  closeSpotCompareDialog: document.getElementById('closeSpotCompareDialog'),
+  spotCompareResult: document.getElementById('spotCompareResult'),
   editDialog: document.getElementById('editDialog'),
   editForm: document.getElementById('editForm'),
   editPhase: document.getElementById('editPhase'),
@@ -95,7 +105,7 @@ function showToast(message) {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260723-logistics-meeting';
+const STATIC_DATA_VERSION = '20260724-spot-compare';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -376,6 +386,200 @@ async function loadData() {
   hydrateControls();
   await loadImpacts();
   render();
+  updateSpotSnapshotStatus().catch(err => console.warn(err));
+}
+
+async function loadSpotSnapshots() {
+  const payload = await api('/api/spot-hire/snapshots');
+  return payload.snapshots || [];
+}
+
+function spotSnapshotLabel(snapshot) {
+  const dateTime = [snapshot.date, snapshot.time].filter(Boolean).join(' ');
+  return `${dateTime || snapshot.id} (${snapshot.record_count || 0} activities)`;
+}
+
+async function updateSpotSnapshotStatus() {
+  if (!els.spotSnapshotStatus) return;
+  if (staticMode) {
+    els.spotSnapshotStatus.textContent = 'Compare snapshots require the local server.';
+    return;
+  }
+  const snapshots = await loadSpotSnapshots();
+  if (!snapshots.length) {
+    els.spotSnapshotStatus.textContent = 'No Spot Hire snapshots yet. Create one to start comparing.';
+    return;
+  }
+  els.spotSnapshotStatus.textContent = `Latest: ${spotSnapshotLabel(snapshots[0])}`;
+}
+
+async function createSpotSnapshot() {
+  if (staticMode) {
+    showToast('Cannot create snapshots in read-only mode');
+    return;
+  }
+  const payload = await api('/api/spot-hire/snapshots', { method: 'POST' });
+  showToast(`Spot Hire snapshot created: ${payload.date} ${payload.time}`);
+  await updateSpotSnapshotStatus();
+}
+
+async function openSpotCompareDialog() {
+  if (!els.spotCompareDialog) return;
+  const snapshots = await loadSpotSnapshots();
+  if (!snapshots.length) {
+    showToast('No Spot Hire snapshots available. Create a snapshot first.');
+    return;
+  }
+  els.spotBaselineSnapshotSelect.innerHTML = snapshots.map(snapshot => `<option value="${escapeHtml(snapshot.id)}">${escapeHtml(spotSnapshotLabel(snapshot))}</option>`).join('');
+  els.spotCurrentSnapshotSelect.innerHTML = '<option value="current">Current Live Data</option>' + snapshots.map(snapshot => `<option value="${escapeHtml(snapshot.id)}">${escapeHtml(spotSnapshotLabel(snapshot))}</option>`).join('');
+  const assets = Array.from(new Set(state.records.map(record => record.display_asset || record.asset).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  els.spotCompareAssetFilter.innerHTML = '<option value="all">All Assets</option>' + assets.map(asset => `<option value="${escapeHtml(asset)}">${escapeHtml(asset)}</option>`).join('');
+  els.spotCompareResult.innerHTML = '<p style="color:var(--muted);margin:0;">Select snapshots and click Compare to identify date changes, cancellations, and new activities.</p>';
+  els.spotCompareDialog.hidden = false;
+}
+
+function closeSpotCompareDialog() {
+  if (els.spotCompareDialog) els.spotCompareDialog.hidden = true;
+}
+
+function getSpotDateShiftDays(change) {
+  if (!change || !change.old || !change.new) return null;
+  const oldDate = parseDate(change.old);
+  const newDate = parseDate(change.new);
+  if (!oldDate || !newDate) return null;
+  return Math.round((newDate - oldDate) / (1000 * 60 * 60 * 24));
+}
+
+function formatSpotDateShiftBadge(change) {
+  const diffDays = getSpotDateShiftDays(change);
+  if (diffDays === null || diffDays === 0) return '';
+  const sign = diffDays > 0 ? '+' : '-';
+  const label = `${sign}${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'}`;
+  const direction = diffDays > 0 ? 'later' : 'earlier';
+  return `<span class="compare-date-shift ${diffDays > 0 ? 'later' : 'earlier'}"><span class="compare-date-shift-value">${label}</span><span class="compare-date-shift-direction">${direction}</span></span>`;
+}
+
+function formatSpotCompareValue(field, value) {
+  if (!value) return '(empty)';
+  if (field === 'start_date' || field === 'end_date') {
+    const date = parseDate(value);
+    return date ? date.toLocaleDateString() : value;
+  }
+  return value;
+}
+
+function renderSpotRecordRows(records, type) {
+  if (!records.length) return '';
+  const title = type === 'new' ? `New Activities (${records.length})` : `Cancelled / Removed Activities (${records.length})`;
+  const color = type === 'new' ? 'var(--success,#28a745)' : 'var(--danger,#dc3545)';
+  return `<details ${type === 'removed' ? 'open' : ''} style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:${color};font-size:15px;">${escapeHtml(title)}</summary>
+    <div style="max-height:35vh;overflow-y:auto;margin-top:8px;">
+      <table style="width:100%;font-size:13px;border-collapse:collapse;">
+        <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Phase</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Start</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">End</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Status</th>
+        </tr></thead>
+        <tbody>${records.map(record => `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+          <td style="padding:8px;">${escapeHtml(record.display_asset || record.asset || '')}</td>
+          <td style="padding:8px;">${escapeHtml(record.activity || '')}</td>
+          <td style="padding:8px;">${escapeHtml(record.phase || '')}</td>
+          <td style="padding:8px;">${escapeHtml(formatSpotCompareValue('start_date', record.start_date))}</td>
+          <td style="padding:8px;">${escapeHtml(formatSpotCompareValue('end_date', record.end_date))}</td>
+          <td style="padding:8px;">${escapeHtml(record.status || '')}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </details>`;
+}
+
+function renderSpotCompareResult(data, assetFilter = 'all') {
+  const { summary, changed_records = [], new_records = [], removed_records = [], baseline, current } = data;
+  const categoryCounts = summary.category_counts || {};
+  const categoryLabels = {
+    date_change: { label: 'Date Changes', color: '#3182ce' },
+    cancelled: { label: 'Cancelled', color: '#c53030' },
+    status_update: { label: 'Status', color: '#38a169' },
+    allocation_change: { label: 'Allocation', color: '#dd6b20' },
+    scope_change: { label: 'Scope', color: '#805ad5' }
+  };
+  const categoryBadges = Object.entries(categoryCounts)
+    .filter(([, count]) => count > 0)
+    .map(([id, count]) => {
+      const category = categoryLabels[id] || { label: id, color: '#718096' };
+      return `<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:${category.color}22;color:${category.color};border-radius:12px;font-size:12px;font-weight:600;border:1px solid ${category.color}44;">${count} ${escapeHtml(category.label)}</span>`;
+    }).join('');
+
+  const filterText = assetFilter && assetFilter !== 'all' ? `<span style="background:var(--primary,#007bff);color:white;padding:2px 8px;border-radius:4px;margin-left:8px;">Filtered: ${escapeHtml(assetFilter)}</span>` : '';
+  let html = `<div class="comparison-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:12px;">
+    <div class="stat-card" style="background:var(--success-bg,#d4edda);padding:12px;border-radius:6px;text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--success,#28a745);">${summary.new_count}</div><div style="font-size:12px;color:var(--muted);">New</div></div>
+    <div class="stat-card" style="background:var(--danger-bg,#f8d7da);padding:12px;border-radius:6px;text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--danger,#dc3545);">${summary.removed_count}</div><div style="font-size:12px;color:var(--muted);">Cancelled / Removed</div></div>
+    <div class="stat-card" style="background:var(--warning-bg,#fff3cd);padding:12px;border-radius:6px;text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--warning,#ffc107);">${summary.changed_count}</div><div style="font-size:12px;color:var(--muted);">Changed</div></div>
+    <div class="stat-card" style="background:var(--muted-bg,#e9ecef);padding:12px;border-radius:6px;text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--text);">${summary.unchanged_count}</div><div style="font-size:12px;color:var(--muted);">Unchanged</div></div>
+  </div>
+  ${categoryBadges ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">${categoryBadges}</div>` : ''}
+  <p style="font-size:12px;color:var(--muted);margin:0 0 16px 0;">Comparing <strong>${escapeHtml(baseline.date || baseline.id)}</strong> (${baseline.record_count} activities) to <strong>${current.id === 'current' ? 'Live Data' : escapeHtml(current.date || current.id)}</strong> (${current.record_count} activities)${filterText}</p>`;
+
+  if (changed_records.length) {
+    html += `<details open style="margin-bottom:16px;"><summary style="cursor:pointer;font-weight:600;color:var(--warning,#b58900);font-size:15px;">Changed Activities (${changed_records.length})</summary>
+      <div style="max-height:45vh;overflow-y:auto;margin-top:8px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <thead><tr style="background:var(--muted-bg,#f8f9fa);position:sticky;top:0;">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Asset</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Activity</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Phase</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Category</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border);">Changes</th>
+          </tr></thead>
+          <tbody>${changed_records.map(record => {
+            const categories = (record.change_categories || []).map(category => `<span style="display:inline-block;padding:2px 6px;background:${category.color}22;color:${category.color};border-radius:8px;font-size:10px;font-weight:600;white-space:nowrap;margin:1px 0;">${escapeHtml(category.label)}</span>`).join('<br>');
+            const changes = Object.entries(record.changes || {}).map(([field, change]) => {
+              const shiftBadge = (field === 'start_date' || field === 'end_date') ? formatSpotDateShiftBadge(change) : '';
+              return `<div class="compare-change-row">
+                <strong class="compare-change-field">${escapeHtml(field)}:</strong>
+                <span class="compare-change-old">${escapeHtml(String(formatSpotCompareValue(field, change.old)))}</span>
+                <span class="compare-change-arrow">→</span>
+                <span class="compare-change-new">${escapeHtml(String(formatSpotCompareValue(field, change.new)))}</span>
+                <span class="compare-change-delta">${shiftBadge}</span>
+              </div>`;
+            }).join('');
+            return `<tr style="border-bottom:1px solid var(--border,#dee2e6);">
+              <td style="padding:8px;vertical-align:top;font-weight:500;">${escapeHtml(record.display_asset || record.asset || '')}</td>
+              <td style="padding:8px;vertical-align:top;">${escapeHtml(record.activity || '')}</td>
+              <td style="padding:8px;vertical-align:top;">${escapeHtml(record.phase || '')}</td>
+              <td style="padding:8px;vertical-align:top;">${categories || '-'}</td>
+              <td style="padding:8px;vertical-align:top;">${changes}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </details>`;
+  }
+
+  html += renderSpotRecordRows(removed_records, 'removed');
+  html += renderSpotRecordRows(new_records, 'new');
+  if (!changed_records.length && !new_records.length && !removed_records.length) {
+    html += '<p style="text-align:center;color:var(--muted);padding:20px;">No Spot Hire activity changes detected between the selected snapshots.</p>';
+  }
+  els.spotCompareResult.innerHTML = html;
+}
+
+async function runSpotCompare() {
+  const baseline = els.spotBaselineSnapshotSelect.value;
+  const current = els.spotCurrentSnapshotSelect.value || 'current';
+  const asset = els.spotCompareAssetFilter.value;
+  if (!baseline) {
+    showToast('Select a baseline snapshot');
+    return;
+  }
+  els.spotCompareResult.innerHTML = '<p style="text-align:center;">Loading comparison...</p>';
+  let url = `/api/spot-hire/snapshots/compare?baseline=${encodeURIComponent(baseline)}&current=${encodeURIComponent(current)}`;
+  if (asset && asset !== 'all') url += `&asset=${encodeURIComponent(asset)}`;
+  const payload = await api(url);
+  renderSpotCompareResult(payload, asset);
 }
 
 async function saveImpacts() {
@@ -979,6 +1183,11 @@ els.workbookInput?.addEventListener('change', async event => {
   event.target.value = '';
 });
 els.saveImpactsButton.addEventListener('click', () => saveImpacts().catch(err => showToast(err.message)));
+els.createSpotSnapshotBtn?.addEventListener('click', () => createSpotSnapshot().catch(err => showToast(err.message)));
+els.compareSpotSnapshotsBtn?.addEventListener('click', () => openSpotCompareDialog().catch(err => showToast(err.message)));
+els.runSpotCompareBtn?.addEventListener('click', () => runSpotCompare().catch(err => showToast(err.message)));
+els.closeSpotCompareDialog?.addEventListener('click', closeSpotCompareDialog);
+els.spotCompareDialog?.addEventListener('click', event => { if (event.target === els.spotCompareDialog) closeSpotCompareDialog(); });
 els.impactMonth.addEventListener('change', () => {
   state.impactMonth = els.impactMonth.value;
   updateForecastDemand(filteredRecords());

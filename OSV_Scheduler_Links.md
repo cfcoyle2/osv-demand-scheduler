@@ -1,6 +1,6 @@
 # OSV Demand Scheduler & Spot Hire Planner Links
 
-**Updated:** July 13, 2026
+**Updated:** July 24, 2026
 
 ---
 
@@ -8,8 +8,8 @@
 
 | App | URL |
 |-----|-----|
-| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260713-route-schedule-focus |
-| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260713-spot-hire-impacts |
+| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260724-compare-shift-color |
+| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260724-spot-compare |
 
 > Note: GitHub Pages is read-only. Good for viewing schedules but cannot save changes.
 
@@ -44,13 +44,15 @@ Or double-click: `Start_OSV_Scheduler.bat`
 
 ---
 
-## Features (July 6, 2026 Release)
+## Features (July 24, 2026 Release)
 
 - Route Demand Gantt timeline
 - Spot Hire Planner with phase colors
+- Asset Activity Forecast uses Spot Hire planned vessel allocations and highlights spot-hire gaps
+- Spot Hire Planner has a Compare section for date changes, day shifts, new activities, and cancelled/removed activities
 - **Snapshot Comparison** - Compare baseline vs current data
   - Filter by specific asset
   - See changed/new/removed tasks
-  - Field-level change details
+  - Field-level change details with aligned date-shift rows
 - Excel workbook upload
 - Auto-snapshot on upload

@@ -130,6 +130,80 @@ button:hover, .upload-button:hover { border-color: var(--teal); }
 .shift-preview-tooltip .preview-decrease { color: #86efac; }
 .shift-preview-tooltip .preview-neutral { color: #94a3b8; }
 
+.compare-change-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.9fr) minmax(170px, 1.25fr) 18px minmax(170px, 1.25fr) minmax(110px, max-content);
+  align-items: center;
+  column-gap: 8px;
+  margin: 2px 0;
+  padding: 3px 6px;
+  background: var(--warning-bg, #fff3cd);
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.compare-change-field,
+.compare-change-old,
+.compare-change-new {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-change-old {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.compare-change-arrow {
+  color: var(--muted);
+  text-align: center;
+}
+
+.compare-change-new {
+  color: var(--success, #28a745);
+}
+
+.compare-change-delta {
+  justify-self: start;
+  min-width: 0;
+}
+
+.compare-date-shift {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.compare-date-shift.later {
+  background: rgba(154, 72, 18, 0.16);
+  color: #9a4812;
+}
+
+.compare-date-shift.earlier {
+  background: rgba(31, 111, 70, 0.16);
+  color: #1f6f46;
+}
+
+.compare-date-shift-value,
+.compare-date-shift-direction { color: inherit; }
+
+@media (max-width: 900px) {
+  .compare-change-row {
+    grid-template-columns: 1fr;
+    row-gap: 2px;
+  }
+
+  .compare-change-arrow {
+    display: none;
+  }
+}
+
 .topbar {
   min-height: 48px;
   padding: 8px 24px;

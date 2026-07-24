@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>2026 Spot Hire Planner</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-logistics-meeting">
+  <link rel="stylesheet" href="styles.css?v=20260724-spot-compare">
 </head>
 <body class="spot-page">
   <header class="topbar">
@@ -70,6 +70,15 @@
             <label>View To<input id="dateToFilter" type="date"></label>
           </div>
           <button id="clearDateFilter" type="button">Clear Dates</button>
+        </section>
+
+        <section>
+          <h2>Compare</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="createSpotSnapshotBtn" type="button" class="secondary-button" title="Save current Spot Hire activities as a comparison baseline">Create Snapshot</button>
+            <button id="compareSpotSnapshotsBtn" type="button" class="secondary-button" title="Compare Spot Hire activity changes">Compare</button>
+          </div>
+          <p id="spotSnapshotStatus" style="font-size:12px;color:var(--muted);margin-top:8px;"></p>
         </section>
       </aside>
 
@@ -176,7 +185,33 @@
     </form>
   </div>
 
+  <div id="spotCompareDialog" class="dialog-backdrop" hidden>
+    <div class="dialog panel" style="max-width:95vw;width:1300px;max-height:92vh;display:flex;flex-direction:column;">
+      <h2 style="margin:0 0 16px 0;">Compare Spot Hire Activities</h2>
+      <div class="snapshot-compare-controls" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+        <label style="flex:1;min-width:180px;">Baseline Snapshot
+          <select id="spotBaselineSnapshotSelect"></select>
+        </label>
+        <label style="flex:1;min-width:180px;">Compare To
+          <select id="spotCurrentSnapshotSelect">
+            <option value="current">Current Live Data</option>
+          </select>
+        </label>
+        <label style="flex:1;min-width:150px;">Filter by Asset
+          <select id="spotCompareAssetFilter">
+            <option value="all">All Assets</option>
+          </select>
+        </label>
+        <button id="runSpotCompareBtn" type="button" class="primary-button">Compare</button>
+      </div>
+      <div id="spotCompareResult" style="flex:1;overflow-y:auto;margin-bottom:16px;"></div>
+      <div class="dialog-actions" style="flex-shrink:0;border-top:1px solid var(--border,#dee2e6);padding-top:12px;margin-top:auto;">
+        <button id="closeSpotCompareDialog" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" hidden></div>
-  <script src="spot_hire.js?v=20260723-logistics-meeting"></script>
+  <script src="spot_hire.js?v=20260724-spot-compare"></script>
 </body>
 </html>
