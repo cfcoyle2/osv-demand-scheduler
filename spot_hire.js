@@ -105,7 +105,7 @@ function showToast(message) {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260724-spot-compare';
+const STATIC_DATA_VERSION = '20260727-upload';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -1172,9 +1172,7 @@ els.workbookInput?.addEventListener('change', async event => {
     const formData = new FormData();
     formData.append('file', file);
     showToast('Uploading workbook...');
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Upload failed');
-    const result = await res.json();
+    const result = await api('/api/upload', { method: 'POST', body: formData });
     showToast(result.message || 'Workbook uploaded successfully');
     await loadData();
   } catch (err) {

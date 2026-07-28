@@ -395,7 +395,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260724-compare-align';
+const STATIC_DATA_VERSION = '20260727-upload';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -1890,13 +1890,14 @@ async function uploadWorkbook(event) {
   if (!file) return;
   const form = new FormData();
   form.append('file', file);
-  await fetch('/api/upload', { method: 'POST', body: form }).then(response => {
-    if (!response.ok) throw new Error('Workbook upload failed');
-    return response.json();
+  await api('/api/upload', {
+    method: 'POST',
+    body: form
   });
   showToast('Workbook uploaded');
   await loadData();
   await loadSpotData();
+  event.target.value = '';
 }
 
 function spotPhaseNames() {
@@ -2138,7 +2139,13 @@ async function deleteSpotRecord(recordId) {
 
 document.getElementById('demandForm').addEventListener('submit', event => addDemand(event).catch(err => showToast(err.message)));
 document.getElementById('refreshButton').addEventListener('click', () => Promise.all([loadData(), loadSpotData()]).catch(err => showToast(err.message)));
-document.getElementById('exportButton').addEventListener('click', () => { window.location.href = '/api/export'; });
+document.getElementById('exportButton').addEventListener('click', () => {
+  if (staticMode) {
+    showToast('Export requires the local server');
+    return;
+  }
+  window.location.href = '/api/export';
+});
 document.getElementById('workbookInput').addEventListener('change', event => uploadWorkbook(event).catch(err => showToast(err.message)));
 els.routeTab.addEventListener('click', () => switchView('route'));
 els.spotHireTab.addEventListener('click', () => switchView('spotHire'));
@@ -2519,10 +2526,9 @@ enableSpotShiftDrag();
 // ============== Snapshot Comparison Feature ==============
 
 async function loadSnapshots() {
+  if (staticMode) return [];
   try {
-    const response = await fetch('/api/snapshots');
-    if (!response.ok) return [];
-    const data = await response.json();
+    const data = await api('/api/snapshots');
     return data.snapshots || [];
   } catch {
     return [];
@@ -2535,9 +2541,7 @@ async function createSnapshot() {
     return;
   }
   try {
-    const response = await fetch('/api/snapshots', { method: 'POST' });
-    if (!response.ok) throw new Error('Failed to create snapshot');
-    const data = await response.json();
+    const data = await api('/api/snapshots', { method: 'POST' });
     showToast(`Snapshot created: ${data.date} ${data.time}`);
     updateSnapshotStatus();
     return data;
