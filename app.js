@@ -395,7 +395,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260729-upload';
+const STATIC_DATA_VERSION = '20260729-capacity-defaults';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -1240,6 +1240,16 @@ async function saveAssetCapacity() {
 }
 
 const DEFAULT_OSV_CAPACITY = 9;
+const DEFAULT_WEEKLY_CAPACITIES = {
+  '2026-07-27': 10,
+  '2026-08-03': 12,
+  '2026-08-10': 12,
+  '2026-08-17': 12,
+  '2026-08-24': 12,
+  '2026-08-31': 9,
+  '2026-09-07': 9,
+  '2026-09-14': 9
+};
 
 // Per-week capacity storage
 function getWeeklyCapacities() {
@@ -1260,12 +1270,13 @@ function setWeeklyCapacity(weekKey, capacity) {
 
 function getCapacityForWeek(weekKey) {
   const capacities = getWeeklyCapacities();
-  return capacities[weekKey] !== undefined ? capacities[weekKey] : DEFAULT_OSV_CAPACITY;
+  if (capacities[weekKey] !== undefined) return capacities[weekKey];
+  return DEFAULT_WEEKLY_CAPACITIES[weekKey] !== undefined ? DEFAULT_WEEKLY_CAPACITIES[weekKey] : DEFAULT_OSV_CAPACITY;
 }
 
 // For asset forecast, use average of visible weeks or default
 function getOsvCapacity() {
-  const capacities = getWeeklyCapacities();
+  const capacities = { ...DEFAULT_WEEKLY_CAPACITIES, ...getWeeklyCapacities() };
   const values = Object.values(capacities);
   if (values.length === 0) return DEFAULT_OSV_CAPACITY;
   return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
