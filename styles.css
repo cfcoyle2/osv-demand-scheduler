@@ -1110,20 +1110,30 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
   background: #f0fff4;
 }
 .week-card .week-label { font-weight: 700; color: #14324a; display: block; margin-bottom: 6px; }
-.week-card .week-stats { display: flex; align-items: baseline; gap: 6px; }
+.week-card .week-stats { display: flex; align-items: center; gap: 6px; }
 .week-card .week-demand { font-size: 20px; font-weight: 700; color: #1f2933; }
 .week-card .week-divider { color: #62717f; }
 .week-card .week-capacity-wrap { display: flex; align-items: center; gap: 2px; }
 .week-card .week-capacity-input {
-  width: 36px;
-  padding: 2px 4px;
+  width: 54px;
+  min-width: 54px;
+  min-height: 30px;
+  padding: 2px 8px;
   border: 1px solid var(--line);
   border-radius: 3px;
   font-size: 14px;
   font-weight: 700;
+  line-height: 1;
   text-align: center;
   background: rgba(255,255,255,0.9);
   color: #1f2933;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.week-card .week-capacity-input::-webkit-outer-spin-button,
+.week-card .week-capacity-input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 .week-card .week-capacity-input:focus {
   outline: none;
