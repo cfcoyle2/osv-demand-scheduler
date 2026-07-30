@@ -19,6 +19,7 @@ from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from regenerate_conflicts import detect_conflicts
 
 # Try to import openpyxl for Excel parsing
 try:
@@ -141,6 +142,21 @@ def load_tasks_data():
 def write_tasks_data(data):
     with open(DATA_DIR / 'tasks.json', 'w') as f:
         json.dump(data, f, indent=2)
+    refresh_demand_conflicts()
+
+
+def refresh_demand_conflicts():
+    """Regenerate Demand Watch conflicts from current tasks and asset capacity."""
+    tasks_data = get_json_file(DATA_DIR / 'tasks.json', {'tasks': []})
+    capacity_data = get_json_file(DATA_DIR / 'asset-capacity.json', {'asset_capacities': []})
+    conflicts = detect_conflicts(
+        tasks_data.get('tasks', []),
+        capacity_data.get('asset_capacities', []),
+        datetime.now().date()
+    )
+    with open(DATA_DIR / 'conflicts.json', 'w') as f:
+        json.dump({'conflicts': conflicts, 'fleet': None}, f, indent=2)
+    return conflicts
 
 
 def get_json_file(path, default):
@@ -295,6 +311,7 @@ def save_asset_capacity():
     data = request.get_json()
     with open(DATA_DIR / 'asset-capacity.json', 'w') as f:
         json.dump(data, f, indent=2)
+    refresh_demand_conflicts()
     return jsonify({'success': True})
 
 
@@ -1329,6 +1346,7 @@ def process_json_upload(filepath):
     if 'tasks' in data:
         with open(DATA_DIR / 'tasks.json', 'w') as f:
             json.dump(data, f, indent=2)
+        refresh_demand_conflicts()
         return {'success': True, 'type': 'tasks', 'count': len(data.get('tasks', []))}
     
     elif 'records' in data:
@@ -1344,6 +1362,7 @@ def process_json_upload(filepath):
     elif 'asset_capacities' in data:
         with open(DATA_DIR / 'asset-capacity.json', 'w') as f:
             json.dump(data, f, indent=2)
+        refresh_demand_conflicts()
         return {'success': True, 'type': 'asset-capacity', 'count': len(data.get('asset_capacities', []))}
     
     return {'error': 'Unknown JSON format'}, 400
@@ -1626,6 +1645,7 @@ def save_tasks_data(tasks, filename, sheet_name):
     # Save current tasks
     with open(DATA_DIR / 'tasks.json', 'w') as f:
         json.dump(data, f, indent=2)
+    refresh_demand_conflicts()
     
     # Save snapshot for planned vs actual tracking
     snapshot_filename = f"tasks_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
@@ -1738,6 +1758,7 @@ def update_asset_capacity_from_spot_hire(records):
 
     with open(DATA_DIR / 'asset-capacity.json', 'w') as f:
         json.dump(capacity_data, f, indent=2)
+    refresh_demand_conflicts()
 
     print(f"Auto-updated asset capacity: {len(asset_capacities)} entries, {len(monthly_capacity)} months")
 

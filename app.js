@@ -395,7 +395,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260730-update-3';
+const STATIC_DATA_VERSION = '20260730-demand-watch-fix';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -922,7 +922,7 @@ function renderInsightPanel(tasks) {
         body: `<div class="insight-scroll">${forecastHtml}<div class="insight-list">${relevantConflicts.map(item => {
           const label = item.type === 'fleet_monthly_capacity' ? 'Monthly OSV Capacity' : (item.asset || item.resource || '');
           const severityLabel = item.severity === 'warning' ? 'Demand warning' : 'Demand conflict';
-          return `<button type="button" class="insight-item insight-item-action" data-conflict-tasks="${escapeHtml(JSON.stringify(item.task_ids || []))}" data-conflict-start="${escapeHtml(item.overlap_start || '')}"><strong>${escapeHtml(severityLabel)} - ${escapeHtml(label)}</strong><span>${escapeHtml(item.message)}</span></button>`;
+          return `<button type="button" class="insight-item insight-item-action" data-conflict-tasks="${escapeHtml(JSON.stringify(item.task_ids || []))}" data-conflict-start="${escapeHtml(item.overlap_start || '')}" data-conflict-end="${escapeHtml(item.overlap_end || '')}" data-conflict-asset="${escapeHtml(item.asset || '')}" data-conflict-message="${escapeHtml(item.message || '')}"><strong>${escapeHtml(severityLabel)} - ${escapeHtml(label)}</strong><span>${escapeHtml(item.message)}</span></button>`;
         }).join('') || '<div class="empty-state">No demand watch items' + (selectedAssets.length ? ` for ${assetFilterLabel()}` : '') + '.</div>'}</div></div>`
       };
     })()
@@ -1692,14 +1692,42 @@ function runAssetForecast() {
   els.assetForecastResult.innerHTML = summaryHtml + peakInfo + activitiesHtml;
 }
 
-function scrollToConflictTasks(taskIds, conflictStart) {
-  console.log('scrollToConflictTasks called:', { taskIds, conflictStart });
-  if (!taskIds || !taskIds.length) {
-    console.log('No task IDs provided');
+function resolveConflictTaskIds(taskIds, conflictStart, conflictEnd, conflictAsset, conflictMessage) {
+  const requestedIds = Array.isArray(taskIds) ? taskIds : [];
+  const existingIds = requestedIds.filter(id => state.tasks.some(task => task.id === id));
+  if (existingIds.length && existingIds.length === requestedIds.length) return existingIds;
+
+  const start = parseDate(conflictStart);
+  const end = parseDate(conflictEnd) || start;
+  const message = String(conflictMessage || '').toLowerCase();
+  let candidates = state.tasks.filter(task => !conflictAsset || task.asset === conflictAsset);
+
+  if (start && end) {
+    candidates = candidates.filter(task => {
+      const routeStart = parseDate(task.offshore_start) || parseDate(task.start_date);
+      const routeEnd = parseDate(task.offshore_end) || parseDate(task.return_end) || routeStart;
+      return routeStart && routeEnd && routeStart < end && start < routeEnd;
+    });
+  }
+
+  if (message && candidates.length) {
+    const mentioned = candidates.filter(task => message.includes(String(task.activity || '').toLowerCase()));
+    if (mentioned.length) candidates = mentioned;
+  }
+
+  return Array.from(new Set([...existingIds, ...candidates.map(task => task.id)]));
+}
+
+function scrollToConflictTasks(taskIds, conflictStart, conflictEnd = null, conflictAsset = '', conflictMessage = '') {
+  const resolvedTaskIds = resolveConflictTaskIds(taskIds, conflictStart, conflictEnd, conflictAsset, conflictMessage);
+  console.log('scrollToConflictTasks called:', { taskIds, resolvedTaskIds, conflictStart, conflictEnd, conflictAsset });
+  if (!resolvedTaskIds.length) {
+    console.log('No matching task IDs found');
+    showToast('No current routes found for that demand conflict');
     return;
   }
   
-  const conflictTasks = taskIds
+  const conflictTasks = resolvedTaskIds
     .map(id => state.tasks.find(task => task.id === id))
     .filter(Boolean);
   const targetTask = conflictTasks[0];
@@ -1708,7 +1736,7 @@ function scrollToConflictTasks(taskIds, conflictStart) {
   // Switch to route view if needed
   if (state.view !== 'route') switchView('route');
   
-  state.conflictFocusTaskIds = taskIds;
+  state.conflictFocusTaskIds = resolvedTaskIds;
   if (targetAssets.length) setAssetFilter(targetAssets);
   state.filters.status = 'all';
   state.filters.coordinator = 'all';
@@ -1722,11 +1750,11 @@ function scrollToConflictTasks(taskIds, conflictStart) {
   
   // Use longer delay to ensure DOM is fully updated after render
   setTimeout(() => {
-    console.log('Looking for row with task ID:', taskIds[0]);
-    const row = els.timeline.querySelector(`[data-task-id="${taskIds[0]}"]`);
+    console.log('Looking for row with task ID:', resolvedTaskIds[0]);
+    const row = els.timeline.querySelector(`[data-task-id="${resolvedTaskIds[0]}"]`);
     console.log('Row found:', row);
     if (!row) {
-      console.log('Row not found for task:', taskIds[0]);
+      console.log('Row not found for task:', resolvedTaskIds[0]);
       showToast('Route not found in current view');
       return;
     }
@@ -1755,13 +1783,13 @@ function scrollToConflictTasks(taskIds, conflictStart) {
         }
       }
       
-      taskIds.forEach(taskId => {
+      resolvedTaskIds.forEach(taskId => {
         const conflictRow = els.timeline.querySelector(`[data-task-id="${taskId}"]`);
         if (!conflictRow) return;
         conflictRow.classList.add('conflict-flash');
         setTimeout(() => conflictRow.classList.remove('conflict-flash'), 3500);
       });
-      showToast(`Focused ${taskIds.length} conflicted route${taskIds.length === 1 ? '' : 's'}`);
+      showToast(`Focused ${resolvedTaskIds.length} conflicted route${resolvedTaskIds.length === 1 ? '' : 's'}`);
     }, 500);
   }, 400);
 }
@@ -2202,7 +2230,10 @@ els.insightPanel.addEventListener('click', event => {
     try {
       const taskIds = JSON.parse(conflictButton.dataset.conflictTasks);
       const conflictStart = conflictButton.dataset.conflictStart || null;
-      scrollToConflictTasks(taskIds, conflictStart);
+      const conflictEnd = conflictButton.dataset.conflictEnd || null;
+      const conflictAsset = conflictButton.dataset.conflictAsset || '';
+      const conflictMessage = conflictButton.dataset.conflictMessage || '';
+      scrollToConflictTasks(taskIds, conflictStart, conflictEnd, conflictAsset, conflictMessage);
     } catch (_) {}
   }
 });
@@ -2213,7 +2244,10 @@ els.conflicts.addEventListener('click', event => {
   try {
     const taskIds = JSON.parse(conflictButton.dataset.conflictTasks);
     const conflictStart = conflictButton.dataset.conflictStart || null;
-    scrollToConflictTasks(taskIds, conflictStart);
+    const conflictEnd = conflictButton.dataset.conflictEnd || null;
+    const conflictAsset = conflictButton.dataset.conflictAsset || '';
+    const conflictMessage = conflictButton.dataset.conflictMessage || '';
+    scrollToConflictTasks(taskIds, conflictStart, conflictEnd, conflictAsset, conflictMessage);
     // Switch the insight panel to demand conflict so the user can see the full list
     state.activeInsight = 'watch';
     render();

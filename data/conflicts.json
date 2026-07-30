@@ -7,52 +7,172 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "c4b7acf7f17e",
-        "6017ef8a30e5"
+        "7b68e732c6a4",
+        "6ddd02a17b57"
       ],
       "tasks": [
         {
-          "id": "c4b7acf7f17e",
-          "activity": "GL 07 Harvey America Pre-Demob OWIRS",
+          "id": "7b68e732c6a4",
+          "activity": "GL 05b Southern Crane Parts",
           "project": "Vito VA-10 Drift/ CTCO"
         },
         {
-          "id": "6017ef8a30e5",
-          "activity": "GL 08 OSV - Complete De-Mob of Rig",
-          "project": "Vito VA-10 Drift / CTCO"
+          "id": "6ddd02a17b57",
+          "activity": "GL 05c FSV Milk Run",
+          "project": "Vito VA-10 Drift/ CTCO"
         }
       ],
-      "overlap_minutes": 480,
-      "overlap_start": "2026-08-03T06:00:00",
-      "overlap_end": "2026-08-03T14:00:00",
-      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Aug 03 to Aug 03): 'GL 07 Harvey America Pre-Demob OWIRS', 'GL 08 OSV - Complete De-Mob of Rig'."
+      "overlap_minutes": 30,
+      "overlap_start": "2026-08-01T14:00:00",
+      "overlap_end": "2026-08-01T14:30:00",
+      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Aug 01 to Aug 01): 'GL 05b Southern Crane Parts', 'GL 05c FSV Milk Run'."
     },
     {
       "type": "on_location_overlap",
       "severity": "conflict",
-      "asset": "Mars",
+      "asset": "Q5000",
       "asset_capacity": 1,
-      "active_routes": 2,
+      "active_routes": 3,
       "task_ids": [
-        "896f140def11",
-        "acea6f4531cb"
+        "7b68e732c6a4",
+        "6ddd02a17b57",
+        "fbcdd378972e"
       ],
       "tasks": [
         {
-          "id": "896f140def11",
-          "activity": "GL 09 Run Upper Tieback - OSV - 48Hrs",
-          "project": "A-23 St2 Drill"
+          "id": "7b68e732c6a4",
+          "activity": "GL 05b Southern Crane Parts",
+          "project": "Vito VA-10 Drift/ CTCO"
         },
         {
-          "id": "acea6f4531cb",
-          "activity": "GL 10 Drill 6.5\" Open Hole Horizontal - OSV - 60 hrs",
-          "project": "A-23 St2 Drill"
+          "id": "6ddd02a17b57",
+          "activity": "GL 05c FSV Milk Run",
+          "project": "Vito VA-10 Drift/ CTCO"
+        },
+        {
+          "id": "fbcdd378972e",
+          "activity": "GL 07 Pre-Demob OWIRS 150k Fuel",
+          "project": "Vito VA-10 Drift/ CTCO"
         }
       ],
-      "overlap_minutes": 900,
-      "overlap_start": "2026-08-22T17:00:00",
-      "overlap_end": "2026-08-23T08:00:00",
-      "message": "Mars: 2 routes are on location at the same time against 1 configured vessel (Aug 22 to Aug 23): 'GL 09 Run Upper Tieback - OSV - 48Hrs', 'GL 10 Drill 6.5\" Open Hole Horizontal - OSV - 60 hrs'."
+      "overlap_minutes": 1410,
+      "overlap_start": "2026-08-01T14:30:00",
+      "overlap_end": "2026-08-02T14:00:00",
+      "message": "Q5000: 3 routes are on location at the same time against 1 configured vessel (Aug 01 to Aug 02): 'GL 05b Southern Crane Parts', 'GL 05c FSV Milk Run', 'GL 07 Pre-Demob OWIRS 150k Fuel'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Q5000",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "7b68e732c6a4",
+        "fbcdd378972e"
+      ],
+      "tasks": [
+        {
+          "id": "7b68e732c6a4",
+          "activity": "GL 05b Southern Crane Parts",
+          "project": "Vito VA-10 Drift/ CTCO"
+        },
+        {
+          "id": "fbcdd378972e",
+          "activity": "GL 07 Pre-Demob OWIRS 150k Fuel",
+          "project": "Vito VA-10 Drift/ CTCO"
+        }
+      ],
+      "overlap_minutes": 960,
+      "overlap_start": "2026-08-02T14:00:00",
+      "overlap_end": "2026-08-03T06:00:00",
+      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Aug 02 to Aug 03): 'GL 05b Southern Crane Parts', 'GL 07 Pre-Demob OWIRS 150k Fuel'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Q5000",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "fbcdd378972e",
+        "0fea5326d261"
+      ],
+      "tasks": [
+        {
+          "id": "fbcdd378972e",
+          "activity": "GL 07 Pre-Demob OWIRS 150k Fuel",
+          "project": "Vito VA-10 Drift/ CTCO"
+        },
+        {
+          "id": "0fea5326d261",
+          "activity": "GL 08 OSV - Complete De-Mob of Rig",
+          "project": "Vito VA-10 Drift / CTCO"
+        }
+      ],
+      "overlap_minutes": 30,
+      "overlap_start": "2026-08-03T06:00:00",
+      "overlap_end": "2026-08-03T06:30:00",
+      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Aug 03 to Aug 03): 'GL 07 Pre-Demob OWIRS 150k Fuel', 'GL 08 OSV - Complete De-Mob of Rig'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Q5000",
+      "asset_capacity": 1,
+      "active_routes": 3,
+      "task_ids": [
+        "fbcdd378972e",
+        "0fea5326d261",
+        "1d0d7fab3b94"
+      ],
+      "tasks": [
+        {
+          "id": "fbcdd378972e",
+          "activity": "GL 07 Pre-Demob OWIRS 150k Fuel",
+          "project": "Vito VA-10 Drift/ CTCO"
+        },
+        {
+          "id": "0fea5326d261",
+          "activity": "GL 08 OSV - Complete De-Mob of Rig",
+          "project": "Vito VA-10 Drift / CTCO"
+        },
+        {
+          "id": "1d0d7fab3b94",
+          "activity": "GL 09 OSV #2 - Complete De-Mob of Rig",
+          "project": "Vito VA-10 Drift/ CTCO"
+        }
+      ],
+      "overlap_minutes": 480,
+      "overlap_start": "2026-08-03T06:30:00",
+      "overlap_end": "2026-08-03T14:30:00",
+      "message": "Q5000: 3 routes are on location at the same time against 1 configured vessel (Aug 03 to Aug 03): 'GL 07 Pre-Demob OWIRS 150k Fuel', 'GL 08 OSV - Complete De-Mob of Rig', 'GL 09 OSV #2 - Complete De-Mob of Rig'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Q5000",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "0fea5326d261",
+        "1d0d7fab3b94"
+      ],
+      "tasks": [
+        {
+          "id": "0fea5326d261",
+          "activity": "GL 08 OSV - Complete De-Mob of Rig",
+          "project": "Vito VA-10 Drift / CTCO"
+        },
+        {
+          "id": "1d0d7fab3b94",
+          "activity": "GL 09 OSV #2 - Complete De-Mob of Rig",
+          "project": "Vito VA-10 Drift/ CTCO"
+        }
+      ],
+      "overlap_minutes": 2370,
+      "overlap_start": "2026-08-03T14:30:00",
+      "overlap_end": "2026-08-05T06:00:00",
+      "message": "Q5000: 2 routes are on location at the same time against 1 configured vessel (Aug 03 to Aug 05): 'GL 08 OSV - Complete De-Mob of Rig', 'GL 09 OSV #2 - Complete De-Mob of Rig'."
     },
     {
       "type": "on_location_overlap",
@@ -61,52 +181,58 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "cb2dcb008aab",
-        "884ca21dabd1"
+        "4bd49c16f499",
+        "a64054faa3c6"
       ],
       "tasks": [
         {
-          "id": "cb2dcb008aab",
+          "id": "4bd49c16f499",
           "activity": "GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs",
           "project": "GA023 Drill ByPass"
         },
         {
-          "id": "884ca21dabd1",
+          "id": "a64054faa3c6",
           "activity": "GL 09 OSV / THS installation - 96 hrs",
           "project": "GA023 Drill ByPass"
         }
       ],
       "overlap_minutes": 1350,
-      "overlap_start": "2026-08-29T20:30:00",
-      "overlap_end": "2026-08-30T19:00:00",
-      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Aug 29 to Aug 30): 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs', 'GL 09 OSV / THS installation - 96 hrs'."
+      "overlap_start": "2026-09-01T20:30:00",
+      "overlap_end": "2026-09-02T19:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Sep 01 to Sep 02): 'GL 08 OSV 7 5/8'' Liner Section and Install Packer - 48 hrs', 'GL 09 OSV / THS installation - 96 hrs'."
     },
     {
       "type": "on_location_overlap",
       "severity": "conflict",
       "asset": "Perdido",
       "asset_capacity": 1,
-      "active_routes": 2,
+      "active_routes": 3,
       "task_ids": [
-        "fcc0603de984",
-        "803186c045c0"
+        "a64054faa3c6",
+        "9db1f5b20c69",
+        "bfee962b850b"
       ],
       "tasks": [
         {
-          "id": "fcc0603de984",
+          "id": "a64054faa3c6",
+          "activity": "GL 09 OSV / THS installation - 96 hrs",
+          "project": "GA023 Drill ByPass"
+        },
+        {
+          "id": "9db1f5b20c69",
           "activity": "Perdido Riser Swap - BSEE TBD",
           "project": "Perdido Riser Swap"
         },
         {
-          "id": "803186c045c0",
+          "id": "bfee962b850b",
           "activity": "Perdido Riser Swap - BSEE TBD",
           "project": "Perdido Riser Swap"
         }
       ],
-      "overlap_minutes": 64800,
+      "overlap_minutes": 3750,
       "overlap_start": "2026-09-03T06:00:00",
-      "overlap_end": "2026-10-18T06:00:00",
-      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Sep 03 to Oct 18): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
+      "overlap_end": "2026-09-05T20:30:00",
+      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Sep 03 to Sep 05): 'GL 09 OSV / THS installation - 96 hrs', 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
     },
     {
       "type": "on_location_overlap",
@@ -115,17 +241,137 @@
       "asset_capacity": 1,
       "active_routes": 2,
       "task_ids": [
-        "f23dacfa46aa",
-        "cbbbc10b92b3"
+        "9db1f5b20c69",
+        "bfee962b850b"
       ],
       "tasks": [
         {
-          "id": "f23dacfa46aa",
+          "id": "9db1f5b20c69",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "bfee962b850b",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        }
+      ],
+      "overlap_minutes": 50970,
+      "overlap_start": "2026-09-05T20:30:00",
+      "overlap_end": "2026-10-11T06:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Sep 05 to Oct 11): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 3,
+      "task_ids": [
+        "9db1f5b20c69",
+        "bfee962b850b",
+        "644668a854aa"
+      ],
+      "tasks": [
+        {
+          "id": "9db1f5b20c69",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "bfee962b850b",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "644668a854aa",
+          "activity": "Ship Deck Extension and Vertical Support Assembly",
+          "project": "Perdido LTBW"
+        }
+      ],
+      "overlap_minutes": 2880,
+      "overlap_start": "2026-10-11T06:00:00",
+      "overlap_end": "2026-10-13T06:00:00",
+      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Oct 11 to Oct 13): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD', 'Ship Deck Extension and Vertical Support Assembly'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "9db1f5b20c69",
+        "bfee962b850b"
+      ],
+      "tasks": [
+        {
+          "id": "9db1f5b20c69",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        },
+        {
+          "id": "bfee962b850b",
+          "activity": "Perdido Riser Swap - BSEE TBD",
+          "project": "Perdido Riser Swap"
+        }
+      ],
+      "overlap_minutes": 7200,
+      "overlap_start": "2026-10-13T06:00:00",
+      "overlap_end": "2026-10-18T06:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Oct 13 to Oct 18): 'Perdido Riser Swap - BSEE TBD', 'Perdido Riser Swap - BSEE TBD'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "f78cbd46a1e8",
+        "fd5df88cd807"
+      ],
+      "tasks": [
+        {
+          "id": "f78cbd46a1e8",
+          "activity": "Ship Deck Extension and Vertical Support Assembly",
+          "project": "Perdido LTBW"
+        },
+        {
+          "id": "fd5df88cd807",
+          "activity": "GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg",
+          "project": "H&P 205 Rig Idle"
+        }
+      ],
+      "overlap_minutes": 3960,
+      "overlap_start": "2026-12-02T06:00:00",
+      "overlap_end": "2026-12-05T00:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Dec 02 to Dec 05): 'Ship Deck Extension and Vertical Support Assembly', 'GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 3,
+      "task_ids": [
+        "f78cbd46a1e8",
+        "fd5df88cd807",
+        "ed63ceedccd9"
+      ],
+      "tasks": [
+        {
+          "id": "f78cbd46a1e8",
+          "activity": "Ship Deck Extension and Vertical Support Assembly",
+          "project": "Perdido LTBW"
+        },
+        {
+          "id": "fd5df88cd807",
           "activity": "GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg",
           "project": "H&P 205 Rig Idle"
         },
         {
-          "id": "cbbbc10b92b3",
+          "id": "ed63ceedccd9",
           "activity": "GL 30 Holding at Port",
           "project": "GA023 Drill ByPass"
         }
@@ -133,7 +379,34 @@
       "overlap_minutes": 1800,
       "overlap_start": "2026-12-05T00:00:00",
       "overlap_end": "2026-12-06T06:00:00",
-      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Dec 05 to Dec 06): 'GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg', 'GL 30 Holding at Port'."
+      "message": "Perdido: 3 routes are on location at the same time against 1 configured vessel (Dec 05 to Dec 06): 'Ship Deck Extension and Vertical Support Assembly', 'GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg', 'GL 30 Holding at Port'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
+      "asset": "Perdido",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "f78cbd46a1e8",
+        "ed63ceedccd9"
+      ],
+      "tasks": [
+        {
+          "id": "f78cbd46a1e8",
+          "activity": "Ship Deck Extension and Vertical Support Assembly",
+          "project": "Perdido LTBW"
+        },
+        {
+          "id": "ed63ceedccd9",
+          "activity": "GL 30 Holding at Port",
+          "project": "GA023 Drill ByPass"
+        }
+      ],
+      "overlap_minutes": 1080,
+      "overlap_start": "2026-12-06T06:00:00",
+      "overlap_end": "2026-12-07T00:00:00",
+      "message": "Perdido: 2 routes are on location at the same time against 1 configured vessel (Dec 06 to Dec 07): 'Ship Deck Extension and Vertical Support Assembly', 'GL 30 Holding at Port'."
     }
   ]
 }
