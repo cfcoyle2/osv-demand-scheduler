@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSV Demand Scheduler</title>
-  <link rel="stylesheet" href="styles.css?v=20260730-update-3">
+  <link rel="stylesheet" href="styles.css?v=20260730-clear-conflict">
 </head>
 <body class="scheduler-page">
   <header class="topbar">
@@ -139,7 +139,10 @@
           <div>
             <h2>Route Schedule</h2>
             <p id="sourceLabel">Loading schedule...</p>
-            <p id="rangeLabel" class="range-label"></p>
+            <div class="schedule-focus-row">
+              <p id="rangeLabel" class="range-label"></p>
+              <button id="clearConflictFocus" type="button" class="secondary-button compact-button" hidden>Clear Conflict View</button>
+            </div>
           </div>
           <div class="legend" aria-label="Route color code legend">
             <strong>Color codes</strong>
@@ -317,6 +320,6 @@
   </div>
 
   <div id="toast" class="toast" hidden></div>
-  <script src="app.js?v=20260730-demand-watch-fix"></script>
+  <script src="app.js?v=20260730-clear-conflict"></script>
 </body>
 </html>

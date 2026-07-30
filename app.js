@@ -39,6 +39,7 @@ const els = {
   insightPanel: document.getElementById('insightPanel'),
   sourceLabel: document.getElementById('sourceLabel'),
   rangeLabel: document.getElementById('rangeLabel'),
+  clearConflictFocus: document.getElementById('clearConflictFocus'),
   timeline: document.getElementById('timeline'),
   table: document.getElementById('taskTable'),
   fleetSummary: document.getElementById('fleetSummary'),
@@ -395,7 +396,7 @@ function hideShiftPreview() {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260730-demand-watch-fix';
+const STATIC_DATA_VERSION = '20260730-clear-conflict';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {
@@ -1801,6 +1802,9 @@ function render() {
   renderInsightPanel(tasks);
   els.sourceLabel.textContent = `${state.source} - ${state.bufferHours}h turnaround buffer`;
   els.rangeLabel.textContent = rangeText();
+  if (els.clearConflictFocus) {
+    els.clearConflictFocus.hidden = !(Array.isArray(state.conflictFocusTaskIds) && state.conflictFocusTaskIds.length);
+  }
   renderTimeline(tasks);
   renderTable(tasks);
   renderConflicts(tasks);
@@ -2283,10 +2287,29 @@ els.assetFilter.addEventListener('change', event => {
 els.clearDateFilter.addEventListener('click', () => {
   els.dateFromFilter.value = '';
   els.dateToFilter.value = '';
+  state.conflictFocusTaskIds = null;
   state.filters.dateFrom = '';
   state.filters.dateTo = '';
   render();
 });
+
+if (els.clearConflictFocus) {
+  els.clearConflictFocus.addEventListener('click', () => {
+    state.conflictFocusTaskIds = null;
+    state.filters.coordinator = 'all';
+    state.filters.asset = 'all';
+    state.filters.status = 'Planned';
+    state.filters.dateFrom = '';
+    state.filters.dateTo = '';
+    els.coordinatorFilter.value = 'all';
+    setAssetFilter('all');
+    els.statusFilter.value = 'Planned';
+    els.dateFromFilter.value = '';
+    els.dateToFilter.value = '';
+    render();
+    showToast('Returned to normal schedule view');
+  });
+}
 
 // === NEW FEATURE: Export Conflict Summary button ===
 if (els.exportConflictSummaryBtn) {
