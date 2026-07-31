@@ -33,7 +33,7 @@
       "vessel_count": 2,
       "notes": "Sparta SP 203 Drill Bypass Deepening",
       "date_from": "2026-06-21",
-      "date_to": "2026-08-18"
+      "date_to": "2026-08-20"
     },
     {
       "asset": "Olympus",
@@ -68,7 +68,7 @@
       "vessel_count": 2,
       "notes": "NVOY Arrival and Commisioning at Deep Sleep Dummy Well Top Hole",
       "date_from": "2026-07-15",
-      "date_to": "2026-08-14"
+      "date_to": "2026-08-13"
     },
     {
       "asset": "Poseidon",
@@ -109,7 +109,7 @@
       "asset": "Noble Voyager",
       "vessel_count": 3,
       "notes": "Ursa North P013 Top Hole",
-      "date_from": "2026-08-14",
+      "date_from": "2026-08-13",
       "date_to": "2026-08-24"
     },
     {
@@ -120,18 +120,11 @@
       "date_to": "2026-08-22"
     },
     {
-      "asset": "Pontus",
-      "vessel_count": 3,
-      "notes": "Vito Top Hole",
-      "date_from": "2026-08-17",
-      "date_to": "2026-08-31"
-    },
-    {
       "asset": "Stena Evolution",
       "vessel_count": 2,
       "notes": "Sparta SP106 Deepen Hole Deepening",
-      "date_from": "2026-08-18",
-      "date_to": "2026-09-21"
+      "date_from": "2026-08-20",
+      "date_to": "2026-09-23"
     },
     {
       "asset": "Poseidon",
@@ -146,6 +139,13 @@
       "notes": "Princess P8 Sidetrack Deepening",
       "date_from": "2026-08-24",
       "date_to": "2026-09-19"
+    },
+    {
+      "asset": "Pontus",
+      "vessel_count": 3,
+      "notes": "Vito Top Hole",
+      "date_from": "2026-08-24",
+      "date_to": "2026-09-07"
     },
     {
       "asset": "ESA, Ursa",
@@ -267,12 +267,12 @@
       "date_to": "2026-07-31"
     },
     {
-      "capacity_text": "24",
+      "capacity_text": "21",
       "date_from": "2026-08-01",
       "date_to": "2026-08-31"
     },
     {
-      "capacity_text": "13",
+      "capacity_text": "16",
       "date_from": "2026-09-01",
       "date_to": "2026-09-30"
     },
@@ -297,6 +297,6 @@
       "date_to": "2027-01-31"
     }
   ],
-  "updated_at": "2026-07-30T11:25:06.030943",
+  "updated_at": "2026-07-31T08:22:10.021634",
   "source": "auto-sync from Spot Hire Planner"
 }
