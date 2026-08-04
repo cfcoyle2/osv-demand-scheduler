@@ -103,6 +103,25 @@ function showToast(message) {
   window.setTimeout(() => { els.toast.hidden = true; }, 3200);
 }
 
+const LOCAL_SERVER_ORIGIN = 'http://127.0.0.1:8000';
+
+function shouldRedirectToLocalServer() {
+  if (window.location.protocol === 'file:') return true;
+  const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  return isLocalHost && window.location.port && window.location.port !== '8000';
+}
+
+function redirectToLocalServer() {
+  if (!shouldRedirectToLocalServer()) return false;
+  const target = `${LOCAL_SERVER_ORIGIN}/spot_hire.html${window.location.search || ''}`;
+  if (window.location.href !== target) window.location.replace(target);
+  return true;
+}
+
+function apiUrl(path) {
+  return path.startsWith('/') ? path : `/${path}`;
+}
+
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
 const STATIC_DATA_VERSION = '20260731-latest-update';
@@ -114,7 +133,7 @@ const STATIC_DATA_MAP = {
 
 async function checkApiHealth() {
   try {
-    const response = await fetch('api/health', { method: 'GET', signal: AbortSignal.timeout(2000) });
+    const response = await fetch(apiUrl('/api/health'), { method: 'GET', signal: AbortSignal.timeout(2000) });
     return response.ok;
   } catch (_) {
     return false;
@@ -146,7 +165,7 @@ async function api(path, options = {}) {
     throw new Error('Write operations disabled in static mode');
   }
   
-  const response = await fetch(path, options);
+  const response = await fetch(apiUrl(path), options);
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
     try {
@@ -1271,6 +1290,8 @@ enableDialogDrag();
 
 // Initialize: check if API is available, otherwise use static mode
 (async function init() {
+  if (redirectToLocalServer()) return;
+
   const apiAvailable = await checkApiHealth();
   if (!apiAvailable) {
     staticMode = true;

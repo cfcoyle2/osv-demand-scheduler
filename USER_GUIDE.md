@@ -92,6 +92,8 @@ Use one of these methods:
 
 ## Workbook Format Requirements
 
+You can use one combined Excel workbook to update both tools. Run `python create_combined_update_template.py` to generate `OSV_Scheduler_Combined_Update_YYYYMMDD.xlsx`, then update both tabs and upload the workbook once from the OSV Demand Scheduler page.
+
 Your Excel workbook should have these sheets:
 
 ### OSV Demand Tracker Sheet
