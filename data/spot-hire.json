@@ -3,7 +3,7 @@
   "sheet_name": "Spot Hire Update",
   "records": [
     {
-      "id": "b013d0bc3baf",
+      "id": "72c920148995",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -19,7 +19,7 @@
       "sheet_row": 2
     },
     {
-      "id": "2c56c254d089",
+      "id": "84b70ec50a21",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -35,7 +35,7 @@
       "sheet_row": 3
     },
     {
-      "id": "da5e68d56e92",
+      "id": "96fdb7cec84f",
       "asset": "Thalassa",
       "display_asset": "Thalassa",
       "vessel_count": 2,
@@ -51,7 +51,7 @@
       "sheet_row": 4
     },
     {
-      "id": "5023deb38d5a",
+      "id": "e7342a424d7a",
       "asset": "Proteus",
       "display_asset": "Proteus",
       "vessel_count": 2,
@@ -67,7 +67,7 @@
       "sheet_row": 5
     },
     {
-      "id": "d4f8b7d8320e",
+      "id": "19bc562fe1df",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 1,
@@ -83,7 +83,7 @@
       "sheet_row": 6
     },
     {
-      "id": "d5c2d2f173f8",
+      "id": "23093c87d64d",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -99,7 +99,7 @@
       "sheet_row": 7
     },
     {
-      "id": "7b423ab7b7c6",
+      "id": "3d45cea6be3e",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 1,
@@ -115,7 +115,7 @@
       "sheet_row": 8
     },
     {
-      "id": "57e7d508843e",
+      "id": "43ad7b0a1f82",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -131,7 +131,7 @@
       "sheet_row": 9
     },
     {
-      "id": "946bd31d3380",
+      "id": "ea924f13705d",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -147,7 +147,7 @@
       "sheet_row": 10
     },
     {
-      "id": "c4aeb66041ff",
+      "id": "c6f8edaf3df1",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -163,7 +163,7 @@
       "sheet_row": 11
     },
     {
-      "id": "3e3d2e8e5616",
+      "id": "efe168244a1d",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "vessel_count": 2,
@@ -179,7 +179,7 @@
       "sheet_row": 12
     },
     {
-      "id": "f684cb40a39f",
+      "id": "cf63a0244fdd",
       "asset": "Perdido",
       "display_asset": "Perdido",
       "vessel_count": 2,
@@ -195,7 +195,7 @@
       "sheet_row": 13
     },
     {
-      "id": "15d63e4cdffa",
+      "id": "d8cce533b19e",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -211,7 +211,7 @@
       "sheet_row": 14
     },
     {
-      "id": "3da696e012b8",
+      "id": "16a51c44b191",
       "asset": "Vito",
       "display_asset": "Vito",
       "vessel_count": 1,
@@ -227,7 +227,7 @@
       "sheet_row": 15
     },
     {
-      "id": "ea25b10fde18",
+      "id": "c2491fd24e77",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -243,7 +243,7 @@
       "sheet_row": 16
     },
     {
-      "id": "4a277dd6827b",
+      "id": "ad4814de42ed",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -259,7 +259,7 @@
       "sheet_row": 17
     },
     {
-      "id": "cffc9d49eb3a",
+      "id": "12b55772cbd7",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -275,7 +275,7 @@
       "sheet_row": 18
     },
     {
-      "id": "972357be80f0",
+      "id": "31c2add6a186",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "vessel_count": 1,
@@ -291,7 +291,7 @@
       "sheet_row": 19
     },
     {
-      "id": "2a0e2c1a19a8",
+      "id": "d38f985ea409",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 1,
@@ -307,7 +307,7 @@
       "sheet_row": 20
     },
     {
-      "id": "e1242f8e7f96",
+      "id": "edba86b20d84",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -323,7 +323,7 @@
       "sheet_row": 21
     },
     {
-      "id": "e5d4153e6da5",
+      "id": "a7d0d6c8057c",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -339,7 +339,7 @@
       "sheet_row": 22
     },
     {
-      "id": "530e21de0a74",
+      "id": "863ce43182cd",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -355,7 +355,7 @@
       "sheet_row": 23
     },
     {
-      "id": "07cdd923ab9d",
+      "id": "b4d3a4ce133c",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -371,7 +371,7 @@
       "sheet_row": 24
     },
     {
-      "id": "63162758dc07",
+      "id": "d928a97e6506",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -387,7 +387,7 @@
       "sheet_row": 25
     },
     {
-      "id": "7e7a70381952",
+      "id": "d56de377e410",
       "asset": "Whale",
       "display_asset": "Whale",
       "vessel_count": 1,
@@ -403,7 +403,7 @@
       "sheet_row": 26
     },
     {
-      "id": "03868a6cddad",
+      "id": "c55a2004261b",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -419,7 +419,7 @@
       "sheet_row": 27
     },
     {
-      "id": "45f2e9278401",
+      "id": "5cf830d3d4f4",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -435,7 +435,7 @@
       "sheet_row": 28
     },
     {
-      "id": "327ec0767cf0",
+      "id": "3aa5cfcdf855",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -451,7 +451,7 @@
       "sheet_row": 29
     },
     {
-      "id": "c60d8b4672b1",
+      "id": "43e64f8d7ad5",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -467,7 +467,7 @@
       "sheet_row": 30
     },
     {
-      "id": "355e282fe268",
+      "id": "81f00e424fe0",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -483,7 +483,7 @@
       "sheet_row": 31
     },
     {
-      "id": "e376780dc440",
+      "id": "651be08c8d48",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -499,7 +499,7 @@
       "sheet_row": 32
     },
     {
-      "id": "0e6f18b46099",
+      "id": "f2d7afd6c46d",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -515,7 +515,7 @@
       "sheet_row": 33
     },
     {
-      "id": "1641ab03c22c",
+      "id": "4fd0364157c9",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -531,7 +531,7 @@
       "sheet_row": 34
     },
     {
-      "id": "7fd9954f8221",
+      "id": "56ba10bd32e8",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -547,7 +547,7 @@
       "sheet_row": 35
     },
     {
-      "id": "17a46b4f282f",
+      "id": "021ee0eebb91",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -563,7 +563,7 @@
       "sheet_row": 36
     },
     {
-      "id": "44ceed79d732",
+      "id": "b749d112105e",
       "asset": "Mars",
       "display_asset": "Mars",
       "vessel_count": 1,
@@ -579,7 +579,7 @@
       "sheet_row": 37
     },
     {
-      "id": "9abf4a70462e",
+      "id": "b38d6235dde8",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -595,7 +595,7 @@
       "sheet_row": 38
     },
     {
-      "id": "ea7cc391dcf1",
+      "id": "1b030faa8b64",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 2,
@@ -611,7 +611,7 @@
       "sheet_row": 39
     },
     {
-      "id": "aa89daf960cb",
+      "id": "37403bec2ee6",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -627,7 +627,7 @@
       "sheet_row": 40
     },
     {
-      "id": "9bc4dd40c3df",
+      "id": "462183dc56aa",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -643,7 +643,7 @@
       "sheet_row": 41
     },
     {
-      "id": "39b9b6d95389",
+      "id": "e8fbb710bbcb",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -659,7 +659,7 @@
       "sheet_row": 42
     },
     {
-      "id": "dfaafcb51534",
+      "id": "ed613127c38b",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 2,
@@ -675,7 +675,7 @@
       "sheet_row": 43
     },
     {
-      "id": "502dd2926d54",
+      "id": "225fc1eb0629",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -691,7 +691,7 @@
       "sheet_row": 44
     },
     {
-      "id": "4958ce92870b",
+      "id": "f87ba37aa5bc",
       "asset": "Olympus",
       "display_asset": "Olympus",
       "vessel_count": 1,
@@ -707,7 +707,7 @@
       "sheet_row": 45
     },
     {
-      "id": "402922a431b4",
+      "id": "08bdc6144b01",
       "asset": "Noble Voyager",
       "display_asset": "Noble Voyager",
       "vessel_count": 2,
@@ -723,7 +723,7 @@
       "sheet_row": 46
     },
     {
-      "id": "a2bc1f07b57b",
+      "id": "68ccbef0dae8",
       "asset": "Noble Voyager",
       "display_asset": "Noble Voyager",
       "vessel_count": 3,
@@ -739,7 +739,7 @@
       "sheet_row": 47
     },
     {
-      "id": "bde02d0169bb",
+      "id": "aa9afb0c06bb",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 3,
@@ -755,7 +755,7 @@
       "sheet_row": 48
     },
     {
-      "id": "4239c60a1489",
+      "id": "befee1efece2",
       "asset": "Stena Evolution",
       "display_asset": "Stena Evolution",
       "vessel_count": 2,
@@ -771,7 +771,7 @@
       "sheet_row": 49
     },
     {
-      "id": "7ec5cb1fe809",
+      "id": "012d5caf93cd",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -787,7 +787,7 @@
       "sheet_row": 50
     },
     {
-      "id": "9bc124849994",
+      "id": "9a516d27b031",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -803,7 +803,7 @@
       "sheet_row": 51
     },
     {
-      "id": "9cee252dab15",
+      "id": "6e5fa79a9bac",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -819,7 +819,7 @@
       "sheet_row": 52
     },
     {
-      "id": "9218f529d539",
+      "id": "52043bd03fd7",
       "asset": "Noble Voyager",
       "display_asset": "Noble Voyager",
       "vessel_count": 2,
@@ -835,7 +835,7 @@
       "sheet_row": 53
     },
     {
-      "id": "0d32feb9d7e0",
+      "id": "cc8bb7e22f98",
       "asset": "Poseidon",
       "display_asset": "Poseidon",
       "vessel_count": 2,
@@ -851,7 +851,7 @@
       "sheet_row": 54
     },
     {
-      "id": "370803bacaef",
+      "id": "7f240eaa3f20",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -867,7 +867,7 @@
       "sheet_row": 55
     },
     {
-      "id": "161b7269abb1",
+      "id": "d58a624feffe",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -883,7 +883,7 @@
       "sheet_row": 56
     },
     {
-      "id": "c615af65af4a",
+      "id": "e5f920588795",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -899,7 +899,7 @@
       "sheet_row": 57
     },
     {
-      "id": "237903949a14",
+      "id": "7e3bf249a8a3",
       "asset": "Noble Voyager",
       "display_asset": "Noble Voyager",
       "vessel_count": 2,
@@ -915,7 +915,7 @@
       "sheet_row": 58
     },
     {
-      "id": "f0df3de80add",
+      "id": "4fc767a5cd10",
       "asset": "Noble Voyager",
       "display_asset": "Noble Voyager",
       "vessel_count": 2,
@@ -931,7 +931,7 @@
       "sheet_row": 59
     },
     {
-      "id": "8839592722bb",
+      "id": "6444289abd61",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -947,7 +947,7 @@
       "sheet_row": 60
     },
     {
-      "id": "b14b731c6211",
+      "id": "a7d2e2227b8a",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -963,7 +963,7 @@
       "sheet_row": 61
     },
     {
-      "id": "dd93fe467356",
+      "id": "1980da20bd3b",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -979,7 +979,7 @@
       "sheet_row": 62
     },
     {
-      "id": "68fe71687989",
+      "id": "96b653acb8b7",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -995,7 +995,7 @@
       "sheet_row": 63
     },
     {
-      "id": "466943627134",
+      "id": "33998c29d505",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -1011,7 +1011,7 @@
       "sheet_row": 64
     },
     {
-      "id": "3608ee759a6f",
+      "id": "8d783896e556",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -1027,7 +1027,7 @@
       "sheet_row": 65
     },
     {
-      "id": "44f1cc6aee1f",
+      "id": "5a6b1c295efc",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -1043,7 +1043,7 @@
       "sheet_row": 66
     },
     {
-      "id": "0183a8edf470",
+      "id": "c2d21ae71392",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -1059,7 +1059,7 @@
       "sheet_row": 67
     },
     {
-      "id": "8a46637bf383",
+      "id": "f06e4ffcfdb7",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -1075,7 +1075,7 @@
       "sheet_row": 68
     },
     {
-      "id": "889a2e66bca9",
+      "id": "656bc99e1f85",
       "asset": "ESA, Ursa",
       "display_asset": "ESA, Ursa",
       "vessel_count": 1,
@@ -1091,7 +1091,7 @@
       "sheet_row": 69
     },
     {
-      "id": "37b72f7d8e2a",
+      "id": "ab449a71f5a3",
       "asset": "Appomatox, Vito, Olympus",
       "display_asset": "Appomatox, Vito, Olympus",
       "vessel_count": 1,
@@ -1107,7 +1107,7 @@
       "sheet_row": 70
     },
     {
-      "id": "08462d2e1ab0",
+      "id": "48d156da5522",
       "asset": "Perdido/Whale",
       "display_asset": "Perdido/Whale",
       "vessel_count": 1,
@@ -1123,7 +1123,7 @@
       "sheet_row": 71
     },
     {
-      "id": "0e329644e01f",
+      "id": "03ae39e64788",
       "asset": "Enchilada",
       "display_asset": "Enchilada",
       "vessel_count": 1,
@@ -1139,7 +1139,7 @@
       "sheet_row": 72
     },
     {
-      "id": "816fe557bb3c",
+      "id": "80213e3b555a",
       "asset": "Salsa",
       "display_asset": "Salsa",
       "vessel_count": 1,
@@ -1155,7 +1155,7 @@
       "sheet_row": 73
     },
     {
-      "id": "6d6181f1659c",
+      "id": "69291d2d48f0",
       "asset": "Q5000",
       "display_asset": "Q5000",
       "vessel_count": 2,
@@ -1171,7 +1171,7 @@
       "sheet_row": 74
     },
     {
-      "id": "37c7e78401d6",
+      "id": "9d5ee2ce140e",
       "asset": "Pontus",
       "display_asset": "Pontus",
       "vessel_count": 3,
@@ -1200,5 +1200,5 @@
     "Other": "#f72585",
     "Intervention": "#f72585"
   },
-  "imported_at": "2026-08-04T10:01:29.678257"
+  "imported_at": "2026-08-04T14:39:44.126325"
 }

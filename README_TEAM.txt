@@ -10,6 +10,15 @@ TO RUN:
 3. Your browser will automatically open to http://localhost:8000
 4. Press Ctrl+C in the command window to stop when done
 
+FEATURES:
+- Route Demand view with Gantt timeline
+- Spot Hire Planner (http://localhost:8000/spot_hire.html)
+- Snapshot Comparison: Compare baseline vs current to see schedule changes
+  * Click "Compare" in the Snapshots section
+  * Filter by specific asset to focus changes
+  * Shows new/removed/changed tasks with field-level details
+- Upload Excel workbooks to update schedule data
+
 TROUBLESHOOTING:
 - If Python is not found, install from https://www.python.org/downloads/
 - During installation, check "Add Python to PATH"
@@ -17,7 +26,8 @@ TROUBLESHOOTING:
 
 DATA:
 - Route schedule data is in the data/ folder (JSON files)
-- Data is from July 2, 2026
+- Snapshots are saved automatically on workbook upload
+- Data last updated: July 6, 2026
 
 CONTACT:
 - Questions? Contact Chris Coyle
