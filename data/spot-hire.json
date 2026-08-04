@@ -477,7 +477,7 @@
       "color": "#ff6b35",
       "start_date": "2026-05-24 00:00:00",
       "end_date": "2026-06-21 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 31
@@ -541,7 +541,7 @@
       "color": "#ff6b35",
       "start_date": "2026-04-28 00:00:00",
       "end_date": "2026-07-01 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 35
@@ -557,7 +557,7 @@
       "color": "#ff6b35",
       "start_date": "2026-05-10 00:00:00",
       "end_date": "2026-07-16 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 36
@@ -621,7 +621,7 @@
       "color": "#b79ac7",
       "start_date": "2026-07-01 00:00:00",
       "end_date": "2026-07-31 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 40
@@ -637,7 +637,7 @@
       "color": "#b79ac7",
       "start_date": "2026-07-01 00:00:00",
       "end_date": "2026-07-31 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 41
@@ -653,7 +653,7 @@
       "color": "#b79ac7",
       "start_date": "2026-07-01 00:00:00",
       "end_date": "2026-07-31 00:00:00",
-      "status": "Planned",
+      "status": "Complete",
       "notes": "",
       "source": "workbook",
       "sheet_row": 42
@@ -1200,5 +1200,5 @@
     "Other": "#f72585",
     "Intervention": "#f72585"
   },
-  "imported_at": "2026-07-31T08:22:09.898312"
+  "imported_at": "2026-08-04T10:01:29.678257"
 }

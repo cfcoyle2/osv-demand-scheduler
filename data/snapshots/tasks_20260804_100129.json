@@ -1,4 +1,10 @@
 {
+  "buffer_hours": 24,
+  "imported_at": "2026-08-04T10:01:29.595553",
+  "snapshot_date": "2026-08-04",
+  "snapshot_id": "tasks_20260804_100129.json",
+  "snapshot_time": "10:01:29",
+  "source": "workbook:OSV_Scheduler_Combined_Update.xlsx:OSV Demand Tracker",
   "tasks": [
     {
       "id": "deb7eb9c837b",
@@ -4194,8 +4200,5 @@
       "source": "workbook",
       "sheet_row": 234
     }
-  ],
-  "source": "workbook:OSV_Scheduler_Combined_Update.xlsx:OSV Demand Tracker",
-  "buffer_hours": 24,
-  "imported_at": "2026-08-04T10:01:29.595553"
+  ]
 }

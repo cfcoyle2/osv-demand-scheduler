@@ -43,27 +43,6 @@
       "date_to": "2026-08-18"
     },
     {
-      "asset": "ESA, Ursa",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
-      "asset": "Appomatox, Vito, Olympus",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
-      "asset": "Perdido/Whale",
-      "vessel_count": 1,
-      "notes": "EV Run",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
       "asset": "Noble Voyager",
       "vessel_count": 2,
       "notes": "NVOY Arrival and Commisioning at Deep Sleep Dummy Well Top Hole",
@@ -262,11 +241,6 @@
   ],
   "monthly_capacity_entries": [
     {
-      "capacity_text": "17",
-      "date_from": "2026-07-01",
-      "date_to": "2026-07-31"
-    },
-    {
       "capacity_text": "21",
       "date_from": "2026-08-01",
       "date_to": "2026-08-31"
@@ -297,6 +271,6 @@
       "date_to": "2027-01-31"
     }
   ],
-  "updated_at": "2026-07-31T08:22:10.021634",
+  "updated_at": "2026-08-04T10:01:29.871077",
   "source": "auto-sync from Spot Hire Planner"
 }
