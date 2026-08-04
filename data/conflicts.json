@@ -57,6 +57,33 @@
     {
       "type": "on_location_overlap",
       "severity": "conflict",
+      "asset": "Olympus",
+      "asset_capacity": 1,
+      "active_routes": 2,
+      "task_ids": [
+        "418894998579",
+        "f2fb6f71b46b"
+      ],
+      "tasks": [
+        {
+          "id": "418894998579",
+          "activity": "GL 04 OSV TBD - Below Deck 13.2# CaBr, Cement - 60hrs",
+          "project": "MB014 Decomplete"
+        },
+        {
+          "id": "f2fb6f71b46b",
+          "activity": "GL 02 OSV TBD - N/U BOP, SBT Log LTB, Pull UTB - 72hrs",
+          "project": "MB-014 Slot Recovery"
+        }
+      ],
+      "overlap_minutes": 579,
+      "overlap_start": "2026-08-24T03:51:00",
+      "overlap_end": "2026-08-24T13:30:00",
+      "message": "Olympus: 2 routes are on location at the same time against 1 configured vessel (Aug 24 to Aug 24): 'GL 04 OSV TBD - Below Deck 13.2# CaBr, Cement - 60hrs', 'GL 02 OSV TBD - N/U BOP, SBT Log LTB, Pull UTB - 72hrs'."
+    },
+    {
+      "type": "on_location_overlap",
+      "severity": "conflict",
       "asset": "Perdido",
       "asset_capacity": 1,
       "active_routes": 3,

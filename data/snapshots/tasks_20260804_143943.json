@@ -1,4 +1,10 @@
 {
+  "buffer_hours": 24,
+  "imported_at": "2026-08-04T14:39:43.881444",
+  "snapshot_date": "2026-08-04",
+  "snapshot_id": "tasks_20260804_143943.json",
+  "snapshot_time": "14:39:43",
+  "source": "workbook:OSV_Scheduler_Combined_Update.xlsx:OSV Demand Tracker",
   "tasks": [
     {
       "id": "deb7eb9c837b",
@@ -631,7 +637,7 @@
       "sheet_row": 36
     },
     {
-      "id": "d2ddd7839af9",
+      "id": "0c760bbe37b0",
       "asset": "Poseidon",
       "coordinator": "",
       "vessel": "Route Demand",
@@ -3187,7 +3193,7 @@
       "sheet_row": 178
     },
     {
-      "id": "1157f2bb543a",
+      "id": "08bee6c6778d",
       "asset": "Perdido",
       "coordinator": "",
       "vessel": "Route Demand",
@@ -3223,7 +3229,7 @@
       "sheet_row": 180
     },
     {
-      "id": "d85c8a357303",
+      "id": "1e9c09db454c",
       "asset": "Perdido",
       "coordinator": "",
       "vessel": "Route Demand",
@@ -4302,8 +4308,5 @@
       "source": "workbook",
       "sheet_row": 252
     }
-  ],
-  "source": "workbook:OSV_Scheduler_Combined_Update.xlsx:OSV Demand Tracker",
-  "buffer_hours": 24,
-  "imported_at": "2026-08-04T14:39:43.881444"
+  ]
 }
