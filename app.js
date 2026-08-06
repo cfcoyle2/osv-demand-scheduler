@@ -415,7 +415,7 @@ function apiUrl(path) {
 
 // Static mode: when true, loads data from /data/ folder instead of API
 let staticMode = false;
-const STATIC_DATA_VERSION = '20260731-latest-update';
+const STATIC_DATA_VERSION = '20260806-morning-update';
 
 // Map API endpoints to static JSON files (relative paths for GitHub Pages)
 const STATIC_DATA_MAP = {

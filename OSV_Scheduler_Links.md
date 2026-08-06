@@ -1,6 +1,6 @@
 # OSV Demand Scheduler & Spot Hire Planner Links
 
-**Updated:** August 3, 2026
+**Updated:** August 6, 2026
 
 ---
 
@@ -8,8 +8,8 @@
 
 | App | URL |
 |-----|-----|
-| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260731-latest-update |
-| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260731-latest-update |
+| **OSV Demand Scheduler** | https://cfcoyle2.github.io/osv-demand-scheduler/?v=20260806-morning-update |
+| **Spot Hire Planner** | https://cfcoyle2.github.io/osv-demand-scheduler/spot_hire.html?v=20260806-morning-update |
 
 > Note: GitHub Pages is read-only. Good for viewing schedules but cannot save changes.
 
@@ -19,8 +19,8 @@
 
 | App | URL |
 |-----|-----|
-| **OSV Demand Scheduler - editable updates** | [http://127.0.0.1:8000/?v=20260731-latest-update](http://127.0.0.1:8000/?v=20260731-latest-update) |
-| **Spot Hire Planner - editable updates** | [http://127.0.0.1:8000/spot_hire.html?v=20260731-latest-update](http://127.0.0.1:8000/spot_hire.html?v=20260731-latest-update) |
+| **OSV Demand Scheduler - editable updates** | [http://127.0.0.1:8000/?v=20260806-morning-update](http://127.0.0.1:8000/?v=20260806-morning-update) |
+| **Spot Hire Planner - editable updates** | [http://127.0.0.1:8000/spot_hire.html?v=20260806-morning-update](http://127.0.0.1:8000/spot_hire.html?v=20260806-morning-update) |
 | **API Health Check** | [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health) |
 
 ### Server Update API Links
