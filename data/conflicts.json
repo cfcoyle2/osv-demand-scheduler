@@ -228,6 +228,5 @@
       "overlap_end": "2026-12-06T06:00:00",
       "message": "H&P 205 - Perdido: 2 routes are on location at the same time against 1 configured vessel (Dec 05 to Dec 06): 'GL 14 FUTURE CAISSON OSV: Phase 3 , Rerun ESP & Tbg', 'GL 30 Holding at Port'."
     }
-  ],
-  "fleet": null
+  ]
 }
