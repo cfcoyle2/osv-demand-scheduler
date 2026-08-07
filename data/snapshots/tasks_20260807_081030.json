@@ -4323,5 +4323,8 @@
   ],
   "source": "workbook:OSV_Scheduler_Combined_Update.xlsx:OSV Demand Tracker",
   "buffer_hours": 24,
-  "imported_at": "2026-08-07T08:10:30.496516"
+  "imported_at": "2026-08-07T08:10:30.496516",
+  "snapshot_id": "tasks_20260807_081030.json",
+  "snapshot_date": "2026-08-07",
+  "snapshot_time": "08:10:30"
 }
